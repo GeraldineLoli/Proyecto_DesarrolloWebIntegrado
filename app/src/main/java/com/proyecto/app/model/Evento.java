@@ -20,9 +20,7 @@ public class Evento {
     
     public Evento() {}
     
-    public Evento(int id, String nombre, String descripcion, String categoria, 
-                  String lugar, String direccion, LocalDateTime fechaHora, 
-                  int duracionMinutos, String artistaPrincipal, int edadMinima) {
+    public Evento(int id, String nombre, String descripcion, String categoria, String lugar, String direccion, LocalDateTime fechaHora, int duracionMinutos, String artistaPrincipal, int edadMinima) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -37,30 +35,107 @@ public class Evento {
     }
     
     // Getters y Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-    public String getCategoria() { return categoria; }
-    public void setCategoria(String categoria) { this.categoria = categoria; }
-    public String getLugar() { return lugar; }
-    public void setLugar(String lugar) { this.lugar = lugar; }
-    public String getDireccion() { return direccion; }
-    public void setDireccion(String direccion) { this.direccion = direccion; }
-    public LocalDateTime getFechaHora() { return fechaHora; }
-    public void setFechaHora(LocalDateTime fechaHora) { this.fechaHora = fechaHora; }
-    public int getDuracionMinutos() { return duracionMinutos; }
-    public void setDuracionMinutos(int duracionMinutos) { this.duracionMinutos = duracionMinutos; }
-    public String getImagenUrl() { return imagenUrl; }
-    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
-    public String getArtistaPrincipal() { return artistaPrincipal; }
-    public void setArtistaPrincipal(String artistaPrincipal) { this.artistaPrincipal = artistaPrincipal; }
-    public List<String> getArtistasInvitados() { return artistasInvitados; }
-    public void setArtistasInvitados(List<String> artistasInvitados) { this.artistasInvitados = artistasInvitados; }
-    public int getEdadMinima() { return edadMinima; }
-    public void setEdadMinima(int edadMinima) { this.edadMinima = edadMinima; }
-    public boolean isActivo() { return activo; }
-    public void setActivo(boolean activo) { this.activo = activo; }
+    public int getId() { 
+        return id; 
+    }
+    
+    public void setId(int id) { 
+        this.id = id; 
+    }
+    
+    public String getNombre() { 
+        return nombre; 
+    }
+    
+    public void setNombre(String nombre) { 
+        this.nombre = nombre; 
+    }
+    
+    public String getDescripcion() { 
+        return descripcion; 
+    }
+    
+    public void setDescripcion(String descripcion) { 
+        this.descripcion = descripcion; 
+    }
+    
+    public String getCategoria() { 
+        return categoria; 
+    }
+    
+    public void setCategoria(String categoria) { 
+        this.categoria = categoria; 
+    }
+    
+    public String getLugar() { 
+        return lugar; 
+    }
+    
+    public void setLugar(String lugar) { 
+        this.lugar = lugar; 
+    }
+    
+    public String getDireccion() { 
+        return direccion; 
+    }
+    
+    public void setDireccion(String direccion) { 
+        this.direccion = direccion; 
+    }
+    
+    public LocalDateTime getFechaHora() { 
+        return fechaHora; 
+    }
+    
+    public void setFechaHora(LocalDateTime fechaHora) { 
+        this.fechaHora = fechaHora; 
+    }
+    
+    public int getDuracionMinutos() { 
+        return duracionMinutos; 
+    }
+    
+    public void setDuracionMinutos(int duracionMinutos) { 
+        this.duracionMinutos = duracionMinutos; 
+    }
+    
+    public String getImagenUrl() { 
+        return imagenUrl; 
+    }
+    
+    public void setImagenUrl(String imagenUrl) { 
+        this.imagenUrl = imagenUrl; 
+    }
+    
+    public String getArtistaPrincipal() { 
+        return artistaPrincipal; 
+    }
+    
+    public void setArtistaPrincipal(String artistaPrincipal) { 
+        this.artistaPrincipal = artistaPrincipal; 
+    }
+    
+    public List<String> getArtistasInvitados() { 
+        return artistasInvitados; 
+    }
+    
+    public void setArtistasInvitados(List<String> artistasInvitados) { 
+        this.artistasInvitados = artistasInvitados; 
+    }
+    
+    public int getEdadMinima() { 
+        return edadMinima; 
+    }
+    
+    public void setEdadMinima(int edadMinima) { 
+        this.edadMinima = edadMinima; 
+    }
+
+    public boolean isActivo() { 
+        return activo; 
+    }
+
+    public void setActivo(boolean activo) { 
+        this.activo = activo; 
+    }
 }
