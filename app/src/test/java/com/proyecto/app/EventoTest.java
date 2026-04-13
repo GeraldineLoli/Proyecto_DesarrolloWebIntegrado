@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.proyecto.app.controller.EventoController;
@@ -32,7 +31,6 @@ class EventoTest {
     }
     
     @Test
-    @DisplayName("Debería obtener todos los eventos")
     void whenObtenerTodos_shouldReturnAllEvents() {
         List<Evento> result = eventoController.obtenerTodos();
         
@@ -41,7 +39,6 @@ class EventoTest {
     }
     
     @Test
-    @DisplayName("Debería obtener evento por ID 1")
     void whenObtenerPorIdConId1_shouldReturnColdplay() {
         Evento result = eventoController.obtenerPorId(1);
         
@@ -50,7 +47,6 @@ class EventoTest {
     }
     
     @Test
-    @DisplayName("Debería crear un nuevo evento")
     void whenCrearEvento_shouldAddNewEvent() {
         // Verificar estado inicial
         int sizeBefore = eventoController.obtenerTodos().size();
@@ -79,7 +75,6 @@ class EventoTest {
     }
     
     @Test
-    @DisplayName("Debería asignar IDs incrementales al crear múltiples eventos")
     void whenCrearMultiplesEventos_shouldAssignIncrementalIds() {
         // Verificar estado inicial
         int eventosIniciales = eventoController.obtenerTodos().size();
@@ -118,7 +113,6 @@ class EventoTest {
     }
     
     @Test
-    @DisplayName("Debería obtener solo eventos próximos")
     void whenObtenerProximos_shouldReturnFutureEvents() {
         List<Evento> result = eventoController.obtenerProximos();
         
@@ -128,7 +122,6 @@ class EventoTest {
     }
     
     @Test
-    @DisplayName("El ID debe ser incremental al crear eventos")
     void whenCrearEvento_elIdDebeSerIncremental() {
         // Verificar último ID antes de crear
         int sizeBefore = eventoController.obtenerTodos().size();
@@ -152,7 +145,6 @@ class EventoTest {
     }
     
     @Test
-    @DisplayName("Debería filtrar eventos por categoría")
     void whenObtenerPorCategoria_shouldReturnFilteredEvents() {
         List<Evento> conciertos = eventoController.obtenerPorCategoria("CONCIERTO");
         assertEquals(2, conciertos.size());
@@ -165,7 +157,6 @@ class EventoTest {
     }
     
     @Test
-    @DisplayName("Debería actualizar un evento existente")
     void whenActualizarEvento_shouldUpdateExistingEvent() {
         Evento eventoActualizado = new Evento(
             0, "Coldplay - Actualizado", "Descripción actualizada",
@@ -182,7 +173,6 @@ class EventoTest {
     }
     
     @Test
-    @DisplayName("Debería eliminar un evento existente")
     void whenEliminarEvento_shouldRemoveEvent() {
         // Verificar que existe
         assertNotNull(eventoController.obtenerPorId(1));

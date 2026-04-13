@@ -24,6 +24,7 @@ public class ZonaService {
         this.nextId = 1;
         if (inicializarDatos) {
             initData();
+            this.nextId = 13;
         }
     }
     
