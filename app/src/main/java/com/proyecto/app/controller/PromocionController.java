@@ -49,18 +49,21 @@ public class PromocionController {
     }
     
     @PostMapping
-    public void crearPromocion(@RequestBody Promocion promocion) {
+    public String crearPromocion(@RequestBody Promocion promocion) {
         promocionService.agregarPromocion(promocion);
+        return "Promoción creada exitosamente";
     }
     
     @PutMapping("/{id}")
-    public void actualizarPromocion(@PathVariable int id, @RequestBody Promocion promocion) {
+    public String actualizarPromocion(@PathVariable int id, @RequestBody Promocion promocion) {
         promocionService.actualizarPromocion(id, promocion);
+        return "Promoción actualizada exitosamente";
     }
     
     @DeleteMapping("/{id}")
-    public void eliminarPromocion(@PathVariable int id) {
+    public String eliminarPromocion(@PathVariable int id) {
         promocionService.eliminarPromocion(id);
+        return "Promoción eliminada exitosamente";
     }
     
     @PostMapping("/{id}/usar")

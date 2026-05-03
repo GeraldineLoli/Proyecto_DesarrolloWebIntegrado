@@ -65,17 +65,20 @@ public class PagoController {
     }
     
     @PostMapping
-    public void crearPago(@RequestBody Pago pago) {
+    public String crearPago(@RequestBody Pago pago) {
         pagoService.agregarPago(pago);
+        return "Pago creado exitosamente";
     }
     
     @PutMapping("/{id}")
-    public void actualizarPago(@PathVariable int id, @RequestBody Pago pago) {
+    public String actualizarPago(@PathVariable int id, @RequestBody Pago pago) {
         pagoService.actualizarPago(id, pago);
+        return "Pago actualizado exitosamente";
     }
     
     @DeleteMapping("/{id}")
-    public void eliminarPago(@PathVariable int id) {
+    public String eliminarPago(@PathVariable int id) {
         pagoService.eliminarPago(id);
+        return "Pago eliminado exitosamente";
     }
 }

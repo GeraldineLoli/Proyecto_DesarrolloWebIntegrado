@@ -52,12 +52,14 @@ public class EntradaController {
     }
     
     @PutMapping("/{id}/cancelar")
-    public void cancelarEntrada(@PathVariable int id) {
+    public String cancelarEntrada(@PathVariable int id) {
         entradaService.cancelarEntrada(id);
+        return "Entrada cancelada exitosamente";
     }
     
     @PutMapping("/{id}/usar")
-    public void usarEntrada(@PathVariable int id) {
+    public String usarEntrada(@PathVariable int id) {
         entradaService.usarEntrada(id);
+        return "Entrada usada exitosamente";
     }
 }

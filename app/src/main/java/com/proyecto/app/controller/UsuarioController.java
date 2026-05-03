@@ -39,18 +39,21 @@ public class UsuarioController {
     }
     
     @PostMapping
-    public void crearUsuario(@RequestBody Usuario usuario) {
+    public String crearUsuario(@RequestBody Usuario usuario) {
         usuarioService.agregarUsuario(usuario);
+        return "Usuario creado exitosamente";
     }
     
     @PutMapping("/{id}")
-    public void actualizarUsuario(@PathVariable int id, @RequestBody Usuario usuario) {
+    public String actualizarUsuario(@PathVariable int id, @RequestBody Usuario usuario) {
         usuarioService.actualizarUsuario(id, usuario);
+        return "Usuario actualizado exitosamente";
     }
     
     @DeleteMapping("/{id}")
-    public void eliminarUsuario(@PathVariable int id) {
+    public String eliminarUsuario(@PathVariable int id) {
         usuarioService.eliminarUsuario(id);
+        return "Usuario eliminado exitosamente";
     }
     
     @PostMapping("/login")

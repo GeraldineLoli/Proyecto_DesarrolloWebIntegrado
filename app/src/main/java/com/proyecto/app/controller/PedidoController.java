@@ -39,17 +39,20 @@ public class PedidoController {
     }
 
     @PostMapping
-    public void crearPedido(@RequestBody Pedido pedido) {
+    public String crearPedido(@RequestBody Pedido pedido) {
         pedidoService.agregarPedido(pedido);
+        return "Pedido creado exitosamente";
     }
 
     @PutMapping("/{id}")
-    public void actualizarPedido(@PathVariable int id, @RequestBody Pedido pedido) {
+    public String actualizarPedido(@PathVariable int id, @RequestBody Pedido pedido) {
         pedidoService.actualizarPedido(id, pedido);
+        return "Pedido actualizado exitosamente";
     }
 
     @DeleteMapping("/{id}")
-    public void eliminarPedido(@PathVariable int id) {
+    public String eliminarPedido(@PathVariable int id) {
         pedidoService.eliminarPedido(id);
+        return "Pedido eliminado exitosamente";
     }
 }

@@ -39,18 +39,21 @@ public class ZonaController {
     }
     
     @PostMapping
-    public void crearZona(@RequestBody Zona zona) {
+    public String crearZona(@RequestBody Zona zona) {
         zonaService.agregarZona(zona);
+        return "Zona creada exitosamente";
     }
     
     @PutMapping("/{id}")
-    public void actualizarZona(@PathVariable int id, @RequestBody Zona zona) {
+    public String actualizarZona(@PathVariable int id, @RequestBody Zona zona) {
         zonaService.actualizarZona(id, zona);
+        return "Zona actualizada exitosamente";
     }
     
     @DeleteMapping("/{id}")
-    public void eliminarZona(@PathVariable int id) {
+    public String eliminarZona(@PathVariable int id) {
         zonaService.eliminarZona(id);
+        return "Zona eliminada exitosamente";
     }
     
     @PostMapping("/{id}/reservar")

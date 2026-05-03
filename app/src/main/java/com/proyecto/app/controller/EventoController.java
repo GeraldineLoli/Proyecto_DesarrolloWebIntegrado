@@ -44,17 +44,20 @@ public class EventoController {
     }
     
     @PostMapping
-    public void crearEvento(@RequestBody Evento evento) {
+    public String crearEvento(@RequestBody Evento evento) {
         eventoService.agregarEvento(evento);
+        return "Evento creado exitosamente";
     }
     
     @PutMapping("/{id}")
-    public void actualizarEvento(@PathVariable int id, @RequestBody Evento evento) {
+    public String actualizarEvento(@PathVariable int id, @RequestBody Evento evento) {
         eventoService.actualizarEvento(id, evento);
+        return "Evento actualizado exitosamente";
     }
     
     @DeleteMapping("/{id}")
-    public void eliminarEvento(@PathVariable int id) {
+    public String eliminarEvento(@PathVariable int id) {
         eventoService.eliminarEvento(id);
+        return "Evento eliminado exitosamente";
     }
 }

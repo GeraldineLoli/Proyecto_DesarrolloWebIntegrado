@@ -55,19 +55,22 @@ public class ResenaController {
 
     // Endpoint para agregar una nueva reseña
     @PostMapping
-    public void agregarResena(@RequestBody Resena resena) {
+    public String agregarResena(@RequestBody Resena resena) {
         resenaService.agregarResena(resena);
+        return "Reseña creada exitosamente";
     }
 
     // Endpoint para actualizar una reseña existente
     @PutMapping("/{id}")
-    public void actualizarResena(@PathVariable int id, @RequestBody Resena resena) {
+    public String actualizarResena(@PathVariable int id, @RequestBody Resena resena) {
         resenaService.actualizarResena(id, resena);
+        return "Reseña actualizada exitosamente";
     }
 
     // Endpoint para eliminar una reseña
     @DeleteMapping("/{id}")
-    public void eliminarResena(@PathVariable int id) {
+    public String eliminarResena(@PathVariable int id) {
         resenaService.eliminarResena(id);
+        return "Reseña eliminada exitosamente";
     }
 }
