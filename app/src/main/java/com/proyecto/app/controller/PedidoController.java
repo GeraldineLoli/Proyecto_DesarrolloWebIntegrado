@@ -2,6 +2,8 @@ package com.proyecto.app.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,47 +14,52 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.app.model.Pedido;
-import com.proyecto.app.service.PedidoService;
+import com.proyecto.app.service.IPedidoService;
 
 @RestController
 @RequestMapping("/api/pedidos")
 public class PedidoController {
-    private final PedidoService pedidoService;
 
-    public PedidoController(PedidoService pedidoService) {
+    private final IPedidoService pedidoService;
+
+    public PedidoController(IPedidoService pedidoService) {
         this.pedidoService = pedidoService;
     }
 
-    @GetMapping
-    public List<Pedido> obtenerTodos() {
-        return pedidoService.todos();
+    @PostMapping
+    public ResponseEntity<String> crearPedido(@RequestBody Pedido pedido) {
+        pedidoService.crearPedido(pedido);
+        return new ResponseEntity<>("Pedido creado exitosamente", HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public Pedido obtenerPorId(@PathVariable int id) {
-        return pedidoService.obtenerPedido(id);
+    public ResponseEntity<Pedido> obtenerPorId(@PathVariable("id") Long id) {
+        Pedido pedido = pedidoService.obtenerPedidoPorId(id);
+        return new ResponseEntity<>(pedido, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Pedido>> obtenerTodos() {
+        List<Pedido> pedidos = pedidoService.obtenerTodosLosPedidos();
+        return new ResponseEntity<>(pedidos, HttpStatus.OK);
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    public List<Pedido> obtenerPorUsuario(@PathVariable int usuarioId) {
-        return pedidoService.obtenerPorUsuario(usuarioId);
-    }
-
-    @PostMapping
-    public String crearPedido(@RequestBody Pedido pedido) {
-        pedidoService.agregarPedido(pedido);
-        return "Pedido creado exitosamente";
+    public ResponseEntity<List<Pedido>> obtenerPorUsuario(@PathVariable("usuarioId") Long usuarioId) {
+        List<Pedido> pedidos = pedidoService.obtenerPedidosPorUsuario(usuarioId);
+        return new ResponseEntity<>(pedidos, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public String actualizarPedido(@PathVariable int id, @RequestBody Pedido pedido) {
-        pedidoService.actualizarPedido(id, pedido);
-        return "Pedido actualizado exitosamente";
+    public ResponseEntity<String> actualizarPedido(@PathVariable("id") Long id, @RequestBody Pedido pedido) {
+        pedido.setId(id);
+        pedidoService.actualizarPedido(pedido);
+        return new ResponseEntity<>("Pedido actualizado exitosamente", HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public String eliminarPedido(@PathVariable int id) {
+    public ResponseEntity<String> eliminarPedido(@PathVariable("id") Long id) {
         pedidoService.eliminarPedido(id);
-        return "Pedido eliminado exitosamente";
+        return new ResponseEntity<>("Pedido eliminado exitosamente", HttpStatus.OK);
     }
 }
