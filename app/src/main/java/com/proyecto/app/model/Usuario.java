@@ -1,25 +1,41 @@
 package com.proyecto.app.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "usuarios")
 public class Usuario {
-    private int id;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false, unique = true)
     private String email;
+    
+    @Column(nullable = false)
     private String contraseña;
+    
+    @Column(nullable = false)
     private String nombre;
+    
+    @Column(nullable = false)
     private String apellido;
+    
+    @Column(nullable = false, unique = true)
     private String dni;
+    
     private String telefono;
     private LocalDate fechaNacimiento;
     private String rol;
     private LocalDate fechaRegistro;
     
     public Usuario() {
-
+        this.fechaRegistro = LocalDate.now();
     }
     
-    public Usuario(int id, String email, String nombre, String apellido, String dni) {
-        this.id = id;
+    public Usuario(String email, String nombre, String apellido, String dni) {
         this.email = email;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -28,11 +44,11 @@ public class Usuario {
     }
     
     // Getters y Setters
-    public int getId() { 
+    public Long getId() { 
         return id; 
     }
     
-    public void setId(int id) { 
+    public void setId(Long id) { 
         this.id = id; 
     }
     

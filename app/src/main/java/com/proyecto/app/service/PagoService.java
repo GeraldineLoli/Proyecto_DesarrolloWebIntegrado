@@ -17,7 +17,7 @@ public class PagoService {
     private List<Pago> pagos;
     private int nextId;
     private final PedidoService pedidoService;
-    private final UsuarioService usuarioService;
+    private final IUsuarioService usuarioService;
     
     // ✅ CONSTRUCTOR POR DEFECTO (obligatorio para Spring)
     public PagoService() {
@@ -30,7 +30,7 @@ public class PagoService {
     
     // ✅ Constructor con @Autowired para inyección de dependencias
     @Autowired
-    public PagoService(PedidoService pedidoService, UsuarioService usuarioService) {
+    public PagoService(PedidoService pedidoService, IUsuarioService usuarioService) {
         this.pagos = new ArrayList<>();
         this.nextId = 1;
         this.pedidoService = pedidoService;
@@ -39,7 +39,7 @@ public class PagoService {
     }
     
     // Constructor para testing
-    public PagoService(PedidoService pedidoService, UsuarioService usuarioService, boolean inicializarDatos) {
+    public PagoService(PedidoService pedidoService, IUsuarioService usuarioService, boolean inicializarDatos) {
         this.pagos = new ArrayList<>();
         this.nextId = 1;
         this.pedidoService = pedidoService;
@@ -118,7 +118,7 @@ public class PagoService {
             throw new RuntimeException("Servicios no inicializados correctamente");
         }
         
-        if (usuarioService.obtenerUsuario(usuarioId) == null) {
+        if (usuarioService.obtenerUsuarioPorId(Long.valueOf(usuarioId)) == null) {
             throw new RuntimeException("Usuario no encontrado");
         }
         
@@ -195,7 +195,7 @@ public class PagoService {
             throw new RuntimeException("Servicios no inicializados correctamente");
         }
         
-        if (usuarioService.obtenerUsuario(pago.getUsuarioId()) == null) {
+        if (usuarioService.obtenerUsuarioPorId(Long.valueOf(pago.getUsuarioId())) == null) {
             throw new RuntimeException("Usuario no encontrado");
         }
         

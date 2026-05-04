@@ -2,6 +2,8 @@ package com.proyecto.app.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,53 +13,60 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.proyecto.app.model.Usuario;
-import com.proyecto.app.service.UsuarioService;
+import com.proyecto.app.service.IUsuarioService;
 
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
-    private final UsuarioService usuarioService;
     
-    public UsuarioController(UsuarioService usuarioService) {
+    private final IUsuarioService usuarioService;
+    
+    public UsuarioController(IUsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
     
-    @GetMapping
-    public List<Usuario> obtenerTodos() {
-        return usuarioService.todos();
+    @PostMapping
+    public ResponseEntity<String> crearUsuario(@RequestBody Usuario usuario) {
+        usuarioService.crearUsuario(usuario);
+        return new ResponseEntity<>("Usuario creado exitosamente", HttpStatus.CREATED);
     }
     
     @GetMapping("/{id}")
-    public Usuario obtenerPorId(@PathVariable int id) {
-        return usuarioService.obtenerUsuario(id);
+    public ResponseEntity<Usuario> obtenerPorId(@PathVariable("id") Long id) {
+        Usuario usuario = usuarioService.obtenerUsuarioPorId(id);
+        return new ResponseEntity<>(usuario, HttpStatus.OK);
     }
     
     @GetMapping("/email/{email}")
-    public Usuario obtenerPorEmail(@PathVariable String email) {
-        return usuarioService.obtenerPorEmail(email);
+    public ResponseEntity<Usuario> obtenerPorEmail(@PathVariable String email) {
+        Usuario usuario = usuarioService.obtenerPorEmail(email);
+        return new ResponseEntity<>(usuario, HttpStatus.OK);
     }
     
-    @PostMapping
-    public String crearUsuario(@RequestBody Usuario usuario) {
-        usuarioService.agregarUsuario(usuario);
-        return "Usuario creado exitosamente";
+    @GetMapping
+    public ResponseEntity<List<Usuario>> obtenerTodos() {
+        List<Usuario> usuarios = usuarioService.obtenerTodosLosUsuarios();
+        return new ResponseEntity<>(usuarios, HttpStatus.OK);
     }
     
     @PutMapping("/{id}")
-    public String actualizarUsuario(@PathVariable int id, @RequestBody Usuario usuario) {
-        usuarioService.actualizarUsuario(id, usuario);
-        return "Usuario actualizado exitosamente";
+    public ResponseEntity<String> actualizarUsuario(@PathVariable("id") Long id, @RequestBody Usuario usuario) {
+        usuario.setId(id);
+        usuarioService.actualizarUsuario(usuario);
+        return new ResponseEntity<>("Usuario actualizado exitosamente", HttpStatus.OK);
     }
     
     @DeleteMapping("/{id}")
-    public String eliminarUsuario(@PathVariable int id) {
+    public ResponseEntity<String> eliminarUsuario(@PathVariable("id") Long id) {
         usuarioService.eliminarUsuario(id);
-        return "Usuario eliminado exitosamente";
+        return new ResponseEntity<>("Usuario eliminado exitosamente", HttpStatus.OK);
     }
     
     @PostMapping("/login")
-    public boolean login(@RequestParam String email, @RequestParam String contraseña) {
-        return usuarioService.validarCredenciales(email, contraseña);
+    public ResponseEntity<Boolean> login(@RequestParam String email, @RequestParam String contraseña) {
+        boolean isValid = usuarioService.validarCredenciales(email, contraseña);
+        return new ResponseEntity<>(isValid, HttpStatus.OK);
     }
 }

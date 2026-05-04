@@ -16,9 +16,9 @@ public class PedidoService {
     private List<Pedido> pedidos;
     private int nextId;
     private final EntradaService entradaService;
-    private final UsuarioService usuarioService;
+    private final IUsuarioService usuarioService;
 
-    public PedidoService(EntradaService entradaService, UsuarioService usuarioService) {
+    public PedidoService(EntradaService entradaService, IUsuarioService usuarioService) {
         this.pedidos = new ArrayList<>();
         this.nextId = 1;
         this.entradaService = entradaService;
@@ -57,7 +57,7 @@ public class PedidoService {
     }
 
     public void agregarPedido(Pedido pedido) {
-        if (usuarioService.obtenerUsuario(pedido.getUsuarioId()) == null) {
+        if (usuarioService.obtenerUsuarioPorId(Long.valueOf(pedido.getUsuarioId())) == null) {
             throw new RuntimeException("Usuario no encontrado");
         }
         if (pedido.getEntradaIds() == null) {
@@ -99,7 +99,7 @@ public class PedidoService {
     }
 
     public void actualizarPedido(int id, Pedido actualizado) {
-        if (usuarioService.obtenerUsuario(actualizado.getUsuarioId()) == null) {
+        if (usuarioService.obtenerUsuarioPorId(Long.valueOf(actualizado.getUsuarioId())) == null) {
             throw new RuntimeException("Usuario no encontrado");
         }
         if (actualizado.getEntradaIds() == null) {

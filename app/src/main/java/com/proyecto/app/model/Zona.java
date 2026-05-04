@@ -1,19 +1,38 @@
 package com.proyecto.app.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "zonas")
 public class Zona {
-    private int id;
-    private int eventoId;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false)
+    private Long eventoId;
+    
+    @Column(nullable = false)
     private String nombre; // VIP, PLATEA, GENERAL, PALCO
+    
+    @Column(nullable = false)
     private double precio;
+    
+    @Column(nullable = false)
     private int capacidadTotal;
+    
+    @Column(nullable = false)
     private int entradasDisponibles;
+    
     private String colorMapa;
+    
+    @Column(nullable = false)
     private boolean tieneNumeracion;
     
     public Zona() {}
     
-    public Zona(int id, int eventoId, String nombre, double precio, int capacidadTotal, boolean tieneNumeracion) {
-        this.id = id;
+    public Zona(Long eventoId, String nombre, double precio, int capacidadTotal, boolean tieneNumeracion) {
         this.eventoId = eventoId;
         this.nombre = nombre;
         this.precio = precio;
@@ -23,18 +42,18 @@ public class Zona {
     }
     
     // Getters y Setters
-    public int getId() { 
+    public Long getId() { 
         return id; 
     }
 
-    public void setId(int id) { 
+    public void setId(Long id) { 
         this.id = id; 
     }
 
-    public int getEventoId() { 
+    public Long getEventoId() { 
         return eventoId; 
     }
-    public void setEventoId(int eventoId) { 
+    public void setEventoId(Long eventoId) { 
         this.eventoId = eventoId; 
     }
 

@@ -15,10 +15,10 @@ public class ResenaService {
     private List<Resena> resenas;
     private int nextId;
     private final EntradaService entradaService;
-    private final UsuarioService usuarioService;
+    private final IUsuarioService usuarioService;
 
     @Autowired
-    public ResenaService(EntradaService entradaService, UsuarioService usuarioService) {
+    public ResenaService(EntradaService entradaService, IUsuarioService usuarioService) {
         this.resenas = new ArrayList<>();
         this.nextId = 1;
         this.entradaService = entradaService;
@@ -27,7 +27,7 @@ public class ResenaService {
     }
 
     // Constructor para testing
-    public ResenaService(EntradaService entradaService, UsuarioService usuarioService, boolean inicializarDatos) {
+    public ResenaService(EntradaService entradaService, IUsuarioService usuarioService, boolean inicializarDatos) {
         this.resenas = new ArrayList<>();
         this.nextId = 1;
         this.entradaService = entradaService;
@@ -87,7 +87,7 @@ public class ResenaService {
 
     public void agregarResena(Resena resena) {
         // Validar que el usuario existe
-        if (usuarioService.obtenerUsuario(resena.getUsuarioId()) == null) {
+        if (usuarioService.obtenerUsuarioPorId(Long.valueOf(resena.getUsuarioId())) == null) {
             throw new RuntimeException("Usuario no encontrado");
         }
         // Validar que la entrada existe y fue usada

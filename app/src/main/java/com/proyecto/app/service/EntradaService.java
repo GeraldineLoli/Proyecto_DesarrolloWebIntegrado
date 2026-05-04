@@ -12,11 +12,11 @@ import com.proyecto.app.model.Entrada;
 public class EntradaService {
     private List<Entrada> entradas;
     private int nextId;
-    private final ZonaService zonaService;
-    private final UsuarioService usuarioService;
+    private final IZonaService zonaService;
+    private final IUsuarioService usuarioService;
     private final EventoService eventoService;
     
-    public EntradaService(ZonaService zonaService, UsuarioService usuarioService, EventoService eventoService) {
+    public EntradaService(IZonaService zonaService, IUsuarioService usuarioService, EventoService eventoService) {
         this.entradas = new ArrayList<>();
         this.nextId = 4;
         this.zonaService = zonaService;
@@ -53,20 +53,20 @@ public class EntradaService {
     
     public Entrada comprarEntrada(int usuarioId, int zonaId, String metodoPago) {
         // Validar usuario existe
-        if (usuarioService.obtenerUsuario(usuarioId) == null) {
+        if (usuarioService.obtenerUsuarioPorId(Long.valueOf(usuarioId)) == null) {
             throw new RuntimeException("Usuario no encontrado");
         }
         
         // Validar zona existe y tiene disponibilidad
-        if (!zonaService.reservarEntrada(zonaId)) {
+        if (!zonaService.reservarEntrada(Long.valueOf(zonaId))) {
             throw new RuntimeException("No hay entradas disponibles en esta zona");
         }
         
         // Obtener zona para saber el precio y evento
-        var zona = zonaService.obtenerZona(zonaId);
+        var zona = zonaService.obtenerZonaPorId(Long.valueOf(zonaId));
         
         // Crear entrada
-        Entrada nuevaEntrada = new Entrada(0, zona.getEventoId(), zonaId, usuarioId, 
+        Entrada nuevaEntrada = new Entrada(0, zona.getEventoId().intValue(), zonaId, usuarioId, 
                                           generarCodigoUnico(), zona.getPrecio(), metodoPago);
         nuevaEntrada.setId(nextId++);
         entradas.add(nuevaEntrada);
@@ -79,7 +79,7 @@ public class EntradaService {
         if (entrada != null && !entrada.getEstado().equals("USADA")) {
             entrada.setEstado("CANCELADA");
             // Liberar la entrada en la zona
-            zonaService.liberarEntrada(entrada.getZonaId());
+            zonaService.liberarEntrada(Long.valueOf(entrada.getZonaId()));
         }
     }
     
