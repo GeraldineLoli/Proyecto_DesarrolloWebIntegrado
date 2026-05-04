@@ -1,45 +1,65 @@
 package com.proyecto.app.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "pedidos")
 public class Pedido {
-    private int id;
-    private int usuarioId;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private Long usuarioId;
+
     private LocalDateTime fechaCreacion;
+
+    @Column(nullable = false)
     private String estado;
+
     private double total;
+
+    @Column(unique = true)
     private String codigoPedido;
-    private List<Integer> entradaIds;
+
+    @ElementCollection
+    @CollectionTable(name = "pedido_entradas", joinColumns = @JoinColumn(name = "pedido_id"))
+    @Column(name = "entrada_id")
+    private List<Long> entradaIds;
 
     public Pedido() {
         this.entradaIds = new ArrayList<>();
+        this.fechaCreacion = LocalDateTime.now();
     }
 
-    public Pedido(int id, int usuarioId, LocalDateTime fechaCreacion, double total, String estado, String codigoPedido) {
-        this.id = id;
+    public Pedido(Long usuarioId, double total, String estado, String codigoPedido) {
         this.usuarioId = usuarioId;
-        this.fechaCreacion = fechaCreacion;
         this.total = total;
         this.estado = estado;
         this.codigoPedido = codigoPedido;
         this.entradaIds = new ArrayList<>();
+        this.fechaCreacion = LocalDateTime.now();
     }
 
-    public int getId() {
+    // Getters y Setters
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public int getUsuarioId() {
+    public Long getUsuarioId() {
         return usuarioId;
     }
 
-    public void setUsuarioId(int usuarioId) {
+    public void setUsuarioId(Long usuarioId) {
         this.usuarioId = usuarioId;
     }
 
@@ -75,11 +95,11 @@ public class Pedido {
         this.codigoPedido = codigoPedido;
     }
 
-    public List<Integer> getEntradaIds() {
+    public List<Long> getEntradaIds() {
         return entradaIds;
     }
 
-    public void setEntradaIds(List<Integer> entradaIds) {
+    public void setEntradaIds(List<Long> entradaIds) {
         this.entradaIds = entradaIds != null ? entradaIds : new ArrayList<>();
     }
 }

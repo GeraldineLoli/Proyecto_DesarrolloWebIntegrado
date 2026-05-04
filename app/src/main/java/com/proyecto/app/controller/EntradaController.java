@@ -2,64 +2,76 @@ package com.proyecto.app.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.proyecto.app.model.Entrada;
-import com.proyecto.app.service.EntradaService;
+import com.proyecto.app.service.IEntradaService;
 
 @RestController
 @RequestMapping("/api/entradas")
 public class EntradaController {
-    private final EntradaService entradaService;
-    
-    public EntradaController(EntradaService entradaService) {
+
+    private final IEntradaService entradaService;
+
+    public EntradaController(IEntradaService entradaService) {
         this.entradaService = entradaService;
     }
-    
-    @GetMapping
-    public List<Entrada> obtenerTodas() {
-        return entradaService.todas();
+
+    @PostMapping
+    public ResponseEntity<String> crearEntrada(@RequestBody Entrada entrada) {
+        entradaService.crearEntrada(entrada);
+        return new ResponseEntity<>("Entrada creada exitosamente", HttpStatus.CREATED);
     }
-    
+
     @GetMapping("/{id}")
-    public Entrada obtenerPorId(@PathVariable int id) {
-        return entradaService.obtenerEntrada(id);
+    public ResponseEntity<Entrada> obtenerPorId(@PathVariable("id") Long id) {
+        Entrada entrada = entradaService.obtenerEntradaPorId(id);
+        return new ResponseEntity<>(entrada, HttpStatus.OK);
     }
-    
+
+    @GetMapping
+    public ResponseEntity<List<Entrada>> obtenerTodas() {
+        List<Entrada> entradas = entradaService.obtenerTodasLasEntradas();
+        return new ResponseEntity<>(entradas, HttpStatus.OK);
+    }
+
     @GetMapping("/usuario/{usuarioId}")
-    public List<Entrada> obtenerPorUsuario(@PathVariable int usuarioId) {
-        return entradaService.obtenerPorUsuario(usuarioId);
+    public ResponseEntity<List<Entrada>> obtenerPorUsuario(@PathVariable("usuarioId") Long usuarioId) {
+        List<Entrada> entradas = entradaService.obtenerEntradasPorUsuario(usuarioId);
+        return new ResponseEntity<>(entradas, HttpStatus.OK);
     }
-    
+
     @GetMapping("/evento/{eventoId}")
-    public List<Entrada> obtenerPorEvento(@PathVariable int eventoId) {
-        return entradaService.obtenerPorEvento(eventoId);
+    public ResponseEntity<List<Entrada>> obtenerPorEvento(@PathVariable("eventoId") Long eventoId) {
+        List<Entrada> entradas = entradaService.obtenerEntradasPorEvento(eventoId);
+        return new ResponseEntity<>(entradas, HttpStatus.OK);
     }
-    
+
     @GetMapping("/activas")
-    public List<Entrada> obtenerActivas() {
-        return entradaService.obtenerEntradasActivas();
+    public ResponseEntity<List<Entrada>> obtenerActivas() {
+        List<Entrada> entradas = entradaService.obtenerEntradasActivas();
+        return new ResponseEntity<>(entradas, HttpStatus.OK);
     }
-    
-    @PostMapping("/comprar")
-    public Entrada comprarEntrada(@RequestParam int usuarioId, @RequestParam int zonaId, @RequestParam String metodoPago) {
-        return entradaService.comprarEntrada(usuarioId, zonaId, metodoPago);
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> actualizarEntrada(@PathVariable("id") Long id, @RequestBody Entrada entrada) {
+        entrada.setId(id);
+        entradaService.actualizarEntrada(entrada);
+        return new ResponseEntity<>("Entrada actualizada exitosamente", HttpStatus.OK);
     }
-    
-    @PutMapping("/{id}/cancelar")
-    public String cancelarEntrada(@PathVariable int id) {
-        entradaService.cancelarEntrada(id);
-        return "Entrada cancelada exitosamente";
-    }
-    
-    @PutMapping("/{id}/usar")
-    public String usarEntrada(@PathVariable int id) {
-        entradaService.usarEntrada(id);
-        return "Entrada usada exitosamente";
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> eliminarEntrada(@PathVariable("id") Long id) {
+        entradaService.eliminarEntrada(id);
+        return new ResponseEntity<>("Entrada eliminada exitosamente", HttpStatus.OK);
     }
 }

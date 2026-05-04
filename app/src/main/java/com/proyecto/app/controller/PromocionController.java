@@ -29,7 +29,7 @@ public class PromocionController {
     }
     
     @GetMapping("/{id}")
-    public Promocion obtenerPorId(@PathVariable int id) {
+    public Promocion obtenerPorId(@PathVariable Long id) {
         return promocionService.obtenerPromocion(id);
     }
     
@@ -39,7 +39,7 @@ public class PromocionController {
     }
     
     @GetMapping("/evento/{eventoId}")
-    public List<Promocion> obtenerPorEvento(@PathVariable int eventoId) {
+    public List<Promocion> obtenerPorEvento(@PathVariable Long eventoId) {
         return promocionService.obtenerPorEvento(eventoId);
     }
     
@@ -55,19 +55,19 @@ public class PromocionController {
     }
     
     @PutMapping("/{id}")
-    public String actualizarPromocion(@PathVariable int id, @RequestBody Promocion promocion) {
+    public String actualizarPromocion(@PathVariable Long id, @RequestBody Promocion promocion) {
         promocionService.actualizarPromocion(id, promocion);
         return "Promoción actualizada exitosamente";
     }
     
     @DeleteMapping("/{id}")
-    public String eliminarPromocion(@PathVariable int id) {
+    public String eliminarPromocion(@PathVariable Long id) {
         promocionService.eliminarPromocion(id);
         return "Promoción eliminada exitosamente";
     }
     
     @PostMapping("/{id}/usar")
-    public boolean usarPromocion(@PathVariable int id) {
+    public boolean usarPromocion(@PathVariable Long id) {
         return promocionService.usarPromocion(id);
     }
 }
