@@ -12,51 +12,51 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.app.model.Evento;
-import com.proyecto.app.service.EventoService;
+import com.proyecto.app.service.IEventoService;
 
 @RestController
 @RequestMapping("/api/eventos")
 public class EventoController {
-    private final EventoService eventoService;
-    
-    public EventoController(EventoService eventoService) {
+    private final IEventoService eventoService;
+
+    public EventoController(IEventoService eventoService) {
         this.eventoService = eventoService;
     }
-    
+
     @GetMapping
     public List<Evento> obtenerTodos() {
         return eventoService.todos();
     }
-    
+
     @GetMapping("/{id}")
-    public Evento obtenerPorId(@PathVariable int id) {
+    public Evento obtenerPorId(@PathVariable Long id) {
         return eventoService.obtenerEvento(id);
     }
-    
+
     @GetMapping("/categoria/{categoria}")
     public List<Evento> obtenerPorCategoria(@PathVariable String categoria) {
         return eventoService.obtenerPorCategoria(categoria);
     }
-    
+
     @GetMapping("/proximos")
     public List<Evento> obtenerProximos() {
         return eventoService.obtenerEventosProximos();
     }
-    
+
     @PostMapping
     public String crearEvento(@RequestBody Evento evento) {
         eventoService.agregarEvento(evento);
         return "Evento creado exitosamente";
     }
-    
+
     @PutMapping("/{id}")
-    public String actualizarEvento(@PathVariable int id, @RequestBody Evento evento) {
+    public String actualizarEvento(@PathVariable Long id, @RequestBody Evento evento) {
         eventoService.actualizarEvento(id, evento);
         return "Evento actualizado exitosamente";
     }
-    
+
     @DeleteMapping("/{id}")
-    public String eliminarEvento(@PathVariable int id) {
+    public String eliminarEvento(@PathVariable Long id) {
         eventoService.eliminarEvento(id);
         return "Evento eliminado exitosamente";
     }

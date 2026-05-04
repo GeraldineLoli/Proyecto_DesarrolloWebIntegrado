@@ -1,21 +1,37 @@
 package com.proyecto.app.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "resenas")
 public class Resena {
-    private int id;
-    private int eventoId;
-    private int usuarioId;
-    private int entradaId;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private Long eventoId;
+
+    @Column(nullable = false)
+    private Long usuarioId;
+
+    @Column(nullable = false)
+    private Long entradaId;
+
+    @Column(nullable = false)
     private int calificacion; // 1 a 5 estrellas
+
+    @Column(length = 1000)
     private String comentario;
+
     private LocalDate fecha;
 
     public Resena() {
     }
 
-    public Resena(int id, int eventoId, int usuarioId, int entradaId, int calificacion, String comentario) {
-        this.id = id;
+    public Resena(Long eventoId, Long usuarioId, Long entradaId, int calificacion, String comentario) {
         this.eventoId = eventoId;
         this.usuarioId = usuarioId;
         this.entradaId = entradaId;
@@ -25,35 +41,35 @@ public class Resena {
     }
 
     // Getters y Setters
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public int getEventoId() {
+    public Long getEventoId() {
         return eventoId;
     }
 
-    public void setEventoId(int eventoId) {
+    public void setEventoId(Long eventoId) {
         this.eventoId = eventoId;
     }
 
-    public int getUsuarioId() {
+    public Long getUsuarioId() {
         return usuarioId;
     }
 
-    public void setUsuarioId(int usuarioId) {
+    public void setUsuarioId(Long usuarioId) {
         this.usuarioId = usuarioId;
     }
 
-    public int getEntradaId() {
+    public Long getEntradaId() {
         return entradaId;
     }
 
-    public void setEntradaId(int entradaId) {
+    public void setEntradaId(Long entradaId) {
         this.entradaId = entradaId;
     }
 
