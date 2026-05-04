@@ -14,10 +14,10 @@ import com.proyecto.app.repository.PagoRepository;
 public class PagoService {
     
     private final PagoRepository pagoRepository;
-    private final PedidoService pedidoService;
+    private final IPedidoService pedidoService;
     private final IUsuarioService usuarioService;
     
-    public PagoService(PagoRepository pagoRepository, PedidoService pedidoService, IUsuarioService usuarioService) {
+    public PagoService(PagoRepository pagoRepository, IPedidoService pedidoService, IUsuarioService usuarioService) {
         this.pagoRepository = pagoRepository;
         this.pedidoService = pedidoService;
         this.usuarioService = usuarioService;
@@ -62,7 +62,7 @@ public class PagoService {
             throw new RuntimeException("Usuario no encontrado");
         }
         
-        Pedido pedido = pedidoService.obtenerPedido(pedidoId.intValue());
+        Pedido pedido = pedidoService.obtenerPedidoPorId(pedidoId);
         if (pedido == null) {
             throw new RuntimeException("Pedido no encontrado");
         }
@@ -117,7 +117,7 @@ public class PagoService {
         
         pago.setEstado("REEMBOLSADO");
         
-        Pedido pedido = pedidoService.obtenerPedido(pago.getPedidoId().intValue());
+        Pedido pedido = pedidoService.obtenerPedidoPorId(pago.getPedidoId());
         if (pedido != null) {
             pedido.setEstado("REEMBOLSADO");
         }
@@ -130,7 +130,7 @@ public class PagoService {
             throw new RuntimeException("Usuario no encontrado");
         }
         
-        Pedido pedido = pedidoService.obtenerPedido(pago.getPedidoId().intValue());
+        Pedido pedido = pedidoService.obtenerPedidoPorId(pago.getPedidoId());
         if (pedido == null) {
             throw new RuntimeException("Pedido no encontrado");
         }
