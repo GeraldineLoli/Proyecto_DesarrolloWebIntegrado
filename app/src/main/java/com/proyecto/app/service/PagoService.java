@@ -1,101 +1,46 @@
 package com.proyecto.app.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.proyecto.app.model.Pago;
 import com.proyecto.app.model.Pedido;
+import com.proyecto.app.repository.PagoRepository;
 
 @Service
 public class PagoService {
-    private List<Pago> pagos;
-    private int nextId;
+    
+    private final PagoRepository pagoRepository;
     private final PedidoService pedidoService;
     private final IUsuarioService usuarioService;
     
-    // ✅ CONSTRUCTOR POR DEFECTO (obligatorio para Spring)
-    public PagoService() {
-        this.pagos = new ArrayList<>();
-        this.nextId = 1;
-        this.pedidoService = null;
-        this.usuarioService = null;
-        initData();
-    }
-    
-    // ✅ Constructor con @Autowired para inyección de dependencias
-    @Autowired
-    public PagoService(PedidoService pedidoService, IUsuarioService usuarioService) {
-        this.pagos = new ArrayList<>();
-        this.nextId = 1;
+    public PagoService(PagoRepository pagoRepository, PedidoService pedidoService, IUsuarioService usuarioService) {
+        this.pagoRepository = pagoRepository;
         this.pedidoService = pedidoService;
         this.usuarioService = usuarioService;
-        initData();
-    }
-    
-    // Constructor para testing
-    public PagoService(PedidoService pedidoService, IUsuarioService usuarioService, boolean inicializarDatos) {
-        this.pagos = new ArrayList<>();
-        this.nextId = 1;
-        this.pedidoService = pedidoService;
-        this.usuarioService = usuarioService;
-        if (inicializarDatos) {
-            initData();
-        }
-    }
-    
-    private void initData() {
-        pagos.clear();
-        
-        Pago p1 = new Pago(1, 1, 1, 850.00, "VISA", "TXN-VISA-001");
-        p1.setFechaPago(LocalDateTime.of(2026, 4, 1, 10, 35));
-        p1.setNumeroTarjeta("****3623");
-        
-        Pago p2 = new Pago(2, 2, 2, 450.00, "MASTERCARD", "TXN-MC-002");
-        p2.setFechaPago(LocalDateTime.of(2026, 4, 2, 18, 15));
-        p2.setNumeroTarjeta("****9903");
-        
-        Pago p3 = new Pago(3, 3, 3, 320.00, "YAPE", "TXN-YAPE-003");
-        p3.setFechaPago(LocalDateTime.of(2026, 4, 10, 12, 5));
-        
-        pagos.add(p1);
-        pagos.add(p2);
-        pagos.add(p3);
-        nextId = 4;
     }
     
     public List<Pago> todos() {
-        return new ArrayList<>(pagos);
+        return pagoRepository.findAll();
     }
     
-    public Pago obtenerPago(int id) {
-        return pagos.stream()
-                .filter(p -> p.getId() == id)
-                .findFirst()
-                .orElse(null);
+    public Pago obtenerPago(Long id) {
+        return pagoRepository.findById(id).orElse(null);
     }
     
-    public List<Pago> obtenerPorUsuario(int usuarioId) {
-        return pagos.stream()
-                .filter(p -> p.getUsuarioId() == usuarioId)
-                .collect(Collectors.toList());
+    public List<Pago> obtenerPorUsuario(Long usuarioId) {
+        return pagoRepository.findByUsuarioId(usuarioId);
     }
     
-    public List<Pago> obtenerPorPedido(int pedidoId) {
-        return pagos.stream()
-                .filter(p -> p.getPedidoId() == pedidoId)
-                .collect(Collectors.toList());
+    public List<Pago> obtenerPorPedido(Long pedidoId) {
+        return pagoRepository.findByPedidoId(pedidoId);
     }
     
     public List<Pago> obtenerPorEstado(String estado) {
-        return pagos.stream()
-                .filter(p -> p.getEstado().equalsIgnoreCase(estado))
-                .collect(Collectors.toList());
+        return pagoRepository.findByEstado(estado);
     }
     
     private String generarCodigoTransaccion() {
@@ -112,17 +57,12 @@ public class PagoService {
         return monto <= 10000;
     }
     
-    public Pago procesarPago(int pedidoId, int usuarioId, String metodoPago, String numeroTarjeta) {
-        // Verificar que los servicios no sean null
-        if (pedidoService == null || usuarioService == null) {
-            throw new RuntimeException("Servicios no inicializados correctamente");
-        }
-        
-        if (usuarioService.obtenerUsuarioPorId(Long.valueOf(usuarioId)) == null) {
+    public Pago procesarPago(Long pedidoId, Long usuarioId, String metodoPago, String numeroTarjeta) {
+        if (usuarioService.obtenerUsuarioPorId(usuarioId) == null) {
             throw new RuntimeException("Usuario no encontrado");
         }
         
-        Pedido pedido = pedidoService.obtenerPedido(pedidoId);
+        Pedido pedido = pedidoService.obtenerPedido(pedidoId.intValue());
         if (pedido == null) {
             throw new RuntimeException("Pedido no encontrado");
         }
@@ -156,21 +96,16 @@ public class PagoService {
         
         if (pagoExitoso) {
             nuevoPago.setEstado("COMPLETADO");
-            nuevoPago.setId(nextId++);
-            pagos.add(nuevoPago);
+            Pago pagoGuardado = pagoRepository.save(nuevoPago);
             pedido.setEstado("PAGADO");
-            return nuevoPago;
+            return pagoGuardado;
         } else {
             nuevoPago.setEstado("FALLIDO");
             throw new RuntimeException("El pago fue rechazado por el proveedor");
         }
     }
     
-    public Pago reembolsarPago(int pagoId) {
-        if (pedidoService == null) {
-            throw new RuntimeException("Servicio de pedidos no inicializado");
-        }
-        
+    public Pago reembolsarPago(Long pagoId) {
         Pago pago = obtenerPago(pagoId);
         if (pago == null) {
             throw new RuntimeException("Pago no encontrado");
@@ -182,24 +117,20 @@ public class PagoService {
         
         pago.setEstado("REEMBOLSADO");
         
-        Pedido pedido = pedidoService.obtenerPedido(pago.getPedidoId());
+        Pedido pedido = pedidoService.obtenerPedido(pago.getPedidoId().intValue());
         if (pedido != null) {
             pedido.setEstado("REEMBOLSADO");
         }
         
-        return pago;
+        return pagoRepository.save(pago);
     }
     
-    public void agregarPago(Pago pago) {
-        if (usuarioService == null || pedidoService == null) {
-            throw new RuntimeException("Servicios no inicializados correctamente");
-        }
-        
-        if (usuarioService.obtenerUsuarioPorId(Long.valueOf(pago.getUsuarioId())) == null) {
+    public Pago agregarPago(Pago pago) {
+        if (usuarioService.obtenerUsuarioPorId(pago.getUsuarioId()) == null) {
             throw new RuntimeException("Usuario no encontrado");
         }
         
-        Pedido pedido = pedidoService.obtenerPedido(pago.getPedidoId());
+        Pedido pedido = pedidoService.obtenerPedido(pago.getPedidoId().intValue());
         if (pedido == null) {
             throw new RuntimeException("Pedido no encontrado");
         }
@@ -216,25 +147,32 @@ public class PagoService {
             pago.setEstado("COMPLETADO");
         }
         
-        pago.setId(nextId++);
-        pagos.add(pago);
+        return pagoRepository.save(pago);
     }
     
-    public void actualizarPago(int id, Pago pagoActualizado) {
-        for (int i = 0; i < pagos.size(); i++) {
-            if (pagos.get(i).getId() == id) {
-                pagoActualizado.setId(id);
-                pagos.set(i, pagoActualizado);
-                return;
-            }
+    public Pago actualizarPago(Long id, Pago pagoActualizado) {
+        Pago pagoExistente = pagoRepository.findById(id).orElse(null);
+        if (pagoExistente != null) {
+            pagoExistente.setPedidoId(pagoActualizado.getPedidoId());
+            pagoExistente.setUsuarioId(pagoActualizado.getUsuarioId());
+            pagoExistente.setMonto(pagoActualizado.getMonto());
+            pagoExistente.setMetodoPago(pagoActualizado.getMetodoPago());
+            pagoExistente.setEstado(pagoActualizado.getEstado());
+            pagoExistente.setCodigoTransaccion(pagoActualizado.getCodigoTransaccion());
+            pagoExistente.setNumeroTarjeta(pagoActualizado.getNumeroTarjeta());
+            pagoExistente.setFechaPago(pagoActualizado.getFechaPago());
+            pagoExistente.setComprobanteUrl(pagoActualizado.getComprobanteUrl());
+            pagoExistente.setNotas(pagoActualizado.getNotas());
+            return pagoRepository.save(pagoExistente);
         }
+        return null;
     }
     
-    public void eliminarPago(int id) {
-        pagos.removeIf(p -> p.getId() == id);
+    public void eliminarPago(Long id) {
+        pagoRepository.deleteById(id);
     }
     
-    public double obtenerTotalRecaudadoPorUsuario(int usuarioId) {
+    public double obtenerTotalRecaudadoPorUsuario(Long usuarioId) {
         return obtenerPorUsuario(usuarioId).stream()
                 .filter(p -> p.getEstado().equals("COMPLETADO"))
                 .mapToDouble(Pago::getMonto)

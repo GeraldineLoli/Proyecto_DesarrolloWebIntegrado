@@ -30,17 +30,17 @@ public class PagoController {
     }
     
     @GetMapping("/{id}")
-    public Pago obtenerPorId(@PathVariable int id) {
+    public Pago obtenerPorId(@PathVariable Long id) {
         return pagoService.obtenerPago(id);
     }
     
     @GetMapping("/usuario/{usuarioId}")
-    public List<Pago> obtenerPorUsuario(@PathVariable int usuarioId) {
+    public List<Pago> obtenerPorUsuario(@PathVariable Long usuarioId) {
         return pagoService.obtenerPorUsuario(usuarioId);
     }
     
     @GetMapping("/pedido/{pedidoId}")
-    public List<Pago> obtenerPorPedido(@PathVariable int pedidoId) {
+    public List<Pago> obtenerPorPedido(@PathVariable Long pedidoId) {
         return pagoService.obtenerPorPedido(pedidoId);
     }
     
@@ -50,17 +50,17 @@ public class PagoController {
     }
     
     @GetMapping("/usuario/{usuarioId}/total-recaudado")
-    public double obtenerTotalRecaudado(@PathVariable int usuarioId) {
+    public double obtenerTotalRecaudado(@PathVariable Long usuarioId) {
         return pagoService.obtenerTotalRecaudadoPorUsuario(usuarioId);
     }
     
     @PostMapping("/procesar")
-    public Pago procesarPago(@RequestParam int pedidoId, @RequestParam int usuarioId, @RequestParam String metodoPago,@RequestParam(required = false) String numeroTarjeta) {
+    public Pago procesarPago(@RequestParam Long pedidoId, @RequestParam Long usuarioId, @RequestParam String metodoPago,@RequestParam(required = false) String numeroTarjeta) {
         return pagoService.procesarPago(pedidoId, usuarioId, metodoPago, numeroTarjeta);
     }
     
     @PostMapping("/{id}/reembolsar")
-    public Pago reembolsarPago(@PathVariable int id) {
+    public Pago reembolsarPago(@PathVariable Long id) {
         return pagoService.reembolsarPago(id);
     }
     
@@ -71,13 +71,13 @@ public class PagoController {
     }
     
     @PutMapping("/{id}")
-    public String actualizarPago(@PathVariable int id, @RequestBody Pago pago) {
+    public String actualizarPago(@PathVariable Long id, @RequestBody Pago pago) {
         pagoService.actualizarPago(id, pago);
         return "Pago actualizado exitosamente";
     }
     
     @DeleteMapping("/{id}")
-    public String eliminarPago(@PathVariable int id) {
+    public String eliminarPago(@PathVariable Long id) {
         pagoService.eliminarPago(id);
         return "Pago eliminado exitosamente";
     }
