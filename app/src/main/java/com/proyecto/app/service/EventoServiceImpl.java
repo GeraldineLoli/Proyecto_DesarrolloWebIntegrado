@@ -66,4 +66,54 @@ public class EventoServiceImpl implements IEventoService {
     public void eliminarEvento(Long id) {
         eventoRepository.deleteById(id);
     }
+    
+    // ========== Métodos adicionales con JPQL ==========
+    
+    public List<Evento> buscarPorNombre(String nombre) {
+        return eventoRepository.buscarPorNombre(nombre);
+    }
+    
+    public List<Evento> buscarPorArtistaPrincipal(String artista) {
+        return eventoRepository.buscarPorArtistaPrincipal(artista);
+    }
+    
+    public List<Evento> buscarPorLugar(String lugar) {
+        return eventoRepository.buscarPorLugar(lugar);
+    }
+    
+    public List<Evento> buscarEventosEntreFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        return eventoRepository.buscarEventosEntreFechas(fechaInicio, fechaFin);
+    }
+    
+    public List<Evento> buscarEventosParaEdad(int edad) {
+        return eventoRepository.buscarEventosParaEdad(edad);
+    }
+    
+    public List<Evento> buscarPorTexto(String texto) {
+        return eventoRepository.buscarPorTexto(texto);
+    }
+    
+    public List<Evento> buscarPorCategoriaActivos(String categoria) {
+        return eventoRepository.buscarPorCategoriaActivos(categoria);
+    }
+    
+    public List<Evento> buscarEventosPorDuracionMinima(int duracion) {
+        return eventoRepository.buscarEventosPorDuracionMinima(duracion);
+    }
+    
+    public long contarPorCategoria(String categoria) {
+        return eventoRepository.contarPorCategoria(categoria);
+    }
+    
+    public List<Evento> buscarEventosActivosOrdenados() {
+        return eventoRepository.buscarEventosActivosOrdenados();
+    }
+    
+    public List<Evento> buscarPorCategoriaYLugar(String categoria, String lugar) {
+        return eventoRepository.buscarPorCategoriaYLugar(categoria, lugar);
+    }
+    
+    public List<Evento> buscarEventosDeHoy() {
+        return eventoRepository.buscarEventosDeHoy();
+    }
 }

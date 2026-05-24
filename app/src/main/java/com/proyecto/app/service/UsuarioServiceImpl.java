@@ -79,5 +79,39 @@ public class UsuarioServiceImpl implements IUsuarioService {
         return usuario != null && usuario.getContraseña() != null
                 && passwordEncoder.matches(password, usuario.getContraseña());
     }
+    
+    // ========== Métodos adicionales con JPQL ==========
+    
+    public List<Usuario> buscarPorNombre(String nombre) {
+        return usuarioRepository.buscarPorNombre(nombre);
+    }
+    
+    public List<Usuario> buscarPorApellido(String apellido) {
+        return usuarioRepository.buscarPorApellido(apellido);
+    }
+    
+    public List<Usuario> buscarPorNombreOApellido(String texto) {
+        return usuarioRepository.buscarPorNombreOApellido(texto);
+    }
+    
+    public List<Usuario> buscarPorRol(String rol) {
+        return usuarioRepository.buscarPorRol(rol);
+    }
+    
+    public List<Usuario> buscarRegistradosDespuesDe(java.time.LocalDate fecha) {
+        return usuarioRepository.buscarRegistradosDespuesDe(fecha);
+    }
+    
+    public Usuario buscarPorDni(String dni) {
+        return usuarioRepository.buscarPorDni(dni).orElse(null);
+    }
+    
+    public long contarPorRol(String rol) {
+        return usuarioRepository.contarPorRol(rol);
+    }
+    
+    public List<Usuario> buscarPorDominioEmail(String dominio) {
+        return usuarioRepository.buscarPorDominioEmail(dominio);
+    }
 }
 

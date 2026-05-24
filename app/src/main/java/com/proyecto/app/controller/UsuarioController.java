@@ -1,5 +1,6 @@
 package com.proyecto.app.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -16,15 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.proyecto.app.model.Usuario;
 import com.proyecto.app.service.IUsuarioService;
+import com.proyecto.app.service.UsuarioServiceImpl;
 
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
     
     private final IUsuarioService usuarioService;
+    private final UsuarioServiceImpl usuarioServiceImpl;
     
-    public UsuarioController(IUsuarioService usuarioService) {
+    public UsuarioController(IUsuarioService usuarioService, UsuarioServiceImpl usuarioServiceImpl) {
         this.usuarioService = usuarioService;
+        this.usuarioServiceImpl = usuarioServiceImpl;
     }
     
     @PostMapping
@@ -68,5 +72,64 @@ public class UsuarioController {
     public ResponseEntity<Boolean> login(@RequestParam String email, @RequestParam String contraseña) {
         boolean isValid = usuarioService.validarCredenciales(email, contraseña);
         return new ResponseEntity<>(isValid, HttpStatus.OK);
+    }
+    
+    // ========== Endpoints con consultas JPQL ==========
+    
+    // GET /api/usuarios/buscar/nombre/{nombre}
+    @GetMapping("/buscar/nombre/{nombre}")
+    public ResponseEntity<List<Usuario>> buscarPorNombre(@PathVariable String nombre) {
+        List<Usuario> usuarios = usuarioServiceImpl.buscarPorNombre(nombre);
+        return new ResponseEntity<>(usuarios, HttpStatus.OK);
+    }
+    
+    // GET /api/usuarios/buscar/apellido/{apellido}
+    @GetMapping("/buscar/apellido/{apellido}")
+    public ResponseEntity<List<Usuario>> buscarPorApellido(@PathVariable String apellido) {
+        List<Usuario> usuarios = usuarioServiceImpl.buscarPorApellido(apellido);
+        return new ResponseEntity<>(usuarios, HttpStatus.OK);
+    }
+    
+    // GET /api/usuarios/buscar/texto?q=texto
+    @GetMapping("/buscar/texto")
+    public ResponseEntity<List<Usuario>> buscarPorNombreOApellido(@RequestParam String q) {
+        List<Usuario> usuarios = usuarioServiceImpl.buscarPorNombreOApellido(q);
+        return new ResponseEntity<>(usuarios, HttpStatus.OK);
+    }
+    
+    // GET /api/usuarios/buscar/rol/{rol}
+    @GetMapping("/buscar/rol/{rol}")
+    public ResponseEntity<List<Usuario>> buscarPorRol(@PathVariable String rol) {
+        List<Usuario> usuarios = usuarioServiceImpl.buscarPorRol(rol);
+        return new ResponseEntity<>(usuarios, HttpStatus.OK);
+    }
+    
+    // GET /api/usuarios/buscar/registrados-despues?fecha=2024-01-01
+    @GetMapping("/buscar/registrados-despues")
+    public ResponseEntity<List<Usuario>> buscarRegistradosDespuesDe(@RequestParam String fecha) {
+        LocalDate localDate = LocalDate.parse(fecha);
+        List<Usuario> usuarios = usuarioServiceImpl.buscarRegistradosDespuesDe(localDate);
+        return new ResponseEntity<>(usuarios, HttpStatus.OK);
+    }
+    
+    // GET /api/usuarios/buscar/dni/{dni}
+    @GetMapping("/buscar/dni/{dni}")
+    public ResponseEntity<Usuario> buscarPorDni(@PathVariable String dni) {
+        Usuario usuario = usuarioServiceImpl.buscarPorDni(dni);
+        return new ResponseEntity<>(usuario, HttpStatus.OK);
+    }
+    
+    // GET /api/usuarios/buscar/contar-rol/{rol}
+    @GetMapping("/buscar/contar-rol/{rol}")
+    public ResponseEntity<Long> contarPorRol(@PathVariable String rol) {
+        long count = usuarioServiceImpl.contarPorRol(rol);
+        return new ResponseEntity<>(count, HttpStatus.OK);
+    }
+    
+    // GET /api/usuarios/buscar/dominio?dominio=gmail.com
+    @GetMapping("/buscar/dominio")
+    public ResponseEntity<List<Usuario>> buscarPorDominioEmail(@RequestParam String dominio) {
+        List<Usuario> usuarios = usuarioServiceImpl.buscarPorDominioEmail(dominio);
+        return new ResponseEntity<>(usuarios, HttpStatus.OK);
     }
 }
