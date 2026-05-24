@@ -77,4 +77,62 @@ public class PromocionService {
         }
         return false;
     }
+    
+    // ========== Métodos adicionales con JPQL ==========
+    
+    public List<Promocion> buscarPromocionesActivas() {
+        return promocionRepository.buscarPromocionesActivas();
+    }
+    
+    public List<Promocion> buscarPorDescripcion(String texto) {
+        return promocionRepository.buscarPorDescripcion(texto);
+    }
+    
+    public List<Promocion> buscarPromocionesVigentes(LocalDateTime fecha) {
+        return promocionRepository.buscarPromocionesVigentes(fecha);
+    }
+    
+    public List<Promocion> buscarPorDescuentoMayor(double porcentaje) {
+        return promocionRepository.buscarPorDescuentoMayor(porcentaje);
+    }
+    
+    public List<Promocion> buscarPorRangoDescuento(double min, double max) {
+        return promocionRepository.buscarPorRangoDescuento(min, max);
+    }
+    
+    public List<Promocion> buscarConDisponibilidad() {
+        return promocionRepository.buscarConDisponibilidad();
+    }
+    
+    public List<Promocion> buscarQueExpiranProximo(LocalDateTime ahora, LocalDateTime fechaLimite) {
+        return promocionRepository.buscarQueExpiranProximo(ahora, fechaLimite);
+    }
+    
+    public List<Promocion> buscarPorEventoActivas(Long eventoId) {
+        return promocionRepository.buscarPorEventoActivas(eventoId);
+    }
+    
+    public long contarPorEvento(Long eventoId) {
+        return promocionRepository.contarPorEvento(eventoId);
+    }
+    
+    public long contarPromocionesActivas() {
+        return promocionRepository.contarPromocionesActivas();
+    }
+    
+    public List<Promocion> buscarOrdenadasPorDescuento() {
+        return promocionRepository.buscarOrdenadasPorDescuento();
+    }
+    
+    public List<Promocion> buscarMasUsadas() {
+        return promocionRepository.buscarMasUsadas();
+    }
+    
+    public Double calcularPromedioDescuento() {
+        return promocionRepository.calcularPromedioDescuento();
+    }
+    
+    public List<Promocion> buscarPorTexto(String texto) {
+        return promocionRepository.buscarPorTexto(texto);
+    }
 }

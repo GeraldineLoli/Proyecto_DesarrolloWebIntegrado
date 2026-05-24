@@ -67,4 +67,66 @@ public class PedidoServiceImpl implements IPedidoService {
     private String generarCodigoPedido() {
         return "ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
+    
+    // ========== Métodos adicionales con JPQL ==========
+    
+    public List<Pedido> buscarPorEstado(String estado) {
+        return pedidoRepository.buscarPorEstado(estado);
+    }
+    
+    public List<Pedido> buscarPorUsuario(Long usuarioId) {
+        return pedidoRepository.buscarPorUsuario(usuarioId);
+    }
+    
+    public List<Pedido> buscarPorCodigoPedidoParcial(String codigo) {
+        return pedidoRepository.buscarPorCodigoPedidoParcial(codigo);
+    }
+    
+    public List<Pedido> buscarCreadosDespuesDe(LocalDateTime fecha) {
+        return pedidoRepository.buscarCreadosDespuesDe(fecha);
+    }
+    
+    public List<Pedido> buscarEntreFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        return pedidoRepository.buscarEntreFechas(fechaInicio, fechaFin);
+    }
+    
+    public List<Pedido> buscarPorEstadoYUsuario(String estado, Long usuarioId) {
+        return pedidoRepository.buscarPorEstadoYUsuario(estado, usuarioId);
+    }
+    
+    public List<Pedido> buscarPorMontoMayor(double monto) {
+        return pedidoRepository.buscarPorMontoMayor(monto);
+    }
+    
+    public List<Pedido> buscarPorRangoMonto(double montoMin, double montoMax) {
+        return pedidoRepository.buscarPorRangoMonto(montoMin, montoMax);
+    }
+    
+    public long contarPorEstado(String estado) {
+        return pedidoRepository.contarPorEstado(estado);
+    }
+    
+    public long contarPorUsuario(Long usuarioId) {
+        return pedidoRepository.contarPorUsuario(usuarioId);
+    }
+    
+    public List<Pedido> buscarOrdenadosPorFecha() {
+        return pedidoRepository.buscarOrdenadosPorFecha();
+    }
+    
+    public List<Pedido> buscarPedidosDeHoy() {
+        return pedidoRepository.buscarPedidosDeHoy();
+    }
+    
+    public Double calcularTotalVentasPorUsuario(Long usuarioId) {
+        return pedidoRepository.calcularTotalVentasPorUsuario(usuarioId);
+    }
+    
+    public Double calcularTotalVentasPorEstado(String estado) {
+        return pedidoRepository.calcularTotalVentasPorEstado(estado);
+    }
+    
+    public List<Pedido> buscarPedidosPagadosOrdenadosPorTotal() {
+        return pedidoRepository.buscarPedidosPagadosOrdenadosPorTotal();
+    }
 }

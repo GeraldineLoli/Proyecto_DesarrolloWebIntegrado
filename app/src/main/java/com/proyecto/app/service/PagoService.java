@@ -178,4 +178,78 @@ public class PagoService {
                 .mapToDouble(Pago::getMonto)
                 .sum();
     }
+    
+    // ========== Métodos adicionales con JPQL ==========
+    
+    public List<Pago> buscarPorMetodoPago(String metodo) {
+        return pagoRepository.buscarPorMetodoPago(metodo);
+    }
+    
+    public List<Pago> buscarPorCodigoTransaccion(String codigo) {
+        return pagoRepository.buscarPorCodigoTransaccion(codigo);
+    }
+    
+    public List<Pago> buscarRealizadosDespuesDe(LocalDateTime fecha) {
+        return pagoRepository.buscarRealizadosDespuesDe(fecha);
+    }
+    
+    public List<Pago> buscarEntreFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        return pagoRepository.buscarEntreFechas(fechaInicio, fechaFin);
+    }
+    
+    public List<Pago> buscarPorMontoMayor(double monto) {
+        return pagoRepository.buscarPorMontoMayor(monto);
+    }
+    
+    public List<Pago> buscarPorRangoMonto(double montoMin, double montoMax) {
+        return pagoRepository.buscarPorRangoMonto(montoMin, montoMax);
+    }
+    
+    public List<Pago> buscarPorEstadoYUsuario(String estado, Long usuarioId) {
+        return pagoRepository.buscarPorEstadoYUsuario(estado, usuarioId);
+    }
+    
+    public List<Pago> buscarPorMetodoYEstado(String metodo, String estado) {
+        return pagoRepository.buscarPorMetodoYEstado(metodo, estado);
+    }
+    
+    public long contarPorEstado(String estado) {
+        return pagoRepository.contarPorEstado(estado);
+    }
+    
+    public long contarPorMetodoPago(String metodo) {
+        return pagoRepository.contarPorMetodoPago(metodo);
+    }
+    
+    public long contarPorUsuario(Long usuarioId) {
+        return pagoRepository.contarPorUsuario(usuarioId);
+    }
+    
+    public List<Pago> buscarOrdenadosPorFecha() {
+        return pagoRepository.buscarOrdenadosPorFecha();
+    }
+    
+    public List<Pago> buscarPagosDeHoy() {
+        return pagoRepository.buscarPagosDeHoy();
+    }
+    
+    public Double calcularTotalRecaudadoPorUsuarioJPQL(Long usuarioId) {
+        return pagoRepository.calcularTotalRecaudadoPorUsuario(usuarioId);
+    }
+    
+    public Double calcularTotalPorMetodoPago(String metodo) {
+        return pagoRepository.calcularTotalPorMetodoPago(metodo);
+    }
+    
+    public Double calcularTotalPorEstado(String estado) {
+        return pagoRepository.calcularTotalPorEstado(estado);
+    }
+    
+    public List<Pago> buscarCompletadosOrdenadosPorMonto() {
+        return pagoRepository.buscarCompletadosOrdenadosPorMonto();
+    }
+    
+    public Double calcularPromedioMontoPagos() {
+        return pagoRepository.calcularPromedioMontoPagos();
+    }
 }
