@@ -1,6 +1,8 @@
 package com.proyecto.app.config;
 
+import com.proyecto.app.filter.JwtFilter;
 import com.proyecto.app.service.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,12 +14,16 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
+    
+    @Autowired
+    private JwtFilter jwtFilter;
 
     public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
         this.customUserDetailsService = customUserDetailsService;
@@ -45,11 +51,13 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
 
                 // ── Rutas PÚBLICAS (sin autenticación) ──────────────────────
+                .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()           // Login y registro con JWT
                 .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()          // Registro
                 .requestMatchers(HttpMethod.GET,  "/api/eventos").permitAll()           // Ver todos los eventos
                 .requestMatchers(HttpMethod.GET,  "/api/eventos/{id}").permitAll()      // Ver un evento
                 .requestMatchers(HttpMethod.GET,  "/api/eventos/proximos").permitAll()  // Ver eventos próximos
                 .requestMatchers(HttpMethod.GET,  "/api/eventos/categoria/**").permitAll() // Filtrar por categoría
+                .requestMatchers(HttpMethod.GET,  "/api/eventos/buscar/**").permitAll() // Búsquedas JPQL de eventos
                 .requestMatchers(HttpMethod.GET,  "/api/zonas/evento/**").permitAll()   // Ver zonas de un evento
                 .requestMatchers(HttpMethod.GET,  "/api/zonas/{id}").permitAll()        // Ver una zona
                 .requestMatchers(HttpMethod.GET,  "/api/resenas/evento/**").permitAll() // Ver reseñas de evento
@@ -80,6 +88,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT,    "/api/zonas/{id}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/zonas/{id}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET,    "/api/usuarios").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET,    "/api/usuarios/buscar/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/usuarios/{id}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET,    "/api/pagos").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST,   "/api/pagos/reembolsar/**").hasRole("ADMIN")
@@ -92,7 +101,8 @@ public class SecurityConfig {
                 // Cualquier otra ruta requiere autenticación
                 .anyRequest().authenticated()
             )
-            .httpBasic(basic -> {}); // Autenticación básica HTTP (usuario:contraseña en Base64)
+            // Agregar el filtro JWT antes del filtro de autenticación de Spring Security
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
