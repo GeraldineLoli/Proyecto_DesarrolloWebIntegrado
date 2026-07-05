@@ -4,17 +4,30 @@ import { AdminLayoutComponent } from './admin/admin-layout/admin-layout.componen
 
 export const routes: Routes = [
 
-  // Redirige la raíz al login
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  // Raíz → home
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
 
-  // Login (página pública — la creará el equipo)
+  // ── Páginas públicas (del equipo) ──────────────────────────
   {
     path: 'login',
     loadComponent: () =>
-      import('./pages/login/login.component').then(m => m.LoginComponent)
+      import('./pages/login/login.component').then(m => m.LoginComponent),
+    title: 'Iniciar sesión · TicketApp'
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./pages/register/register.component').then(m => m.RegisterComponent),
+    title: 'Crear cuenta · TicketApp'
+  },
+  {
+    path: 'home',
+    loadComponent: () =>
+      import('./pages/home/home.component').then(m => m.HomeComponent),
+    title: 'Inicio · TicketApp'
   },
 
-  // Panel Admin — protegido por authGuard, usa AdminLayout como shell
+  // ── Panel Admin — protegido por authGuard ──────────────────
   {
     path: 'admin',
     component: AdminLayoutComponent,
@@ -49,7 +62,6 @@ export const routes: Routes = [
     ]
   },
 
-  // Cualquier ruta desconocida → login
-  { path: '**', redirectTo: 'login' }
+  // Ruta comodín → home
+  { path: '**', redirectTo: 'home' }
 ];
-

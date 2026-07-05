@@ -1,0 +1,226 @@
+<!-- ── NAVBAR ──────────────────────────────────────────────────────────────── -->
+<header class="navbar">
+  <div class="navbar-container">
+    <a routerLink="/home" class="navbar-brand">
+      <span class="brand-icon">🎫</span>
+      <span class="brand-name">TicketApp</span>
+    </a>
+
+    <nav class="navbar-nav desktop-only">
+      <a routerLink="/home" class="nav-link active">Inicio</a>
+      <a href="#eventos" class="nav-link">Eventos</a>
+    </nav>
+
+    <div class="navbar-actions">
+      @if (user) {
+        <div class="user-menu" (click)="toggleMenu()" role="button" [attr.aria-expanded]="menuAbierto">
+          <div class="user-avatar">{{ user.nombre[0] }}{{ user.apellido[0] }}</div>
+          <div class="user-info desktop-only">
+            <span class="user-name">{{ user.nombre }} {{ user.apellido }}</span>
+            <span class="user-role">{{ user.rol }}</span>
+          </div>
+          <span class="chevron">▾</span>
+
+          @if (menuAbierto) {
+            <div class="dropdown-menu" role="menu">
+              <div class="dropdown-header">
+                <p class="dropdown-name">{{ user.nombre }} {{ user.apellido }}</p>
+                <p class="dropdown-email">{{ user.email }}</p>
+              </div>
+              <hr class="dropdown-divider" />
+              <button class="dropdown-item danger" (click)="logout()" role="menuitem">
+                🚪 Cerrar sesión
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <a routerLink="/login" class="btn-nav-outline">Iniciar sesión</a>
+        <a routerLink="/register" class="btn-nav-primary">Registrarse</a>
+      }
+    </div>
+  </div>
+</header>
+
+<!-- ── HERO ────────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-content">
+    <span class="hero-badge">🎉 Los mejores eventos te esperan</span>
+    <h1 class="hero-title">
+      Descubre y vive<br>
+      <span class="hero-highlight">experiencias únicas</span>
+    </h1>
+    <p class="hero-subtitle">
+      Conciertos, teatro, deportes y más. Todo en un solo lugar.
+    </p>
+
+    <!-- Barra de búsqueda en el hero -->
+    <div class="hero-search">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="busqueda"
+        (input)="onBusqueda()"
+        placeholder="Buscar eventos, artistas o lugares..."
+        class="search-input"
+        aria-label="Buscar eventos"
+      />
+      @if (busqueda) {
+        <button class="search-clear" (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">✕</button>
+      }
+    </div>
+  </div>
+  <div class="hero-bg" aria-hidden="true"></div>
+</section>
+
+<!-- ── CATEGORÍAS ──────────────────────────────────────────────────────────── -->
+<section class="categories-section" id="eventos">
+  <div class="container">
+    <div class="categories-scroll" role="list" aria-label="Filtrar por categoría">
+      @for (cat of categorias; track cat) {
+        <button
+          class="category-chip"
+          [class.active]="categoriaActiva === cat"
+          (click)="filtrarPorCategoria(cat)"
+          role="listitem"
+        >
+          @if (cat !== 'Todos') { {{ getCategoriaIcon(cat) }} }
+          {{ cat }}
+        </button>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ── LISTADO DE EVENTOS ──────────────────────────────────────────────────── -->
+<main class="events-section">
+  <div class="container">
+
+    <!-- Título de sección -->
+    <div class="section-header">
+      <h2 class="section-title">
+        @if (categoriaActiva === 'Todos' && !busqueda) {
+          Próximos eventos
+        } @else if (busqueda) {
+          Resultados para "{{ busqueda }}"
+        } @else {
+          {{ getCategoriaIcon(categoriaActiva) }} {{ categoriaActiva }}
+        }
+      </h2>
+      <span class="events-count">{{ eventosFiltrados.length }} evento{{ eventosFiltrados.length !== 1 ? 's' : '' }}</span>
+    </div>
+
+    <!-- Loading skeleton -->
+    @if (loading) {
+      <div class="events-grid" aria-busy="true" aria-label="Cargando eventos">
+        @for (i of [1,2,3,4,5,6]; track i) {
+          <div class="event-card skeleton">
+            <div class="skeleton-img"></div>
+            <div class="skeleton-body">
+              <div class="skeleton-line wide"></div>
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line narrow"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Error -->
+    @if (!loading && error) {
+      <div class="empty-state">
+        <div class="empty-icon">⚠️</div>
+        <h3>{{ error }}</h3>
+        <button class="btn-retry" (click)="cargarEventos()">Reintentar</button>
+      </div>
+    }
+
+    <!-- Sin resultados -->
+    @if (!loading && !error && eventosFiltrados.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>No se encontraron eventos</h3>
+        <p>Intenta con otra búsqueda o categoría.</p>
+        <button class="btn-retry" (click)="limpiarBusqueda(); filtrarPorCategoria('Todos')">
+          Ver todos los eventos
+        </button>
+      </div>
+    }
+
+    <!-- Grid de eventos -->
+    @if (!loading && !error && eventosFiltrados.length > 0) {
+      <div class="events-grid">
+        @for (evento of eventosFiltrados; track evento.id) {
+          <article class="event-card" [attr.aria-label]="evento.nombre">
+            <!-- Imagen -->
+            <div class="card-img-wrapper">
+              <img
+                [src]="evento.imagenUrl || getPlaceholderImage(evento.categoria)"
+                [alt]="evento.nombre"
+                class="card-img"
+                loading="lazy"
+                (error)="$any($event.target).src = getPlaceholderImage(evento.categoria)"
+              />
+              <span class="card-category-badge">
+                {{ getCategoriaIcon(evento.categoria) }} {{ evento.categoria }}
+              </span>
+            </div>
+
+            <!-- Contenido -->
+            <div class="card-body">
+              <h3 class="card-title">{{ evento.nombre }}</h3>
+
+              @if (evento.artistaPrincipal) {
+                <p class="card-artist">🎤 {{ evento.artistaPrincipal }}</p>
+              }
+
+              <div class="card-meta">
+                <div class="meta-item">
+                  <span class="meta-icon">📅</span>
+                  <span>{{ formatFecha(evento.fechaHora) }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-icon">🕐</span>
+                  <span>{{ formatHora(evento.fechaHora) }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-icon">📍</span>
+                  <span>{{ evento.lugar }}</span>
+                </div>
+              </div>
+
+              @if (evento.descripcion) {
+                <p class="card-description">{{ evento.descripcion }}</p>
+              }
+
+              <div class="card-footer">
+                @if (evento.edadMinima && evento.edadMinima > 0) {
+                  <span class="age-badge">+{{ evento.edadMinima }}</span>
+                }
+                @if (user) {
+                  <button class="btn-ticket">Ver entradas</button>
+                } @else {
+                  <a routerLink="/login" class="btn-ticket">Ver entradas</a>
+                }
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+
+  </div>
+</main>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <span>🎫</span>
+        <span class="brand-name">TicketApp</span>
+      </div>
+      <p class="footer-copy">© 2026 TicketApp · Todos los derechos reservados</p>
+    </div>
+  </div>
+</footer>
