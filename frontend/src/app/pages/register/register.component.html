@@ -1,0 +1,161 @@
+<div class="auth-page">
+  <!-- Panel izquierdo -->
+  <div class="auth-banner">
+    <div class="banner-content">
+      <div class="logo-mark">🎫</div>
+      <h1>TicketApp</h1>
+      <p>Crea tu cuenta y empieza a disfrutar de los mejores eventos.</p>
+      <div class="steps-info">
+        <div class="step-info-item" [class.active]="step === 1">
+          <span class="step-num">1</span>
+          <span>Datos personales</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-info-item" [class.active]="step === 2">
+          <span class="step-num">2</span>
+          <span>Cuenta y contraseña</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel formulario -->
+  <div class="auth-form-panel">
+    <div class="auth-form-container">
+
+      <!-- Éxito -->
+      @if (success) {
+        <div class="success-card">
+          <div class="success-icon">✅</div>
+          <h2>¡Registro exitoso!</h2>
+          <p>Tu cuenta fue creada correctamente. Redirigiendo al inicio de sesión...</p>
+        </div>
+      }
+
+      @if (!success) {
+        <!-- Stepper visual -->
+        <div class="stepper">
+          <div class="stepper-step" [class.active]="step >= 1" [class.done]="step > 1">
+            <div class="step-circle">{{ step > 1 ? '✓' : '1' }}</div>
+            <span>Personal</span>
+          </div>
+          <div class="stepper-line" [class.done]="step > 1"></div>
+          <div class="stepper-step" [class.active]="step >= 2">
+            <div class="step-circle">2</div>
+            <span>Cuenta</span>
+          </div>
+        </div>
+
+        <div class="form-header">
+          <h2>{{ step === 1 ? 'Datos personales' : 'Crea tu cuenta' }}</h2>
+          <p>{{ step === 1 ? 'Ingresa tu información básica' : 'Configura tus credenciales de acceso' }}</p>
+        </div>
+
+        <!-- Alerta de error -->
+        @if (error) {
+          <div class="alert alert-error" role="alert">
+            <span>⚠️</span> {{ error }}
+          </div>
+        }
+
+        <!-- PASO 1 -->
+        @if (step === 1) {
+          <form (ngSubmit)="nextStep()" #step1Form="ngForm" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="nombre">Nombre *</label>
+                <input id="nombre" type="text" name="nombre" [(ngModel)]="usuario.nombre"
+                  placeholder="Tu nombre" required />
+              </div>
+              <div class="form-group">
+                <label for="apellido">Apellido *</label>
+                <input id="apellido" type="text" name="apellido" [(ngModel)]="usuario.apellido"
+                  placeholder="Tu apellido" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="dni">DNI *</label>
+              <input id="dni" type="text" name="dni" [(ngModel)]="usuario.dni"
+                placeholder="12345678" maxlength="8" required />
+            </div>
+
+            <div class="form-group">
+              <label for="telefono">Teléfono <span class="optional">(opcional)</span></label>
+              <input id="telefono" type="tel" name="telefono" [(ngModel)]="usuario.telefono"
+                placeholder="+51 999 999 999" />
+            </div>
+
+            <div class="form-group">
+              <label for="fechaNacimiento">Fecha de nacimiento <span class="optional">(opcional)</span></label>
+              <input id="fechaNacimiento" type="date" name="fechaNacimiento"
+                [(ngModel)]="usuario.fechaNacimiento" />
+            </div>
+
+            <button type="submit" class="btn-primary btn-full">
+              Siguiente →
+            </button>
+          </form>
+        }
+
+        <!-- PASO 2 -->
+        @if (step === 2) {
+          <form (ngSubmit)="onSubmit()" #step2Form="ngForm" novalidate>
+            <div class="form-group">
+              <label for="email">Correo electrónico *</label>
+              <div class="input-wrapper">
+                <span class="input-icon">✉️</span>
+                <input id="email" type="email" name="email" [(ngModel)]="usuario.email"
+                  placeholder="tucorreo&#64;ejemplo.com" required autocomplete="email" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="password">Contraseña *</label>
+              <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                <input id="password" [type]="showPass ? 'text' : 'password'"
+                  name="password" [(ngModel)]="usuario.password"
+                  placeholder="Mínimo 6 caracteres" required autocomplete="new-password" />
+                <button type="button" class="toggle-pass" (click)="showPass = !showPass">
+                  {{ showPass ? '🙈' : '👁️' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPass">Confirmar contraseña *</label>
+              <div class="input-wrapper">
+                <span class="input-icon">🔒</span>
+                <input id="confirmPass" [type]="showConfirm ? 'text' : 'password'"
+                  name="confirmPass" [(ngModel)]="confirmPass"
+                  placeholder="Repite la contraseña" required autocomplete="new-password" />
+                <button type="button" class="toggle-pass" (click)="showConfirm = !showConfirm">
+                  {{ showConfirm ? '🙈' : '👁️' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="btn-group">
+              <button type="button" class="btn-secondary" (click)="prevStep()">
+                ← Volver
+              </button>
+              <button type="submit" class="btn-primary" [disabled]="loading">
+                @if (loading) {
+                  <span class="spinner"></span> Registrando...
+                } @else {
+                  Crear cuenta
+                }
+              </button>
+            </div>
+          </form>
+        }
+
+        <div class="form-footer">
+          <p>¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a></p>
+        </div>
+      }
+
+    </div>
+  </div>
+</div>

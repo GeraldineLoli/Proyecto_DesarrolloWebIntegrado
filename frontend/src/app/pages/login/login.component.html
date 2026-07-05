@@ -1,0 +1,97 @@
+<div class="auth-page">
+  <!-- Panel izquierdo decorativo -->
+  <div class="auth-banner">
+    <div class="banner-content">
+      <div class="logo-mark">🎫</div>
+      <h1>TicketApp</h1>
+      <p>Tu plataforma para descubrir y vivir los mejores eventos.</p>
+      <div class="banner-features">
+        <div class="feature-item">
+          <span class="feature-icon">🎵</span>
+          <span>Conciertos y festivales</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🎭</span>
+          <span>Teatro y espectáculos</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🏟️</span>
+          <span>Deportes y eventos</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel del formulario -->
+  <div class="auth-form-panel">
+    <div class="auth-form-container">
+      <div class="form-header">
+        <h2>Bienvenido de vuelta</h2>
+        <p>Inicia sesión para continuar</p>
+      </div>
+
+      <!-- Alerta de error -->
+      @if (error) {
+        <div class="alert alert-error" role="alert">
+          <span class="alert-icon">⚠️</span>
+          {{ error }}
+        </div>
+      }
+
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm" novalidate>
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Correo electrónico</label>
+          <div class="input-wrapper">
+            <span class="input-icon">✉️</span>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              [(ngModel)]="email"
+              placeholder="tucorreo&#64;ejemplo.com"
+              autocomplete="email"
+              required
+              [class.input-error]="error"
+            />
+          </div>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input
+              id="password"
+              [type]="showPass ? 'text' : 'password'"
+              name="password"
+              [(ngModel)]="password"
+              placeholder="Tu contraseña"
+              autocomplete="current-password"
+              required
+              [class.input-error]="error"
+            />
+            <button type="button" class="toggle-pass" (click)="togglePassword()" aria-label="Mostrar/ocultar contraseña">
+              {{ showPass ? '🙈' : '👁️' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Botón submit -->
+        <button type="submit" class="btn-primary btn-full" [disabled]="loading">
+          @if (loading) {
+            <span class="spinner"></span>
+            Iniciando sesión...
+          } @else {
+            Iniciar sesión
+          }
+        </button>
+      </form>
+
+      <div class="form-footer">
+        <p>¿No tienes cuenta? <a routerLink="/register">Regístrate gratis</a></p>
+      </div>
+    </div>
+  </div>
+</div>
