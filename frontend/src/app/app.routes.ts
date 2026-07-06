@@ -27,7 +27,7 @@ export const routes: Routes = [
     title: 'Inicio · TicketApp'
   },
 
-  // ── Páginas cliente (Fabiana) ──────────────────────────────
+  // ── Páginas cliente — Fabiana ──────────────────────────────
   {
     path: 'eventos/:id',
     loadComponent: () =>
@@ -45,6 +45,22 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/perfil/perfil.component').then(m => m.PerfilComponent),
     title: 'Mi perfil · TicketApp',
+    canActivate: [authGuard]
+  },
+
+  // ── Páginas cliente — Geraldine ────────────────────────────
+  {
+    path: 'eventos/:id/compra',
+    loadComponent: () =>
+      import('./pages/compra/compra.component').then(m => m.CompraComponent),
+    title: 'Comprar Entradas · TicketApp',
+    canActivate: [authGuard]
+  },
+  {
+    path: 'mis-compras',
+    loadComponent: () =>
+      import('./pages/mis-compras/mis-compras.component').then(m => m.MisComprasComponent),
+    title: 'Mis Compras · TicketApp',
     canActivate: [authGuard]
   },
 
@@ -86,4 +102,3 @@ export const routes: Routes = [
   // Ruta comodín → home
   { path: '**', redirectTo: 'home' }
 ];
-

@@ -18,6 +18,10 @@ export class AuthService {
   login(credentials: AuthRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.API}/auth/login`, credentials).pipe(
       tap(response => {
+        console.log('Login response:', response); // Para debugging
+        if (!response.id) {
+          console.error('⚠️ El backend no devolvió el ID del usuario');
+        }
         localStorage.setItem(this.TOKEN_KEY, response.token);
         localStorage.setItem(this.USER_KEY, JSON.stringify(response));
         this.userSubject.next(response);
@@ -59,7 +63,13 @@ export class AuthService {
   }
 
   getCurrentUser(): AuthResponse | null {
-    return this.userSubject.value;
+    const user = this.userSubject.value;
+    if (user) {
+      console.log('Usuario actual:', { id: user.id, email: user.email, rol: user.rol });
+    } else {
+      console.log('No hay usuario autenticado');
+    }
+    return user;
   }
 
   isAdmin(): boolean {
@@ -69,7 +79,18 @@ export class AuthService {
   private loadUser(): AuthResponse | null {
     try {
       const raw = localStorage.getItem(this.USER_KEY);
-      return raw ? JSON.parse(raw) : null;
+      if (!raw) return null;
+      
+      const user = JSON.parse(raw);
+      
+      // Validar que el usuario tenga ID (después de actualizar el backend)
+      if (!user.id) {
+        console.warn('⚠️ Usuario sin ID detectado, limpiando sesión antigua...');
+        this.logout();
+        return null;
+      }
+      
+      return user;
     } catch {
       return null;
     }

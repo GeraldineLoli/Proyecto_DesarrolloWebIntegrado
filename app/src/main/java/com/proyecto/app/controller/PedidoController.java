@@ -29,9 +29,13 @@ public class PedidoController {
     }
 
     @PostMapping
-    public ResponseEntity<String> crearPedido(@RequestBody Pedido pedido) {
-        pedidoService.crearPedido(pedido);
-        return new ResponseEntity<>("Pedido creado exitosamente", HttpStatus.CREATED);
+    public ResponseEntity<?> crearPedido(@RequestBody Pedido pedido) {
+        try {
+            Pedido pedidoCreado = pedidoService.crearPedido(pedido);
+            return new ResponseEntity<>(pedidoCreado, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error al crear pedido: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/{id}")
@@ -53,10 +57,14 @@ public class PedidoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> actualizarPedido(@PathVariable("id") Long id, @RequestBody Pedido pedido) {
-        pedido.setId(id);
-        pedidoService.actualizarPedido(pedido);
-        return new ResponseEntity<>("Pedido actualizado exitosamente", HttpStatus.OK);
+    public ResponseEntity<?> actualizarPedido(@PathVariable("id") Long id, @RequestBody Pedido pedido) {
+        try {
+            pedido.setId(id);
+            Pedido pedidoActualizado = pedidoService.actualizarPedido(pedido);
+            return new ResponseEntity<>(pedidoActualizado, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error al actualizar pedido: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/{id}")

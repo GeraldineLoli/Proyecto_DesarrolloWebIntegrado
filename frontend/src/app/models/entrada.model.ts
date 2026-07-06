@@ -1,5 +1,5 @@
 export interface Entrada {
-  id: number;
+  id?: number;
   eventoId: number;
   zonaId: number;
   usuarioId: number;

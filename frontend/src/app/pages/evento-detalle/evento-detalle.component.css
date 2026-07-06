@@ -332,3 +332,22 @@
   text-decoration: none;
 }
 .zonas-login-hint a:hover { text-decoration: underline; }
+
+.btn-comprar {
+  display: block;
+  width: 100%;
+  background: #7c3aed;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 1rem;
+  transition: background 0.2s, transform 0.1s;
+}
+.btn-comprar:hover {
+  background: #6d28d9;
+  transform: translateY(-2px);
+}

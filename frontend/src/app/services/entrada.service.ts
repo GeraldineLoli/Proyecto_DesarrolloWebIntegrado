@@ -13,11 +13,23 @@ export class EntradaService {
     return this.http.get<Entrada[]>(`${this.API}/usuario/${usuarioId}`);
   }
 
+  obtenerPorUsuario(usuarioId: number): Observable<Entrada[]> {
+    return this.http.get<Entrada[]>(`${this.API}/usuario/${usuarioId}`);
+  }
+
   getEntradasPorEvento(eventoId: number): Observable<Entrada[]> {
     return this.http.get<Entrada[]>(`${this.API}/evento/${eventoId}`);
   }
 
   getEntrada(id: number): Observable<Entrada> {
     return this.http.get<Entrada>(`${this.API}/${id}`);
+  }
+
+  obtenerPorId(id: number): Observable<Entrada> {
+    return this.http.get<Entrada>(`${this.API}/${id}`);
+  }
+
+  crearEntrada(entrada: Entrada): Observable<Entrada> {
+    return this.http.post<Entrada>(this.API, entrada);
   }
 }

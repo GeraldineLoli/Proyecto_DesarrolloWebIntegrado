@@ -1,6 +1,7 @@
 package com.proyecto.app.dto;
 
 public class AuthResponse {
+    private Long id;
     private String token;
     private String email;
     private String nombre;
@@ -10,12 +11,21 @@ public class AuthResponse {
     public AuthResponse() {
     }
     
-    public AuthResponse(String token, String email, String nombre, String apellido, String rol) {
+    public AuthResponse(Long id, String token, String email, String nombre, String apellido, String rol) {
+        this.id = id;
         this.token = token;
         this.email = email;
         this.nombre = nombre;
         this.apellido = apellido;
         this.rol = rol;
+    }
+    
+    public Long getId() {
+        return id;
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
     }
     
     public String getToken() {

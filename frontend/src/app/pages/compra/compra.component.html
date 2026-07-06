@@ -1,0 +1,377 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-content">
+    <a routerLink="/home" class="navbar-brand">🎟️ TicketApp</a>
+    <div class="navbar-actions">
+      @if (user) {
+        <span class="navbar-user">{{ user.nombre }}</span>
+        <a routerLink="/perfil" class="btn-nav">Mi Perfil</a>
+      }
+    </div>
+  </div>
+</nav>
+
+<!-- CONTENEDOR -->
+<div class="compra-container">
+  
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando...</p>
+    </div>
+  }
+
+  @if (error && paso !== 3) {
+    <div class="error-banner">⚠️ {{ error }}</div>
+  }
+
+  @if (!loading && evento) {
+    
+    <!-- ENCABEZADO DEL EVENTO -->
+    <div class="evento-header">
+      <div class="evento-info">
+        <h1 class="evento-nombre">{{ evento.nombre }}</h1>
+        <p class="evento-detalles">
+          📅 {{ formatFecha(evento.fechaHora) }} • 🕐 {{ formatHora(evento.fechaHora) }} • 📍 {{ evento.lugar }}
+        </p>
+      </div>
+      <div class="steps-indicator">
+        <div class="step" [class.active]="paso === 1" [class.completed]="paso > 1">
+          <div class="step-number">1</div>
+          <span>Selección</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" [class.active]="paso === 2" [class.completed]="paso > 2">
+          <div class="step-number">2</div>
+          <span>Pago</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" [class.active]="paso === 3">
+          <div class="step-number">3</div>
+          <span>Confirmación</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 1: SELECCIÓN DE ZONAS -->
+    @if (paso === 1) {
+      <div class="compra-grid">
+        
+        <!-- ZONAS DISPONIBLES -->
+        <div class="zonas-section">
+          <h2 class="section-title">Zonas Disponibles</h2>
+          
+          @if (zonas.length === 0) {
+            <p class="empty-message">No hay zonas disponibles</p>
+          }
+
+          @for (zona of zonas; track zona.id) {
+            <div class="zona-card" [style.border-left-color]="getZonaColor(zona.nombre)">
+              <div class="zona-header">
+                <div class="zona-nombre" [style.color]="getZonaColor(zona.nombre)">
+                  {{ zona.nombre }}
+                </div>
+                <div class="zona-precio">$ {{ zona.precio | number:'1.2-2' }}</div>
+              </div>
+              <div class="zona-disponibilidad">
+                {{ zona.entradasDisponibles }} de {{ zona.capacidadTotal }} disponibles
+              </div>
+              <button 
+                class="btn-agregar-zona" 
+                (click)="agregarZona(zona)"
+                [disabled]="zona.entradasDisponibles === 0"
+              >
+                @if (zona.entradasDisponibles > 0) {
+                  + Agregar
+                } @else {
+                  Agotado
+                }
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- RESUMEN DEL PEDIDO -->
+        <div class="resumen-section">
+          <h2 class="section-title">Resumen del Pedido</h2>
+          
+          @if (zonasCompra.length === 0) {
+            <p class="empty-message">No has seleccionado entradas</p>
+          }
+
+          @for (zc of zonasCompra; track zc.zona.id) {
+            <div class="zona-seleccionada">
+              <div class="zona-sel-header">
+                <span class="zona-sel-nombre">{{ zc.zona.nombre }}</span>
+                <button class="btn-eliminar" (click)="eliminarZona(zc.zona.id)">✕</button>
+              </div>
+              <div class="zona-sel-cantidad">
+                <button class="btn-cant" (click)="modificarCantidad(zc.zona.id, -1)">-</button>
+                <span class="cantidad">{{ zc.cantidad }}</span>
+                <button class="btn-cant" (click)="modificarCantidad(zc.zona.id, 1)">+</button>
+                <span class="zona-sel-subtotal">$ {{ zc.subtotal | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          }
+
+          @if (zonasCompra.length > 0) {
+            <!-- PROMOCIÓN -->
+            <div class="promocion-section">
+              <h3 class="promocion-title">¿Tienes un código de promoción?</h3>
+              
+              @if (!promocionAplicada) {
+                <div class="promocion-input-group">
+                  <input 
+                    type="text" 
+                    [(ngModel)]="codigoPromocion" 
+                    placeholder="Código"
+                    class="input-promocion"
+                    (keyup.enter)="aplicarPromocion()"
+                  />
+                  <button class="btn-aplicar-promo" (click)="aplicarPromocion()">Aplicar</button>
+                </div>
+                @if (errorPromocion) {
+                  <p class="error-promo">{{ errorPromocion }}</p>
+                }
+              } @else {
+                <div class="promo-aplicada">
+                  <div class="promo-info">
+                    <span class="promo-icono">🎉</span>
+                    <div>
+                      <div class="promo-codigo">{{ promocionAplicada.codigo }}</div>
+                      <div class="promo-desc">{{ promocionAplicada.descripcion }}</div>
+                    </div>
+                  </div>
+                  <button class="btn-quitar-promo" (click)="quitarPromocion()">✕</button>
+                </div>
+              }
+            </div>
+
+            <!-- TOTALES -->
+            <div class="totales-section">
+              <div class="total-row">
+                <span>Subtotal:</span>
+                <span>$ {{ subtotal | number:'1.2-2' }}</span>
+              </div>
+              @if (descuento > 0) {
+                <div class="total-row descuento-row">
+                  <span>Descuento ({{ promocionAplicada!.porcentajeDescuento }}%):</span>
+                  <span>- $ {{ descuento | number:'1.2-2' }}</span>
+                </div>
+              }
+              <div class="total-row total-final">
+                <span>Total:</span>
+                <span>$ {{ total | number:'1.2-2' }}</span>
+              </div>
+            </div>
+
+            <button class="btn-continuar" (click)="irAPago()">
+              Continuar al Pago →
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- PASO 2: PAGO -->
+    @if (paso === 2) {
+      <div class="pago-container">
+        
+        <div class="pago-grid">
+          
+          <!-- FORMULARIO DE PAGO -->
+          <div class="pago-form">
+            <h2 class="section-title">Método de Pago</h2>
+            
+            <div class="metodos-pago">
+              <label class="metodo-item">
+                <input type="radio" name="metodoPago" value="VISA" [(ngModel)]="metodoPago" (change)="errorMetodoPago = ''" />
+                <div class="metodo-label">
+                  <span class="metodo-icono">💳</span>
+                  <span>VISA</span>
+                </div>
+              </label>
+              
+              <label class="metodo-item">
+                <input type="radio" name="metodoPago" value="MASTERCARD" [(ngModel)]="metodoPago" (change)="errorMetodoPago = ''" />
+                <div class="metodo-label">
+                  <span class="metodo-icono">💳</span>
+                  <span>MASTERCARD</span>
+                </div>
+              </label>
+              
+              <label class="metodo-item">
+                <input type="radio" name="metodoPago" value="YAPE" [(ngModel)]="metodoPago" (change)="errorMetodoPago = ''" />
+                <div class="metodo-label">
+                  <span class="metodo-icono">📱</span>
+                  <span>YAPE</span>
+                </div>
+              </label>
+              
+              <label class="metodo-item">
+                <input type="radio" name="metodoPago" value="PLIN" [(ngModel)]="metodoPago" (change)="errorMetodoPago = ''" />
+                <div class="metodo-label">
+                  <span class="metodo-icono">📱</span>
+                  <span>PLIN</span>
+                </div>
+              </label>
+              
+              <label class="metodo-item">
+                <input type="radio" name="metodoPago" value="EFECTIVO" [(ngModel)]="metodoPago" (change)="errorMetodoPago = ''" />
+                <div class="metodo-label">
+                  <span class="metodo-icono">💵</span>
+                  <span>EFECTIVO</span>
+                </div>
+              </label>
+            </div>
+            @if (errorMetodoPago) {
+              <p class="error-field">{{ errorMetodoPago }}</p>
+            }
+
+            @if (metodoPago === 'VISA' || metodoPago === 'MASTERCARD') {
+              <div class="tarjeta-form">
+                <div class="form-group">
+                  <label>Número de Tarjeta *</label>
+                  <input 
+                    type="text" 
+                    [(ngModel)]="numeroTarjeta" 
+                    (input)="errorNumeroTarjeta = ''"
+                    placeholder="1234 5678 9012 3456" 
+                    class="form-input" 
+                    [class.input-error]="errorNumeroTarjeta"
+                    maxlength="16" 
+                  />
+                  @if (errorNumeroTarjeta) {
+                    <p class="error-field">{{ errorNumeroTarjeta }}</p>
+                  }
+                </div>
+                <div class="form-group">
+                  <label>Nombre en la Tarjeta *</label>
+                  <input 
+                    type="text" 
+                    [(ngModel)]="nombreTarjeta" 
+                    (input)="errorNombreTarjeta = ''"
+                    placeholder="JUAN PEREZ" 
+                    class="form-input"
+                    [class.input-error]="errorNombreTarjeta"
+                  />
+                  @if (errorNombreTarjeta) {
+                    <p class="error-field">{{ errorNombreTarjeta }}</p>
+                  }
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Fecha de Expiración *</label>
+                    <input 
+                      type="text" 
+                      [(ngModel)]="fechaExpiracion" 
+                      (input)="errorFechaExpiracion = ''"
+                      placeholder="MM/AA" 
+                      class="form-input"
+                      [class.input-error]="errorFechaExpiracion"
+                      maxlength="5" 
+                    />
+                    @if (errorFechaExpiracion) {
+                      <p class="error-field">{{ errorFechaExpiracion }}</p>
+                    }
+                  </div>
+                  <div class="form-group">
+                    <label>CVV *</label>
+                    <input 
+                      type="text" 
+                      [(ngModel)]="cvv" 
+                      (input)="errorCvv = ''"
+                      placeholder="123" 
+                      class="form-input"
+                      [class.input-error]="errorCvv"
+                      maxlength="3" 
+                    />
+                    @if (errorCvv) {
+                      <p class="error-field">{{ errorCvv }}</p>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+
+            <div class="pago-actions">
+              <button class="btn-volver" (click)="volverASeleccion()">← Volver</button>
+              <button 
+                class="btn-finalizar" 
+                (click)="finalizarCompra()"
+                [disabled]="procesandoPago"
+              >
+                @if (procesandoPago) {
+                  <span class="spinner-small"></span>
+                  Procesando...
+                } @else {
+                  Finalizar Compra
+                }
+              </button>
+            </div>
+          </div>
+
+          <!-- RESUMEN DEL PEDIDO -->
+          <div class="resumen-pago">
+            <h2 class="section-title">Resumen</h2>
+            
+            @for (zc of zonasCompra; track zc.zona.id) {
+              <div class="resumen-item">
+                <div class="resumen-zona">{{ zc.zona.nombre }} x{{ zc.cantidad }}</div>
+                <div class="resumen-precio">$ {{ zc.subtotal | number:'1.2-2' }}</div>
+              </div>
+            }
+
+            <div class="resumen-totales">
+              <div class="resumen-row">
+                <span>Subtotal:</span>
+                <span>$ {{ subtotal | number:'1.2-2' }}</span>
+              </div>
+              @if (descuento > 0) {
+                <div class="resumen-row descuento">
+                  <span>Descuento:</span>
+                  <span>- $ {{ descuento | number:'1.2-2' }}</span>
+                </div>
+              }
+              <div class="resumen-row total">
+                <span>Total:</span>
+                <span>$ {{ total | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- PASO 3: CONFIRMACIÓN -->
+    @if (paso === 3) {
+      <div class="confirmacion-container">
+        <div class="confirmacion-card">
+          <div class="confirmacion-icono">✅</div>
+          <h2 class="confirmacion-title">¡Compra Exitosa!</h2>
+          <p class="confirmacion-mensaje">
+            Tu pedido ha sido procesado correctamente. Recibirás tus entradas por correo electrónico.
+          </p>
+          <div class="confirmacion-detalles">
+            <div class="detalle-item">
+              <span class="detalle-label">Evento:</span>
+              <span class="detalle-valor">{{ evento.nombre }}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Total Pagado:</span>
+              <span class="detalle-valor">$ {{ total | number:'1.2-2' }}</span>
+            </div>
+            <div class="detalle-item">
+              <span class="detalle-label">Método de Pago:</span>
+              <span class="detalle-valor">{{ metodoPago }}</span>
+            </div>
+          </div>
+          <div class="confirmacion-acciones">
+            <a routerLink="/mis-compras" class="btn-ver-compras">Ver Mis Compras</a>
+            <a routerLink="/home" class="btn-volver-home">Volver al Inicio</a>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

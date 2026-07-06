@@ -185,6 +185,10 @@
             <p class="zonas-login-hint">
               <a routerLink="/login">Inicia sesión</a> para comprar entradas.
             </p>
+          } @else {
+            <a [routerLink]="['/eventos', evento.id, 'compra']" class="btn-comprar">
+              🎟️ Comprar Entradas
+            </a>
           }
         </div>
       </div>

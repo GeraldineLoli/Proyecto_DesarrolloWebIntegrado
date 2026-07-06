@@ -31,6 +31,11 @@
               <a routerLink="/perfil" class="dropdown-item" role="menuitem">
                 👤 Mi perfil
               </a>
+              @if (user.rol === 'CLIENTE') {
+                <a routerLink="/mis-compras" class="dropdown-item" role="menuitem">
+                  🛍️ Mis compras
+                </a>
+              }
               <button class="dropdown-item danger" (click)="logout()" role="menuitem">
                 🚪 Cerrar sesión
               </button>
