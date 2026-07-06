@@ -51,6 +51,22 @@ export const routes: Routes = [
     title: 'Mi perfil · TicketApp',
     canActivate: [authGuard]
   },
+  // Compra de entradas (protegido)
+  {
+    path: 'eventos/:id/compra',
+    loadComponent: () =>
+      import('./pages/compra/compra.component').then(m => m.CompraComponent),
+    title: 'Comprar Entradas · TicketApp',
+    canActivate: [authGuard]
+  },
+  // Mis compras (protegido)
+  {
+    path: 'mis-compras',
+    loadComponent: () =>
+      import('./pages/mis-compras/mis-compras.component').then(m => m.MisComprasComponent),
+    title: 'Mis Compras · TicketApp',
+    canActivate: [authGuard]
+  },
   // Ruta comodín
   {
     path: '**',

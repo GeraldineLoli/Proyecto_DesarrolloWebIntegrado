@@ -27,9 +27,13 @@ public class EntradaController {
     }
 
     @PostMapping
-    public ResponseEntity<String> crearEntrada(@RequestBody Entrada entrada) {
-        entradaService.crearEntrada(entrada);
-        return new ResponseEntity<>("Entrada creada exitosamente", HttpStatus.CREATED);
+    public ResponseEntity<?> crearEntrada(@RequestBody Entrada entrada) {
+        try {
+            Entrada entradaCreada = entradaService.crearEntrada(entrada);
+            return new ResponseEntity<>(entradaCreada, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error al crear entrada: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/{id}")

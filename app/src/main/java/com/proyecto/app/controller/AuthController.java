@@ -42,6 +42,7 @@ public class AuthController {
             Usuario usuario = usuarioService.obtenerPorEmail(authRequest.getEmail());
             
             AuthResponse response = new AuthResponse(
+                usuario.getId(),
                 token,
                 usuario.getEmail(),
                 usuario.getNombre(),

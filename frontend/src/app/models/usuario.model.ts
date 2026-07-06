@@ -30,6 +30,7 @@ export interface AuthRequest {
 }
 
 export interface AuthResponse {
+  id?: number;
   token: string;
   email: string;
   nombre: string;

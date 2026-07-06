@@ -1,0 +1,153 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-content">
+    <a routerLink="/home" class="navbar-brand">🎟️ TicketApp</a>
+    <div class="navbar-actions">
+      @if (user) {
+        <span class="navbar-user">{{ user.nombre }}</span>
+        <a routerLink="/perfil" class="btn-nav">Mi Perfil</a>
+        <a routerLink="/mis-compras" class="btn-nav btn-active">Mis Compras</a>
+        <button class="btn-nav btn-logout" (click)="logout()">Salir</button>
+      }
+    </div>
+  </div>
+</nav>
+
+<!-- CONTENEDOR -->
+<div class="compras-container">
+  
+  <div class="compras-header">
+    <h1 class="compras-title">🛍️ Mis Compras</h1>
+    <p class="compras-subtitle">Historial de tus pedidos y entradas</p>
+  </div>
+
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando compras...</p>
+    </div>
+  }
+
+  @if (error) {
+    <div class="error-state">
+      <p>⚠️ {{ error }}</p>
+    </div>
+  }
+
+  @if (!loading && !error && pedidosDetalle.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h2>No tienes compras aún</h2>
+      <p>Explora los eventos disponibles y compra tus entradas.</p>
+      <a routerLink="/home" class="btn-explorar">Explorar Eventos</a>
+    </div>
+  }
+
+  @if (!loading && pedidosDetalle.length > 0) {
+    <div class="pedidos-list">
+      @for (detalle of pedidosDetalle; track detalle.pedido.id) {
+        <div class="pedido-card">
+          
+          <!-- HEADER DEL PEDIDO -->
+          <div class="pedido-header">
+            <div class="pedido-info">
+              <div class="pedido-codigo">
+                <span class="codigo-label">Pedido:</span>
+                <span class="codigo-valor">{{ detalle.pedido.codigoPedido }}</span>
+              </div>
+              <div class="pedido-fecha">
+                {{ formatFecha(detalle.pedido.fechaCreacion!) }}
+              </div>
+            </div>
+            <div class="pedido-estado">
+              <span 
+                class="estado-badge" 
+                [ngClass]="getEstadoClass(detalle.pedido.estado)"
+              >
+                {{ detalle.pedido.estado }}
+              </span>
+            </div>
+          </div>
+
+          <!-- EVENTO -->
+          @if (detalle.evento) {
+            <div class="pedido-evento">
+              <div class="evento-imagen">
+                @if (detalle.evento.imagenUrl) {
+                  <img [src]="detalle.evento.imagenUrl" [alt]="detalle.evento.nombre" />
+                } @else {
+                  <div class="evento-placeholder">🎫</div>
+                }
+              </div>
+              <div class="evento-datos">
+                <h3 class="evento-nombre">{{ detalle.evento.nombre }}</h3>
+                <div class="evento-detalles">
+                  <span>📅 {{ formatFechaEvento(detalle.evento.fechaHora) }}</span>
+                  <span>📍 {{ detalle.evento.lugar }}</span>
+                </div>
+              </div>
+            </div>
+          } @else {
+            <div class="pedido-sin-evento">
+              <p class="sin-evento-mensaje">
+                <span class="sin-evento-icono">ℹ️</span>
+                No se pudo cargar la información del evento
+              </p>
+            </div>
+          }
+
+          <!-- ENTRADAS -->
+          @if (detalle.entradas.length > 0) {
+            <div class="pedido-entradas">
+              <div class="entradas-header">
+                <span class="entradas-count">{{ detalle.entradas.length }} entrada(s)</span>
+              </div>
+              <div class="entradas-grid">
+                @for (entrada of detalle.entradas; track entrada.id) {
+                  <div class="entrada-item">
+                    <div class="entrada-codigo">🎟️ {{ entrada.codigoEntrada }}</div>
+                    <div class="entrada-precio">$ {{ entrada.precioPagado | number:'1.2-2' }}</div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- PAGO -->
+          @if (detalle.pago) {
+            <div class="pedido-pago">
+              <div class="pago-metodo">
+                <span class="pago-label">Método de pago:</span>
+                <span class="pago-valor">{{ detalle.pago.metodoPago }}</span>
+              </div>
+              @if (detalle.pago.codigoTransaccion) {
+                <div class="pago-transaccion">
+                  <span class="pago-label">Transacción:</span>
+                  <span class="pago-valor">{{ detalle.pago.codigoTransaccion }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- TOTAL -->
+          <div class="pedido-total">
+            <span class="total-label">Total Pagado:</span>
+            <span class="total-valor">$ {{ detalle.pedido.total | number:'1.2-2' }}</span>
+          </div>
+
+          <!-- ACCIONES -->
+          @if (detalle.evento) {
+            <div class="pedido-acciones">
+              <a 
+                [routerLink]="['/eventos', detalle.evento.id]" 
+                class="btn-ver-evento"
+              >
+                Ver Evento
+              </a>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
