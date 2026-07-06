@@ -7,7 +7,7 @@ export const routes: Routes = [
   // Raíz → home
   { path: '', redirectTo: 'home', pathMatch: 'full' },
 
-  // ── Páginas públicas (del equipo) ──────────────────────────
+  // ── Páginas públicas ───────────────────────────────────────
   {
     path: 'login',
     loadComponent: () =>
@@ -25,6 +25,27 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/home/home.component').then(m => m.HomeComponent),
     title: 'Inicio · TicketApp'
+  },
+
+  // ── Páginas cliente (Fabiana) ──────────────────────────────
+  {
+    path: 'eventos/:id',
+    loadComponent: () =>
+      import('./pages/evento-detalle/evento-detalle.component').then(m => m.EventoDetalleComponent),
+    title: 'Evento · TicketApp'
+  },
+  {
+    path: 'eventos/:id/resenas',
+    loadComponent: () =>
+      import('./pages/resenas/resenas.component').then(m => m.ResenasComponent),
+    title: 'Reseñas · TicketApp'
+  },
+  {
+    path: 'perfil',
+    loadComponent: () =>
+      import('./pages/perfil/perfil.component').then(m => m.PerfilComponent),
+    title: 'Mi perfil · TicketApp',
+    canActivate: [authGuard]
   },
 
   // ── Panel Admin — protegido por authGuard ──────────────────
@@ -65,3 +86,4 @@ export const routes: Routes = [
   // Ruta comodín → home
   { path: '**', redirectTo: 'home' }
 ];
+

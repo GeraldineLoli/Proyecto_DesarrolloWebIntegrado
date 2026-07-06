@@ -1,0 +1,334 @@
+/* ====== NAVBAR ====== */
+.navbar {
+  background: #1a1a2e;
+  padding: 0 2rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.navbar-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.navbar-brand {
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.navbar-user {
+  color: #a78bfa;
+  font-weight: 500;
+}
+.btn-nav {
+  color: #e2e8f0;
+  text-decoration: none;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.2s;
+}
+.btn-nav:hover { background: rgba(255,255,255,0.1); }
+.btn-primary-nav {
+  background: #7c3aed;
+  color: #fff;
+}
+.btn-primary-nav:hover { background: #6d28d9; }
+.btn-logout { color: #f87171; }
+
+/* ====== CONTENEDOR ====== */
+.detalle-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 3rem;
+}
+
+/* ====== ESTADOS ====== */
+.loading-state, .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 1rem;
+  color: #6b7280;
+}
+.spinner {
+  width: 42px; height: 42px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn-volver {
+  color: #7c3aed;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* ====== BREADCRUMB ====== */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+.breadcrumb a {
+  color: #7c3aed;
+  text-decoration: none;
+}
+.breadcrumb a:hover { text-decoration: underline; }
+
+/* ====== HERO ====== */
+.evento-hero {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  max-height: 400px;
+}
+.hero-image {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  display: block;
+}
+.hero-overlay {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+}
+.categoria-badge {
+  background: rgba(0,0,0,0.65);
+  color: #fff;
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+/* ====== GRID ====== */
+.detalle-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 2rem;
+  align-items: start;
+}
+@media (max-width: 768px) {
+  .detalle-grid { grid-template-columns: 1fr; }
+}
+
+/* ====== COLUMNA INFO ====== */
+.evento-titulo {
+  font-size: 1.875rem;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin: 0 0 1.5rem;
+  line-height: 1.2;
+}
+
+.datos-clave {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  background: #f8f7ff;
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+@media (max-width: 480px) {
+  .datos-clave { grid-template-columns: 1fr; }
+}
+.dato-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+.dato-icon { font-size: 1.2rem; margin-top: 2px; }
+.dato-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.dato-valor {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+.dato-sub {
+  display: block;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.seccion { margin-bottom: 2rem; }
+.seccion-titulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #ede9fe;
+}
+.evento-descripcion {
+  color: #4b5563;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Artistas */
+.artistas-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.artista-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.9rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #374151;
+}
+.artista-principal {
+  background: #ede9fe;
+  font-weight: 600;
+}
+.artista-estrella { font-size: 1rem; }
+.artista-badge {
+  margin-left: auto;
+  font-size: 0.72rem;
+  background: #7c3aed;
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+}
+
+/* Botón reseñas */
+.btn-resenas {
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  padding: 0.8rem 1.75rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.btn-resenas:hover {
+  background: #7c3aed;
+  transform: translateY(-1px);
+}
+
+/* ====== COLUMNA ZONAS ====== */
+.zonas-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  position: sticky;
+  top: 76px;
+}
+.zonas-titulo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 1.25rem;
+}
+.zonas-empty {
+  color: #6b7280;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.zona-item {
+  border-left: 4px solid #7c3aed;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.9rem;
+  background: #fafafa;
+  border-radius: 0 8px 8px 0;
+  transition: background 0.15s;
+}
+.zona-item:hover { background: #f3f0ff; }
+.zona-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+.zona-nombre {
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.zona-precio {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+.zona-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.zona-disponibles {
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+.zona-tag {
+  font-size: 0.7rem;
+  background: #dbeafe;
+  color: #1d4ed8;
+  padding: 0.15rem 0.45rem;
+  border-radius: 10px;
+}
+.zona-barra-bg {
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.zona-barra-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.zonas-login-hint {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: center;
+  margin-top: 1rem;
+}
+.zonas-login-hint a {
+  color: #7c3aed;
+  font-weight: 600;
+  text-decoration: none;
+}
+.zonas-login-hint a:hover { text-decoration: underline; }

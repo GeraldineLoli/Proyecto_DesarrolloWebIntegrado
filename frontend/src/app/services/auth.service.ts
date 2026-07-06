@@ -25,19 +25,19 @@ export class AuthService {
     );
   }
 
-  // ── Registro — mapea password → contraseña para el backend ────────────────
+  // ── Registro — mapea password → 'contraseña' para el backend ──────────────
   register(usuario: Usuario): Observable<string> {
     const payload: UsuarioPayload = {
-      email:     usuario.email,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      contraseña: usuario.password!,
-      nombre:    usuario.nombre,
-      apellido:  usuario.apellido,
-      dni:       usuario.dni,
-      rol:       usuario.rol ?? 'CLIENTE'
+      email:    usuario.email,
+      nombre:   usuario.nombre,
+      apellido: usuario.apellido,
+      dni:      usuario.dni,
+      rol:      usuario.rol ?? 'CLIENTE'
     };
-    if (usuario.telefono)       payload.telefono       = usuario.telefono;
-    if (usuario.fechaNacimiento) payload.fechaNacimiento = usuario.fechaNacimiento;
+    // La clave lleva ñ — usamos bracket notation para evitar error de compilación
+    payload['contraseña'] = usuario.password!;
+    if (usuario.telefono)        payload['telefono']        = usuario.telefono;
+    if (usuario.fechaNacimiento) payload['fechaNacimiento'] = usuario.fechaNacimiento;
 
     return this.http.post(`${this.API}/auth/register`, payload, { responseType: 'text' });
   }
