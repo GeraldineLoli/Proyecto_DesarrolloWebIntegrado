@@ -1,0 +1,209 @@
+<div class="page">
+
+  <!-- ── Encabezado ───────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">🎟️ Gestión de Promociones</h2>
+      <span class="page-subtitle">
+        {{ promociones.length }} en total · {{ totalActivas }} vigente(s)
+      </span>
+    </div>
+    <button class="btn btn-primary" (click)="abrirCrear()">+ Nueva promoción</button>
+  </div>
+
+  <div class="alert-success" *ngIf="mensajeExito">{{ mensajeExito }}</div>
+
+  <!-- ── Carga / error ─────────────────────────────────────── -->
+  <div class="loading-state" *ngIf="cargando">
+    <div class="spinner"></div><p>Cargando promociones...</p>
+  </div>
+  <div class="error-state" *ngIf="error">
+    ⚠️ No se pudieron cargar las promociones.
+  </div>
+
+  <ng-container *ngIf="!cargando && !error">
+
+    <!-- ── Buscador ────────────────────────────────────────── -->
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        placeholder="Buscar por código o descripción..."
+        [(ngModel)]="textoBusqueda"
+        (ngModelChange)="aplicarFiltro()"
+        class="search-input"
+      />
+      <span class="result-count">{{ promocionesFiltradas.length }} resultado(s)</span>
+    </div>
+
+    <!-- ── Tabla ───────────────────────────────────────────── -->
+    <div class="table-card">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Evento</th>
+              <th>Descuento</th>
+              <th>Vigencia</th>
+              <th>Disponibles / Usadas</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of promocionesFiltradas">
+              <td class="code-cell">{{ p.codigo }}</td>
+              <td class="evento-cell">{{ nombreEvento(p.eventoId) }}</td>
+              <td class="descuento-cell">{{ p.porcentajeDescuento }}%</td>
+              <td class="fecha-cell">
+                <span class="fecha-range">
+                  {{ formatFecha(p.fechaInicio) }} → {{ formatFecha(p.fechaFin) }}
+                </span>
+              </td>
+              <td>
+                <div class="uso-bar-wrapper">
+                  <div class="uso-bar">
+                    <div class="uso-fill"
+                      [style.width.%]="p.cantidadDisponible > 0
+                        ? (p.cantidadUsada / p.cantidadDisponible) * 100
+                        : 100">
+                    </div>
+                  </div>
+                  <span class="uso-texto">{{ p.cantidadUsada }} / {{ p.cantidadDisponible }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="badge-vigencia" [attr.data-estado]="vigenciaClass(p)">
+                  {{ vigenciaLabel(p) }}
+                </span>
+              </td>
+              <td class="acciones-cell">
+                <button class="btn-icon edit"   (click)="abrirEditar(p)"       title="Editar">✏️</button>
+                <button class="btn-icon delete" (click)="confirmarEliminar(p)" title="Eliminar">🗑️</button>
+              </td>
+            </tr>
+            <tr *ngIf="promocionesFiltradas.length === 0">
+              <td colspan="7" class="empty-row">No se encontraron promociones</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </ng-container>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       MODAL — CREAR / EDITAR
+  ════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h3>{{ modoEdicion ? '✏️ Editar promoción' : '➕ Nueva promoción' }}</h3>
+        <button class="modal-close" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <form #promoFormRef="ngForm" (ngSubmit)="guardar()">
+          <div class="form-grid">
+
+            <!-- Código -->
+            <div class="field">
+              <label>Código *</label>
+              <input type="text" [(ngModel)]="promoForm.codigo" name="codigo" required
+                     placeholder="Ej: VERANO20" style="text-transform: uppercase" />
+            </div>
+
+            <!-- Evento -->
+            <div class="field">
+              <label>Evento *</label>
+              <select [(ngModel)]="promoForm.eventoId" name="eventoId" required>
+                <option [ngValue]="0" disabled>-- Seleccioná un evento --</option>
+                <option *ngFor="let e of eventos" [ngValue]="e.id">{{ e.nombre }}</option>
+              </select>
+            </div>
+
+            <!-- Descuento -->
+            <div class="field">
+              <label>Descuento (%) *</label>
+              <input type="number" [(ngModel)]="promoForm.porcentajeDescuento"
+                     name="porcentajeDescuento" required min="1" max="100" />
+            </div>
+
+            <!-- Cantidad disponible -->
+            <div class="field">
+              <label>Cantidad disponible *</label>
+              <input type="number" [(ngModel)]="promoForm.cantidadDisponible"
+                     name="cantidadDisponible" required min="1" />
+            </div>
+
+            <!-- Fecha inicio -->
+            <div class="field">
+              <label>Fecha inicio *</label>
+              <input type="date" [(ngModel)]="promoForm.fechaInicio" name="fechaInicio" required />
+            </div>
+
+            <!-- Fecha fin -->
+            <div class="field">
+              <label>Fecha fin *</label>
+              <input type="date" [(ngModel)]="promoForm.fechaFin" name="fechaFin" required />
+            </div>
+
+            <!-- Descripción -->
+            <div class="field full">
+              <label>Descripción</label>
+              <textarea [(ngModel)]="promoForm.descripcion" name="descripcion" rows="2"
+                        placeholder="Descripción opcional de la promoción..."></textarea>
+            </div>
+
+            <!-- Activo -->
+            <div class="field checkbox-field">
+              <label class="checkbox-label">
+                <input type="checkbox" [(ngModel)]="promoForm.activo" name="activo" />
+                Promoción activa
+              </label>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary"
+                    [disabled]="promoFormRef.invalid || promoForm.eventoId === 0 || guardando">
+              {{ guardando ? 'Guardando...' : (modoEdicion ? 'Guardar cambios' : 'Crear promoción') }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       MODAL — CONFIRMAR ELIMINACIÓN
+  ════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" *ngIf="modalEliminarAbierto" (click)="cancelarEliminar()">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>🗑️ Eliminar promoción</h3>
+        <button class="modal-close" (click)="cancelarEliminar()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-text">
+          ¿Eliminar el código <strong>{{ promocionAEliminar?.codigo }}</strong>?
+          Esta acción no se puede deshacer.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cancelarEliminar()">Cancelar</button>
+        <button class="btn btn-danger" (click)="eliminar()" [disabled]="eliminando">
+          {{ eliminando ? 'Eliminando...' : 'Sí, eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

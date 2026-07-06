@@ -1,0 +1,67 @@
+<div class="dashboard">
+
+  <!-- Estado de carga -->
+  <div class="loading-state" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando datos...</p>
+  </div>
+
+  <!-- Error -->
+  <div class="error-state" *ngIf="error">
+    <span class="error-icon">⚠️</span>
+    <p>No se pudo conectar con el servidor. Verificá que el backend esté corriendo.</p>
+  </div>
+
+  <ng-container *ngIf="!cargando && !error">
+
+    <!-- Título -->
+    <div class="page-header">
+      <h2 class="page-title">Dashboard</h2>
+      <span class="page-subtitle">Resumen general del sistema</span>
+    </div>
+
+    <!-- Tarjetas de resumen -->
+    <div class="cards-grid">
+      <div class="stat-card" *ngFor="let card of cards" [attr.data-color]="card.color">
+        <div class="card-icon">{{ card.icon }}</div>
+        <div class="card-body">
+          <p class="card-label">{{ card.label }}</p>
+          <p class="card-value">{{ card.value }}</p>
+          <p class="card-sublabel">{{ card.sublabel }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de pedidos recientes -->
+    <div class="section">
+      <h3 class="section-title">📋 Pedidos recientes</h3>
+
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Usuario ID</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of pedidosRecientes">
+              <td class="code-cell">{{ p.codigoPedido ?? '—' }}</td>
+              <td>{{ p.usuarioId }}</td>
+              <td>S/ {{ p.total.toFixed(2) }}</td>
+              <td><span class="badge" [ngClass]="estadoClass(p.estado)">{{ p.estado }}</span></td>
+              <td>{{ formatFecha(p.fechaCreacion) }}</td>
+            </tr>
+            <tr *ngIf="pedidosRecientes.length === 0">
+              <td colspan="5" class="empty-row">Sin pedidos registrados</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </ng-container>
+</div>

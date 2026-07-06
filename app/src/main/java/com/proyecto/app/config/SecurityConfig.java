@@ -93,6 +93,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,    "/api/pagos").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST,   "/api/pagos/reembolsar/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET,    "/api/pedidos").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH,  "/api/pedidos/{id}/estado").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET,    "/api/entradas").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST,   "/api/promociones").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT,    "/api/promociones/{id}").hasRole("ADMIN")

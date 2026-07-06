@@ -1,0 +1,50 @@
+<div class="admin-shell" [class.sidebar-collapsed]="!sidebarOpen">
+
+  <!-- ── SIDEBAR ─────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="logo" *ngIf="sidebarOpen">🎫 TeleTicket</span>
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        {{ sidebarOpen ? '◀' : '▶' }}
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        class="nav-item"
+        [title]="item.label">
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span class="nav-label" *ngIf="sidebarOpen">{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" (click)="logout()" [title]="'Cerrar sesión'">
+        <span class="nav-icon">🚪</span>
+        <span class="nav-label" *ngIf="sidebarOpen">Cerrar sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── CONTENIDO PRINCIPAL ─────────────────────────────── -->
+  <div class="main-area">
+
+    <!-- Header -->
+    <header class="topbar">
+      <h1 class="topbar-title">Panel de Administración</h1>
+      <div class="topbar-user">
+        <span class="user-avatar">👤</span>
+        <span class="user-name">{{ nombreAdmin }}</span>
+      </div>
+    </header>
+
+    <!-- Página actual -->
+    <main class="page-content">
+      <router-outlet />
+    </main>
+
+  </div>
+</div>

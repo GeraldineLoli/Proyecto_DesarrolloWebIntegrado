@@ -1,0 +1,226 @@
+<div class="page">
+
+  <!-- ── Encabezado ───────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">🗺️ Gestión de Zonas</h2>
+      <span class="page-subtitle">Administrá las zonas de cada evento</span>
+    </div>
+  </div>
+
+  <!-- ── Selector de evento ───────────────────────────────── -->
+  <div class="selector-card">
+    <label class="selector-label">Seleccioná un evento</label>
+
+    <div class="loading-inline" *ngIf="cargandoEventos">
+      <div class="spinner-sm"></div> Cargando eventos...
+    </div>
+
+    <div class="error-inline" *ngIf="errorEventos">
+      ⚠️ No se pudieron cargar los eventos.
+    </div>
+
+    <select
+      *ngIf="!cargandoEventos && !errorEventos"
+      class="evento-select"
+      [(ngModel)]="eventoSeleccionadoId"
+      (ngModelChange)="onEventoChange()">
+      <option [ngValue]="null" disabled>-- Elegí un evento --</option>
+      <option *ngFor="let e of eventos" [ngValue]="e.id">
+        {{ e.nombre }} · {{ e.categoria }} · {{ e.lugar }}
+      </option>
+    </select>
+  </div>
+
+  <!-- ── Alerta de éxito ───────────────────────────────────── -->
+  <div class="alert-success" *ngIf="mensajeExito">{{ mensajeExito }}</div>
+
+  <!-- ── Panel de zonas (solo si hay evento seleccionado) ──── -->
+  <ng-container *ngIf="eventoSeleccionado">
+
+    <!-- Resumen del evento -->
+    <div class="evento-info">
+      <div class="info-item">
+        <span class="info-label">Evento</span>
+        <span class="info-value">{{ eventoSeleccionado.nombre }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Total zonas</span>
+        <span class="info-value">{{ zonas.length }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Capacidad total</span>
+        <span class="info-value">{{ capacidadTotal | number }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Disponibles</span>
+        <span class="info-value highlight">{{ disponibleTotal | number }}</span>
+      </div>
+      <button class="btn btn-primary ml-auto" (click)="abrirCrear()">+ Nueva zona</button>
+    </div>
+
+    <!-- Cargando zonas -->
+    <div class="loading-state" *ngIf="cargandoZonas">
+      <div class="spinner"></div><p>Cargando zonas...</p>
+    </div>
+
+    <div class="error-state" *ngIf="errorZonas">
+      ⚠️ No se pudieron cargar las zonas de este evento.
+    </div>
+
+    <!-- Tabla de zonas -->
+    <div class="table-card" *ngIf="!cargandoZonas && !errorZonas">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Color</th>
+              <th>Nombre</th>
+              <th>Capacidad</th>
+              <th>Disponibles</th>
+              <th>Precio</th>
+              <th>Numeración</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let z of zonas">
+              <td>
+                <span class="color-dot" [style.background]="z.colorMapa || '#ccc'"></span>
+              </td>
+              <td class="nombre-cell">{{ z.nombre }}</td>
+              <td>{{ z.capacidadTotal | number }}</td>
+              <td>
+                <span class="disponible"
+                  [class.bajo]="z.entradasDisponibles < z.capacidadTotal * 0.2">
+                  {{ z.entradasDisponibles | number }}
+                </span>
+              </td>
+              <td>S/ {{ z.precio.toFixed(2) }}</td>
+              <td>
+                <span class="badge-bool" [class.si]="z.tieneNumeracion">
+                  {{ z.tieneNumeracion ? 'Sí' : 'No' }}
+                </span>
+              </td>
+              <td class="acciones-cell">
+                <button class="btn-icon edit"   (click)="abrirEditar(z)"       title="Editar">✏️</button>
+                <button class="btn-icon delete" (click)="confirmarEliminar(z)" title="Eliminar">🗑️</button>
+              </td>
+            </tr>
+            <tr *ngIf="zonas.length === 0">
+              <td colspan="7" class="empty-row">
+                Este evento no tiene zonas. Creá la primera con el botón "Nueva zona".
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <!-- Mensaje si no eligió evento -->
+  <div class="empty-hint" *ngIf="!eventoSeleccionado && !cargandoEventos">
+    👆 Seleccioná un evento para ver y gestionar sus zonas.
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       MODAL — CREAR / EDITAR ZONA
+  ════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h3>{{ modoEdicion ? '✏️ Editar zona' : '➕ Nueva zona' }}</h3>
+        <button class="modal-close" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <form #zonaFormRef="ngForm" (ngSubmit)="guardar()">
+          <div class="form-grid">
+
+            <!-- Nombre -->
+            <div class="field full">
+              <label>Nombre *</label>
+              <input type="text" [(ngModel)]="zonaForm.nombre" name="nombre" required
+                     placeholder="Ej: Platea, VIP, General..." />
+            </div>
+
+            <!-- Capacidad total -->
+            <div class="field">
+              <label>Capacidad total *</label>
+              <input type="number" [(ngModel)]="zonaForm.capacidadTotal" name="capacidadTotal"
+                     required min="1" />
+            </div>
+
+            <!-- Entradas disponibles -->
+            <div class="field">
+              <label>Entradas disponibles *</label>
+              <input type="number" [(ngModel)]="zonaForm.entradasDisponibles" name="entradasDisponibles"
+                     required min="0" />
+            </div>
+
+            <!-- Precio -->
+            <div class="field">
+              <label>Precio (S/) *</label>
+              <input type="number" [(ngModel)]="zonaForm.precio" name="precio"
+                     required min="0" step="0.01" />
+            </div>
+
+            <!-- Color en mapa -->
+            <div class="field color-field">
+              <label>Color en mapa</label>
+              <div class="color-row">
+                <input type="color" [(ngModel)]="zonaForm.colorMapa" name="colorMapa" class="color-picker" />
+                <span class="color-val">{{ zonaForm.colorMapa }}</span>
+              </div>
+            </div>
+
+            <!-- Numeración -->
+            <div class="field checkbox-field">
+              <label class="checkbox-label">
+                <input type="checkbox" [(ngModel)]="zonaForm.tieneNumeracion" name="tieneNumeracion" />
+                Tiene numeración de asientos
+              </label>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary"
+                    [disabled]="zonaFormRef.invalid || guardando">
+              {{ guardando ? 'Guardando...' : (modoEdicion ? 'Guardar cambios' : 'Crear zona') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       MODAL — CONFIRMAR ELIMINACIÓN
+  ════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" *ngIf="modalEliminarAbierto" (click)="cancelarEliminar()">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>🗑️ Eliminar zona</h3>
+        <button class="modal-close" (click)="cancelarEliminar()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-text">
+          ¿Eliminar la zona <strong>{{ zonaAEliminar?.nombre }}</strong>?
+          Esta acción no se puede deshacer.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cancelarEliminar()">Cancelar</button>
+        <button class="btn btn-danger" (click)="eliminar()" [disabled]="eliminando">
+          {{ eliminando ? 'Eliminando...' : 'Sí, eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

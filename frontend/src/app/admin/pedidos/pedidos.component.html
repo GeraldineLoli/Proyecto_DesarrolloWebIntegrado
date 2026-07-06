@@ -1,0 +1,202 @@
+<div class="page">
+
+  <!-- ── Encabezado ───────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">📦 Gestión de Pedidos</h2>
+      <span class="page-subtitle">Vista de administrador — solo lectura y cambio de estado</span>
+    </div>
+  </div>
+
+  <div class="alert-success" *ngIf="mensajeExito">{{ mensajeExito }}</div>
+
+  <!-- ── Carga / error ─────────────────────────────────────── -->
+  <div class="loading-state" *ngIf="cargando">
+    <div class="spinner"></div><p>Cargando pedidos...</p>
+  </div>
+  <div class="error-state" *ngIf="error">
+    ⚠️ No se pudieron cargar los pedidos.
+  </div>
+
+  <ng-container *ngIf="!cargando && !error">
+
+    <!-- ── Tarjetas de resumen ─────────────────────────────── -->
+    <div class="summary-grid">
+      <div class="summary-card" data-color="yellow">
+        <span class="sum-icon">🕐</span>
+        <div>
+          <p class="sum-num">{{ contarPorEstado('PENDIENTE') }}</p>
+          <p class="sum-label">Pendientes</p>
+        </div>
+      </div>
+      <div class="summary-card" data-color="blue">
+        <span class="sum-icon">✅</span>
+        <div>
+          <p class="sum-num">{{ contarPorEstado('APROBADO') }}</p>
+          <p class="sum-label">Aprobados</p>
+        </div>
+      </div>
+      <div class="summary-card" data-color="green">
+        <span class="sum-icon">💰</span>
+        <div>
+          <p class="sum-num">{{ contarPorEstado('PAGADO') }}</p>
+          <p class="sum-label">Pagados</p>
+        </div>
+      </div>
+      <div class="summary-card" data-color="red">
+        <span class="sum-icon">❌</span>
+        <div>
+          <p class="sum-num">{{ contarPorEstado('CANCELADO') }}</p>
+          <p class="sum-label">Cancelados</p>
+        </div>
+      </div>
+      <div class="summary-card" data-color="gold">
+        <span class="sum-icon">🏦</span>
+        <div>
+          <p class="sum-num">S/ {{ totalIngresos().toFixed(2) }}</p>
+          <p class="sum-label">Ingresos totales</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Filtros ─────────────────────────────────────────── -->
+    <div class="filtros-bar">
+      <!-- Buscador -->
+      <div class="search-bar">
+        <span>🔍</span>
+        <input
+          type="text"
+          placeholder="Buscar por código o usuario ID..."
+          [(ngModel)]="textoBusqueda"
+          (ngModelChange)="aplicarFiltro()"
+          class="search-input"
+        />
+      </div>
+
+      <!-- Tabs de estado -->
+      <div class="estado-tabs">
+        <button
+          *ngFor="let e of ESTADOS"
+          class="tab-btn"
+          [class.active]="filtroEstado === e"
+          (click)="filtroEstado = e; aplicarFiltro()">
+          {{ e === 'TODOS' ? 'Todos (' + pedidos.length + ')' : e + ' (' + contarPorEstado(e) + ')' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Tabla ───────────────────────────────────────────── -->
+    <div class="table-card">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Usuario ID</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of pedidosFiltrados">
+              <td class="code-cell">{{ p.codigoPedido ?? '—' }}</td>
+              <td class="user-cell">#{{ p.usuarioId }}</td>
+              <td class="total-cell">S/ {{ p.total.toFixed(2) }}</td>
+              <td>
+                <span class="badge-estado" [attr.data-estado]="estadoClass(p.estado)">
+                  {{ p.estado }}
+                </span>
+              </td>
+              <td class="fecha-cell">{{ formatFecha(p.fechaCreacion) }}</td>
+              <td>
+                <button
+                  class="btn-cambiar"
+                  [class.finalizado]="esFinalizado(p.estado)"
+                  [disabled]="esFinalizado(p.estado)"
+                  (click)="abrirCambioEstado(p)"
+                  [title]="esFinalizado(p.estado) ? 'Estado final — no se puede modificar' : 'Cambiar estado'">
+                  {{ esFinalizado(p.estado) ? '🔒 Final' : '🔄 Cambiar' }}
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="pedidosFiltrados.length === 0">
+              <td colspan="6" class="empty-row">No hay pedidos con ese filtro</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        Mostrando {{ pedidosFiltrados.length }} de {{ pedidos.length }} pedidos
+      </div>
+    </div>
+
+  </ng-container>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       MODAL — CAMBIAR ESTADO
+  ════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" *ngIf="modalEstadoAbierto" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h3>🔄 Cambiar estado del pedido</h3>
+        <button class="modal-close" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <div class="modal-body" *ngIf="pedidoSeleccionado">
+
+        <!-- Resumen del pedido -->
+        <div class="pedido-resumen">
+          <div class="resumen-item">
+            <span class="r-label">Código</span>
+            <span class="r-val code">{{ pedidoSeleccionado.codigoPedido ?? '—' }}</span>
+          </div>
+          <div class="resumen-item">
+            <span class="r-label">Total</span>
+            <span class="r-val">S/ {{ pedidoSeleccionado.total.toFixed(2) }}</span>
+          </div>
+          <div class="resumen-item">
+            <span class="r-label">Estado actual</span>
+            <span class="badge-estado" [attr.data-estado]="estadoClass(pedidoSeleccionado.estado)">
+              {{ pedidoSeleccionado.estado }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Selector de nuevo estado -->
+        <div class="estado-selector">
+          <p class="selector-label">Nuevo estado:</p>
+          <div class="estado-opciones">
+            <button
+              *ngFor="let e of estadosSiguientes(pedidoSeleccionado.estado)"
+              class="estado-opcion"
+              [class.selected]="nuevoEstado === e"
+              [attr.data-estado]="estadoClass(e)"
+              (click)="nuevoEstado = e">
+              {{ e }}
+            </button>
+          </div>
+          <p class="estado-hint" *ngIf="estadosSiguientes(pedidoSeleccionado.estado).length === 0">
+            Este pedido está en un estado final y no puede modificarse.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button
+          class="btn btn-primary"
+          (click)="confirmarCambioEstado()"
+          [disabled]="guardandoEstado || nuevoEstado === pedidoSeleccionado?.estado">
+          {{ guardandoEstado ? 'Guardando...' : 'Confirmar cambio' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

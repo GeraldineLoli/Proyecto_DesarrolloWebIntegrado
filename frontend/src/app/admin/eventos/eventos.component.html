@@ -1,0 +1,211 @@
+<div class="page">
+
+  <!-- ── Encabezado ────────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">🎭 Gestión de Eventos</h2>
+      <span class="page-subtitle">Creá, editá y eliminá eventos del sistema</span>
+    </div>
+    <button class="btn btn-primary" (click)="abrirCrear()">+ Nuevo evento</button>
+  </div>
+
+  <!-- Mensaje de éxito -->
+  <div class="alert-success" *ngIf="mensajeExito">{{ mensajeExito }}</div>
+
+  <!-- ── Estado de carga / error ───────────────────────────── -->
+  <div class="loading-state" *ngIf="cargando">
+    <div class="spinner"></div><p>Cargando eventos...</p>
+  </div>
+
+  <div class="error-state" *ngIf="error">
+    ⚠️ No se pudo cargar los eventos. Verificá que el backend esté activo.
+  </div>
+
+  <ng-container *ngIf="!cargando && !error">
+
+    <!-- ── Buscador ──────────────────────────────────────────── -->
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        placeholder="Buscar por nombre, categoría, lugar o artista..."
+        [(ngModel)]="textoBusqueda"
+        (ngModelChange)="aplicarFiltro()"
+        class="search-input"
+      />
+      <span class="result-count">{{ eventosFiltrados.length }} resultado(s)</span>
+    </div>
+
+    <!-- ── Tabla ──────────────────────────────────────────────── -->
+    <div class="table-card">
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Fecha y hora</th>
+              <th>Lugar</th>
+              <th>Artista</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let e of eventosFiltrados">
+              <td class="nombre-cell">{{ e.nombre }}</td>
+              <td><span class="badge-categoria">{{ e.categoria }}</span></td>
+              <td>{{ formatFecha(e.fechaHora) }}</td>
+              <td>{{ e.lugar }}</td>
+              <td>{{ e.artistaPrincipal || '—' }}</td>
+              <td>
+                <span class="badge-estado" [class.activo]="e.activo" [class.inactivo]="!e.activo">
+                  {{ e.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="acciones-cell">
+                <button class="btn-icon edit"   (click)="abrirEditar(e)"       title="Editar">✏️</button>
+                <button class="btn-icon delete" (click)="confirmarEliminar(e)" title="Eliminar">🗑️</button>
+              </td>
+            </tr>
+            <tr *ngIf="eventosFiltrados.length === 0">
+              <td colspan="7" class="empty-row">No se encontraron eventos</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ════════════════════════════════════════════════════════
+       MODAL — CREAR / EDITAR
+  ════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" *ngIf="modalAbierto" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h3>{{ modoEdicion ? '✏️ Editar evento' : '➕ Nuevo evento' }}</h3>
+        <button class="modal-close" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <form #eventoFormRef="ngForm" (ngSubmit)="guardar()">
+
+          <div class="form-grid">
+            <!-- Nombre -->
+            <div class="field full">
+              <label>Nombre *</label>
+              <input type="text" [(ngModel)]="eventoForm.nombre" name="nombre" required
+                     placeholder="Nombre del evento" />
+            </div>
+
+            <!-- Categoría -->
+            <div class="field">
+              <label>Categoría *</label>
+              <select [(ngModel)]="eventoForm.categoria" name="categoria" required>
+                <option *ngFor="let cat of CATEGORIAS" [value]="cat">{{ cat }}</option>
+              </select>
+            </div>
+
+            <!-- Fecha y hora -->
+            <div class="field">
+              <label>Fecha y hora *</label>
+              <input type="datetime-local" [(ngModel)]="eventoForm.fechaHora" name="fechaHora" required />
+            </div>
+
+            <!-- Lugar -->
+            <div class="field">
+              <label>Lugar *</label>
+              <input type="text" [(ngModel)]="eventoForm.lugar" name="lugar" required
+                     placeholder="Nombre del recinto" />
+            </div>
+
+            <!-- Dirección -->
+            <div class="field">
+              <label>Dirección</label>
+              <input type="text" [(ngModel)]="eventoForm.direccion" name="direccion"
+                     placeholder="Dirección completa" />
+            </div>
+
+            <!-- Artista -->
+            <div class="field">
+              <label>Artista principal</label>
+              <input type="text" [(ngModel)]="eventoForm.artistaPrincipal" name="artistaPrincipal"
+                     placeholder="Nombre del artista" />
+            </div>
+
+            <!-- Duración -->
+            <div class="field">
+              <label>Duración (minutos)</label>
+              <input type="number" [(ngModel)]="eventoForm.duracionMinutos" name="duracionMinutos"
+                     min="1" />
+            </div>
+
+            <!-- Edad mínima -->
+            <div class="field">
+              <label>Edad mínima</label>
+              <input type="number" [(ngModel)]="eventoForm.edadMinima" name="edadMinima"
+                     min="0" placeholder="0 = sin restricción" />
+            </div>
+
+            <!-- URL imagen -->
+            <div class="field full">
+              <label>URL de imagen</label>
+              <input type="url" [(ngModel)]="eventoForm.imagenUrl" name="imagenUrl"
+                     placeholder="https://..." />
+            </div>
+
+            <!-- Descripción -->
+            <div class="field full">
+              <label>Descripción</label>
+              <textarea [(ngModel)]="eventoForm.descripcion" name="descripcion" rows="3"
+                        placeholder="Descripción del evento..."></textarea>
+            </div>
+
+            <!-- Activo -->
+            <div class="field checkbox-field">
+              <label class="checkbox-label">
+                <input type="checkbox" [(ngModel)]="eventoForm.activo" name="activo" />
+                Evento activo
+              </label>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="eventoFormRef.invalid || guardando">
+              {{ guardando ? 'Guardando...' : (modoEdicion ? 'Guardar cambios' : 'Crear evento') }}
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       MODAL — CONFIRMAR ELIMINACIÓN
+  ════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" *ngIf="modalEliminarAbierto" (click)="cancelarEliminar()">
+    <div class="modal modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>🗑️ Eliminar evento</h3>
+        <button class="modal-close" (click)="cancelarEliminar()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-text">
+          ¿Estás seguro que querés eliminar el evento
+          <strong>{{ eventoAEliminar?.nombre }}</strong>?
+          Esta acción no se puede deshacer.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cancelarEliminar()">Cancelar</button>
+        <button class="btn btn-danger" (click)="eliminar()" [disabled]="eliminando">
+          {{ eliminando ? 'Eliminando...' : 'Sí, eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
