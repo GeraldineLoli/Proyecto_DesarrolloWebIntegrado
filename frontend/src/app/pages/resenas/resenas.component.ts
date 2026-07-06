@@ -144,7 +144,7 @@ export class ResenasComponent implements OnInit {
     const resena: Resena = {
       eventoId: this.eventoId,
       usuarioId: this.usuarioId!,
-      entradaId: this.entradaUsuario.id,
+      entradaId: this.entradaUsuario.id!,
       calificacion: this.nuevaResena.calificacion!,
       comentario: this.nuevaResena.comentario
     };
