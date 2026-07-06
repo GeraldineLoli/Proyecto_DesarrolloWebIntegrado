@@ -1,0 +1,231 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-content">
+    <a routerLink="/home" class="navbar-brand">🎟️ TicketApp</a>
+    <div class="navbar-actions">
+      @if (user) {
+        <span class="navbar-user">{{ user.nombre }}</span>
+        <button class="btn-nav btn-logout" (click)="logout()">Salir</button>
+      }
+    </div>
+  </div>
+</nav>
+
+<div class="perfil-container">
+
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando perfil...</p>
+    </div>
+  }
+
+  @if (error) {
+    <div class="error-state">
+      <p>⚠️ {{ error }}</p>
+      <a routerLink="/home" class="btn-link">← Volver al inicio</a>
+    </div>
+  }
+
+  @if (!loading && usuario) {
+    <!-- HEADER PERFIL -->
+    <div class="perfil-header">
+      <div class="avatar-grande">{{ getIniciales() }}</div>
+      <div class="perfil-header-info">
+        <h1 class="perfil-nombre">{{ usuario.nombre }} {{ usuario.apellido }}</h1>
+        <p class="perfil-email">{{ usuario.email }}</p>
+        <div class="perfil-stats">
+          <div class="stat">
+            <span class="stat-num">{{ entradas.length }}</span>
+            <span class="stat-label">Entradas</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">{{ resenas.length }}</span>
+            <span class="stat-label">Reseñas</span>
+          </div>
+          @if (usuario.rol) {
+            <span class="rol-badge">{{ usuario.rol }}</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn" [class.activo]="tabActivo === 'datos'" (click)="setTab('datos')">
+        👤 Mis datos
+      </button>
+      <button class="tab-btn" [class.activo]="tabActivo === 'entradas'" (click)="setTab('entradas')">
+        🎫 Mis entradas
+        @if (entradas.length > 0) {
+          <span class="tab-badge">{{ entradas.length }}</span>
+        }
+      </button>
+      <button class="tab-btn" [class.activo]="tabActivo === 'resenas'" (click)="setTab('resenas')">
+        💬 Mis reseñas
+        @if (resenas.length > 0) {
+          <span class="tab-badge">{{ resenas.length }}</span>
+        }
+      </button>
+    </div>
+
+    <!-- ===== TAB DATOS ===== -->
+    @if (tabActivo === 'datos') {
+      <div class="tab-panel">
+
+        @if (mensajeExito) {
+          <div class="alert-success">✅ {{ mensajeExito }}</div>
+        }
+        @if (mensajeError) {
+          <div class="alert-error">⚠️ {{ mensajeError }}</div>
+        }
+
+        @if (!editando) {
+          <div class="datos-grid">
+            <div class="dato-item">
+              <span class="dato-label">Nombre</span>
+              <span class="dato-valor">{{ usuario.nombre }}</span>
+            </div>
+            <div class="dato-item">
+              <span class="dato-label">Apellido</span>
+              <span class="dato-valor">{{ usuario.apellido }}</span>
+            </div>
+            <div class="dato-item">
+              <span class="dato-label">Email</span>
+              <span class="dato-valor">{{ usuario.email }}</span>
+            </div>
+            <div class="dato-item">
+              <span class="dato-label">DNI</span>
+              <span class="dato-valor">{{ usuario.dni }}</span>
+            </div>
+            <div class="dato-item">
+              <span class="dato-label">Teléfono</span>
+              <span class="dato-valor">{{ usuario.telefono || '—' }}</span>
+            </div>
+            <div class="dato-item">
+              <span class="dato-label">Fecha de nacimiento</span>
+              <span class="dato-valor">{{ formatFecha(usuario.fechaNacimiento) }}</span>
+            </div>
+            <div class="dato-item">
+              <span class="dato-label">Miembro desde</span>
+              <span class="dato-valor">{{ formatFecha(usuario.fechaRegistro) }}</span>
+            </div>
+          </div>
+          <button class="btn-editar" (click)="iniciarEdicion()">✏️ Editar perfil</button>
+        }
+
+        @if (editando) {
+          <form class="form-edicion" (ngSubmit)="guardarCambios()">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" [(ngModel)]="usuarioEdit.nombre" name="nombre" class="input" />
+              </div>
+              <div class="form-group">
+                <label>Apellido</label>
+                <input type="text" [(ngModel)]="usuarioEdit.apellido" name="apellido" class="input" />
+              </div>
+              <div class="form-group">
+                <label>Teléfono</label>
+                <input type="tel" [(ngModel)]="usuarioEdit.telefono" name="telefono" class="input" placeholder="Ej. +51 999 999 999" />
+              </div>
+              <div class="form-group">
+                <label>Fecha de nacimiento</label>
+                <input type="date" [(ngModel)]="usuarioEdit.fechaNacimiento" name="fechaNacimiento" class="input" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn-cancelar" (click)="cancelarEdicion()">Cancelar</button>
+              <button type="submit" class="btn-guardar" [disabled]="guardando">
+                {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+              </button>
+            </div>
+          </form>
+        }
+
+      </div>
+    }
+
+    <!-- ===== TAB ENTRADAS ===== -->
+    @if (tabActivo === 'entradas') {
+      <div class="tab-panel">
+        @if (entradas.length === 0) {
+          <div class="empty-state">
+            <span class="empty-icon">🎫</span>
+            <p>Todavía no compraste entradas.</p>
+            <a routerLink="/home" class="btn-link-primary">Explorar eventos</a>
+          </div>
+        }
+
+        <div class="entradas-grid">
+          @for (entrada of entradas; track entrada.id) {
+            <div class="entrada-card">
+              <div class="entrada-card-header">
+                <span class="entrada-evento">{{ getNombreEvento(entrada.eventoId) }}</span>
+                <span class="entrada-estado" [class]="getEstadoClass(entrada.estado)">
+                  {{ entrada.estado }}
+                </span>
+              </div>
+              <div class="entrada-codigo">{{ entrada.codigoEntrada }}</div>
+              <div class="entrada-detalles">
+                <span>💰 $ {{ entrada.precioPagado | number:'1.2-2' }}</span>
+                @if (entrada.fila) {
+                  <span>📋 Fila {{ entrada.fila }}</span>
+                }
+                @if (entrada.numeroAsiento && entrada.numeroAsiento > 0) {
+                  <span>💺 Asiento {{ entrada.numeroAsiento }}</span>
+                }
+              </div>
+              <div class="entrada-fecha">
+                🗓️ {{ formatFechaHora(entrada.fechaCompra) }}
+              </div>
+              <a [routerLink]="['/eventos', entrada.eventoId]" class="btn-ver-evento">
+                Ver evento →
+              </a>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ===== TAB RESEÑAS ===== -->
+    @if (tabActivo === 'resenas') {
+      <div class="tab-panel">
+        @if (resenas.length === 0) {
+          <div class="empty-state">
+            <span class="empty-icon">💬</span>
+            <p>Todavía no escribiste reseñas.</p>
+          </div>
+        }
+
+        <div class="resenas-lista">
+          @for (resena of resenas; track resena.id) {
+            <div class="resena-card">
+              <div class="resena-card-header">
+                <div>
+                  <span class="resena-evento">{{ getNombreEvento(resena.eventoId) }}</span>
+                  @if (resena.fecha) {
+                    <span class="resena-fecha">{{ formatFecha(resena.fecha) }}</span>
+                  }
+                </div>
+                <div class="resena-estrellas">
+                  @for (s of getEstrellas(resena.calificacion); track $index) {
+                    <span [class.llena]="s === '★'">{{ s }}</span>
+                  }
+                </div>
+              </div>
+              @if (resena.comentario) {
+                <p class="resena-comentario">{{ resena.comentario }}</p>
+              }
+              <a [routerLink]="['/eventos', resena.eventoId, 'resenas']" class="btn-ver-resenas">
+                Ver reseñas del evento →
+              </a>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+  }
+
+</div>

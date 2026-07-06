@@ -29,6 +29,28 @@ export const routes: Routes = [
       import('./pages/home/home.component').then(m => m.HomeComponent),
     title: 'Inicio · TicketApp'
   },
+  // Detalle del evento
+  {
+    path: 'eventos/:id',
+    loadComponent: () =>
+      import('./pages/evento-detalle/evento-detalle.component').then(m => m.EventoDetalleComponent),
+    title: 'Evento · TicketApp'
+  },
+  // Reseñas del evento
+  {
+    path: 'eventos/:id/resenas',
+    loadComponent: () =>
+      import('./pages/resenas/resenas.component').then(m => m.ResenasComponent),
+    title: 'Reseñas · TicketApp'
+  },
+  // Perfil del usuario (protegido)
+  {
+    path: 'perfil',
+    loadComponent: () =>
+      import('./pages/perfil/perfil.component').then(m => m.PerfilComponent),
+    title: 'Mi perfil · TicketApp',
+    canActivate: [authGuard]
+  },
   // Ruta comodín
   {
     path: '**',

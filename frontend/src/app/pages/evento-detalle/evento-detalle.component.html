@@ -1,0 +1,195 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-content">
+    <a routerLink="/home" class="navbar-brand">🎟️ TicketApp</a>
+    <div class="navbar-actions">
+      @if (user) {
+        <span class="navbar-user">{{ user.nombre }}</span>
+        <a routerLink="/perfil" class="btn-nav">Mi Perfil</a>
+        <button class="btn-nav btn-logout" (click)="logout()">Salir</button>
+      } @else {
+        <a routerLink="/login" class="btn-nav">Iniciar sesión</a>
+        <a routerLink="/register" class="btn-nav btn-primary-nav">Registro</a>
+      }
+    </div>
+  </div>
+</nav>
+
+<!-- CONTENIDO -->
+<div class="detalle-container">
+
+  <!-- Estado de carga -->
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando evento...</p>
+    </div>
+  }
+
+  @if (errorEvento) {
+    <div class="error-state">
+      <p>⚠️ {{ errorEvento }}</p>
+      <a routerLink="/home" class="btn-volver">← Volver al inicio</a>
+    </div>
+  }
+
+  @if (!loading && evento) {
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+      <a routerLink="/home">Inicio</a>
+      <span>›</span>
+      <span>{{ evento.nombre }}</span>
+    </div>
+
+    <!-- HERO IMAGE -->
+    <div class="evento-hero">
+      <img
+        [src]="evento.imagenUrl || getPlaceholderImage()"
+        [alt]="evento.nombre"
+        class="hero-image"
+        (error)="$any($event.target).src = getPlaceholderImage()"
+      />
+      <div class="hero-overlay">
+        <span class="categoria-badge">
+          {{ getCategoriaIcon(evento.categoria) }} {{ evento.categoria }}
+        </span>
+      </div>
+    </div>
+
+    <!-- GRID PRINCIPAL -->
+    <div class="detalle-grid">
+
+      <!-- COLUMNA IZQUIERDA: Información -->
+      <div class="info-col">
+        <h1 class="evento-titulo">{{ evento.nombre }}</h1>
+
+        <!-- Datos clave -->
+        <div class="datos-clave">
+          <div class="dato-item">
+            <span class="dato-icon">📅</span>
+            <div>
+              <span class="dato-label">Fecha</span>
+              <span class="dato-valor">{{ formatFecha(evento.fechaHora) }}</span>
+            </div>
+          </div>
+          <div class="dato-item">
+            <span class="dato-icon">🕐</span>
+            <div>
+              <span class="dato-label">Hora</span>
+              <span class="dato-valor">{{ formatHora(evento.fechaHora) }}</span>
+            </div>
+          </div>
+          <div class="dato-item">
+            <span class="dato-icon">📍</span>
+            <div>
+              <span class="dato-label">Lugar</span>
+              <span class="dato-valor">{{ evento.lugar }}</span>
+              @if (evento.direccion) {
+                <span class="dato-sub">{{ evento.direccion }}</span>
+              }
+            </div>
+          </div>
+          @if (evento.duracionMinutos) {
+            <div class="dato-item">
+              <span class="dato-icon">⏱️</span>
+              <div>
+                <span class="dato-label">Duración</span>
+                <span class="dato-valor">{{ evento.duracionMinutos }} min</span>
+              </div>
+            </div>
+          }
+          @if (evento.edadMinima && evento.edadMinima > 0) {
+            <div class="dato-item">
+              <span class="dato-icon">🔞</span>
+              <div>
+                <span class="dato-label">Edad mínima</span>
+                <span class="dato-valor">{{ evento.edadMinima }}+</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Descripción -->
+        @if (evento.descripcion) {
+          <div class="seccion">
+            <h2 class="seccion-titulo">Sobre el evento</h2>
+            <p class="evento-descripcion">{{ evento.descripcion }}</p>
+          </div>
+        }
+
+        <!-- Artistas -->
+        @if (evento.artistaPrincipal) {
+          <div class="seccion">
+            <h2 class="seccion-titulo">Artistas</h2>
+            <div class="artistas-list">
+              <div class="artista-item artista-principal">
+                <span class="artista-estrella">⭐</span>
+                <span>{{ evento.artistaPrincipal }}</span>
+                <span class="artista-badge">Principal</span>
+              </div>
+              @for (artista of evento.artistasInvitados; track artista) {
+                <div class="artista-item">
+                  <span class="artista-estrella">🎤</span>
+                  <span>{{ artista }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Botón reseñas -->
+        <div class="seccion">
+          <button class="btn-resenas" (click)="verResenas()">
+            💬 Ver reseñas del evento
+          </button>
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA: Zonas -->
+      <div class="zonas-col">
+        <div class="zonas-card">
+          <h2 class="zonas-titulo">Zonas disponibles</h2>
+
+          @if (zonas.length === 0) {
+            <p class="zonas-empty">No hay zonas configuradas para este evento.</p>
+          }
+
+          @for (zona of zonas; track zona.id) {
+            <div class="zona-item" [style.border-left-color]="getZonaColor(zona.nombre)">
+              <div class="zona-header">
+                <span class="zona-nombre" [style.color]="getZonaColor(zona.nombre)">
+                  {{ zona.nombre }}
+                </span>
+                <span class="zona-precio">$ {{ zona.precio | number:'1.2-2' }}</span>
+              </div>
+              <div class="zona-meta">
+                <span class="zona-disponibles">
+                  {{ zona.entradasDisponibles }} / {{ zona.capacidadTotal }} disponibles
+                </span>
+                @if (zona.tieneNumeracion) {
+                  <span class="zona-tag">Con numeración</span>
+                }
+              </div>
+              <!-- Barra de disponibilidad -->
+              <div class="zona-barra-bg">
+                <div
+                  class="zona-barra-fill"
+                  [style.width.%]="(zona.entradasDisponibles / zona.capacidadTotal) * 100"
+                  [style.background-color]="getZonaColor(zona.nombre)"
+                ></div>
+              </div>
+            </div>
+          }
+
+          @if (!user) {
+            <p class="zonas-login-hint">
+              <a routerLink="/login">Inicia sesión</a> para comprar entradas.
+            </p>
+          }
+        </div>
+      </div>
+
+    </div>
+  }
+
+</div>

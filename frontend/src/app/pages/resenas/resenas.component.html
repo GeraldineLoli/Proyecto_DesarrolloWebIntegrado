@@ -1,0 +1,190 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-content">
+    <a routerLink="/home" class="navbar-brand">🎟️ TicketApp</a>
+    <div class="navbar-actions">
+      @if (user) {
+        <span class="navbar-user">{{ user.nombre }}</span>
+        <a routerLink="/perfil" class="btn-nav">Mi Perfil</a>
+        <button class="btn-nav btn-logout" (click)="logout()">Salir</button>
+      } @else {
+        <a routerLink="/login" class="btn-nav">Iniciar sesión</a>
+      }
+    </div>
+  </div>
+</nav>
+
+<div class="resenas-container">
+
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando...</p>
+    </div>
+  }
+
+  @if (error) {
+    <div class="error-state">
+      <p>⚠️ {{ error }}</p>
+      <a routerLink="/home" class="btn-volver">← Volver al inicio</a>
+    </div>
+  }
+
+  @if (!loading && evento) {
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a routerLink="/home">Inicio</a>
+      <span>›</span>
+      <a [routerLink]="['/eventos', eventoId]">{{ evento.nombre }}</a>
+      <span>›</span>
+      <span>Reseñas</span>
+    </div>
+
+    <!-- Encabezado -->
+    <div class="resenas-header">
+      <div class="header-info">
+        <h1 class="titulo">Reseñas</h1>
+        <p class="subtitulo">{{ evento.nombre }}</p>
+      </div>
+      <a [routerLink]="['/eventos', eventoId]" class="btn-volver-evento">← Volver al evento</a>
+    </div>
+
+    <!-- RESUMEN DE CALIFICACIONES -->
+    <div class="resumen-card">
+      <div class="resumen-numero">
+        <span class="promedio-grande">{{ promedioRedondeado() }}</span>
+        <div class="estrellas-promedio">
+          @for (s of getEstrellas(promedio); track $index) {
+            <span class="estrella" [class.llena]="s === '★'">{{ s }}</span>
+          }
+        </div>
+        <span class="total-resenas">{{ resenas.length }} reseña{{ resenas.length !== 1 ? 's' : '' }}</span>
+      </div>
+      <div class="distribucion">
+        @for (i of [5,4,3,2,1]; track i) {
+          <div class="dist-fila">
+            <span class="dist-label">{{ i }} ★</span>
+            <div class="dist-barra-bg">
+              <div class="dist-barra-fill" [style.width.%]="distribucion(i)"></div>
+            </div>
+            <span class="dist-pct">{{ distribucion(i) }}%</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- MENSAJE ÉXITO -->
+    @if (successMsg) {
+      <div class="alert-success">✅ {{ successMsg }}</div>
+    }
+
+    <!-- BOTÓN / FORMULARIO NUEVA RESEÑA -->
+    @if (user) {
+      @if (!yaReseno && entradaUsuario) {
+        <div class="nueva-resena-section">
+          @if (!mostrarFormulario) {
+            <button class="btn-escribir" (click)="toggleFormulario()">
+              ✏️ Escribir una reseña
+            </button>
+          }
+
+          @if (mostrarFormulario) {
+            <div class="form-resena">
+              <h3>Tu reseña</h3>
+
+              <!-- Estrellas interactivas -->
+              <div class="form-group">
+                <label>Calificación</label>
+                <div class="estrellas-input">
+                  @for (i of [1,2,3,4,5]; track i) {
+                    <button
+                      class="estrella-btn"
+                      [class.activa]="(nuevaResena.calificacion ?? 0) >= i"
+                      (click)="setEstrellas(i)"
+                      type="button"
+                    >★</button>
+                  }
+                </div>
+              </div>
+
+              <!-- Comentario -->
+              <div class="form-group">
+                <label for="comentario">Comentario (opcional)</label>
+                <textarea
+                  id="comentario"
+                  [(ngModel)]="nuevaResena.comentario"
+                  placeholder="Contá tu experiencia en el evento..."
+                  rows="4"
+                  maxlength="1000"
+                  class="textarea"
+                ></textarea>
+              </div>
+
+              @if (errorForm) {
+                <p class="error-form">⚠️ {{ errorForm }}</p>
+              }
+
+              <div class="form-actions">
+                <button class="btn-cancelar" (click)="toggleFormulario()" type="button">
+                  Cancelar
+                </button>
+                <button class="btn-publicar" (click)="enviarResena()" [disabled]="enviando">
+                  {{ enviando ? 'Publicando...' : 'Publicar reseña' }}
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (yaReseno) {
+        <div class="ya-reseno">✅ Ya dejaste una resena para este evento.</div>
+      }
+
+      @if (!entradaUsuario && !yaReseno) {
+        <div class="sin-entrada">
+          Solo pueden resenar quienes compraron una entrada para este evento.
+        </div>
+      }
+    } @else {
+      <div class="no-auth">
+        <a routerLink="/login">Inicia sesión</a> para dejar tu reseña.
+      </div>
+    }
+
+    <!-- LISTA DE RESEÑAS -->
+    <div class="resenas-lista">
+      @if (resenas.length === 0) {
+        <div class="sin-resenas">
+          <span class="sin-resenas-icon">💬</span>
+          <p>Todavía no hay reseñas para este evento. ¡Sé el primero!</p>
+        </div>
+      }
+
+      @for (resena of resenas; track resena.id) {
+        <div class="resena-card">
+          <div class="resena-header">
+            <div class="resena-avatar">
+              {{ 'U' }}
+            </div>
+            <div class="resena-meta">
+              <span class="resena-usuario">Usuario #{{ resena.usuarioId }}</span>
+              <span class="resena-fecha">
+                @if (resena.fecha) { {{ formatFecha(resena.fecha) }} }
+              </span>
+            </div>
+            <div class="resena-estrellas">
+              @for (s of getEstrellas(resena.calificacion); track $index) {
+                <span [class.estrella-llena]="s === '★'" [class.estrella-vacia]="s === '☆'">{{ s }}</span>
+              }
+            </div>
+          </div>
+          @if (resena.comentario) {
+            <p class="resena-comentario">{{ resena.comentario }}</p>
+          }
+        </div>
+      }
+    </div>
+  }
+
+</div>

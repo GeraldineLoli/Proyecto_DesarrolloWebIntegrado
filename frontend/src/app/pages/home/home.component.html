@@ -28,6 +28,9 @@
                 <p class="dropdown-email">{{ user.email }}</p>
               </div>
               <hr class="dropdown-divider" />
+              <a routerLink="/perfil" class="dropdown-item" role="menuitem">
+                👤 Mi perfil
+              </a>
               <button class="dropdown-item danger" (click)="logout()" role="menuitem">
                 🚪 Cerrar sesión
               </button>
@@ -197,11 +200,7 @@
                 @if (evento.edadMinima && evento.edadMinima > 0) {
                   <span class="age-badge">+{{ evento.edadMinima }}</span>
                 }
-                @if (user) {
-                  <button class="btn-ticket">Ver entradas</button>
-                } @else {
-                  <a routerLink="/login" class="btn-ticket">Ver entradas</a>
-                }
+                <a [routerLink]="['/eventos', evento.id]" class="btn-ticket">Ver evento</a>
               </div>
             </div>
           </article>

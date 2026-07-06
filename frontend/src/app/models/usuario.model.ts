@@ -12,16 +12,16 @@ export interface Usuario {
   fechaRegistro?: string;
 }
 
-// Payload que se envía al backend (usa contraseña con ñ)
+// Payload que se envía al backend — usa bracket notation para la clave 'contraseña'
 export interface UsuarioPayload {
   email: string;
-  contraseña: string;
   nombre: string;
   apellido: string;
   dni: string;
   telefono?: string;
   fechaNacimiento?: string;
   rol?: string;
+  [key: string]: string | undefined; // permite asignar payload['contraseña']
 }
 
 export interface AuthRequest {
