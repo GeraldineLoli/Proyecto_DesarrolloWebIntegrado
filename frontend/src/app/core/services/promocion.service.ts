@@ -35,14 +35,14 @@ export class PromocionService {
   }
 
   create(promocion: Promocion): Observable<string> {
-    return this.http.post<string>(this.API, promocion);
+    return this.http.post(this.API, promocion, { responseType: 'text' });
   }
 
   update(id: number, promocion: Promocion): Observable<string> {
-    return this.http.put<string>(`${this.API}/${id}`, promocion);
+    return this.http.put(`${this.API}/${id}`, promocion, { responseType: 'text' });
   }
 
   delete(id: number): Observable<string> {
-    return this.http.delete<string>(`${this.API}/${id}`);
+    return this.http.delete(`${this.API}/${id}`, { responseType: 'text' });
   }
 }

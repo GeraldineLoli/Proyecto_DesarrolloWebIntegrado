@@ -29,14 +29,14 @@ export class ZonaService {
   }
 
   create(zona: Zona): Observable<string> {
-    return this.http.post<string>(this.API, zona);
+    return this.http.post(this.API, zona, { responseType: 'text' });
   }
 
   update(id: number, zona: Zona): Observable<string> {
-    return this.http.put<string>(`${this.API}/${id}`, zona);
+    return this.http.put(`${this.API}/${id}`, zona, { responseType: 'text' });
   }
 
   delete(id: number): Observable<string> {
-    return this.http.delete<string>(`${this.API}/${id}`);
+    return this.http.delete(`${this.API}/${id}`, { responseType: 'text' });
   }
 }

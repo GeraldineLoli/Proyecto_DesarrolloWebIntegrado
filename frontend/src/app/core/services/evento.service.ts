@@ -33,15 +33,15 @@ export class EventoService {
   }
 
   create(evento: Evento): Observable<string> {
-    return this.http.post<string>(this.API, evento);
+    return this.http.post(this.API, evento, { responseType: 'text' });
   }
 
   update(id: number, evento: Evento): Observable<string> {
-    return this.http.put<string>(`${this.API}/${id}`, evento);
+    return this.http.put(`${this.API}/${id}`, evento, { responseType: 'text' });
   }
 
   delete(id: number): Observable<string> {
-    return this.http.delete<string>(`${this.API}/${id}`);
+    return this.http.delete(`${this.API}/${id}`, { responseType: 'text' });
   }
 
   buscarPorTexto(q: string): Observable<Evento[]> {
