@@ -20,8 +20,10 @@ export class EventosComponent implements OnInit {
   modalAbierto = false;
   modoEdicion = false;
   guardando = false;
+  modoEdicion  = false;
+  guardando    = false;
 
-  // Confirmación de eliminación
+  // Modal eliminar
   modalEliminarAbierto = false;
   eventoAEliminar: Evento | null = null;
   eliminando = false;
@@ -61,42 +63,53 @@ export class EventosComponent implements OnInit {
 
   aplicarFiltro(): void {
     const q = this.textoBusqueda.toLowerCase().trim();
-    this.eventosFiltrados = q
-      ? this.eventos.filter(e =>
-          e.nombre.toLowerCase().includes(q) ||
-          e.categoria.toLowerCase().includes(q) ||
-          e.lugar.toLowerCase().includes(q) ||
-          e.artistaPrincipal?.toLowerCase().includes(q)
-        )
-      : [...this.eventos];
+    if (!q) {
+      this.eventosFiltrados = [...this.eventos];
+      return;
+    }
+    this.eventosFiltrados = this.eventos.filter(e =>
+      e.nombre.toLowerCase().includes(q) ||
+      e.categoria.toLowerCase().includes(q) ||
+      e.lugar.toLowerCase().includes(q) ||
+      (e.artistaPrincipal?.toLowerCase().includes(q) ?? false)
+    );
   }
 
-  // ── Modal Crear / Editar ──────────────────────────────────
+  // ── Helpers de vista ──────────────────────────────────────
+  formatFecha(fecha: string): string {
+    if (!fecha) return '—';
+    return new Date(fecha).toLocaleString('es-PE', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  }
+
+  // ── Modal crear / editar ──────────────────────────────────
   abrirCrear(): void {
     this.eventoForm = this.eventoVacio();
     this.modoEdicion = false;
+    this.errorServidor = '';
     this.modalAbierto = true;
   }
 
   abrirEditar(evento: Evento): void {
-    this.eventoForm = {
+    this.eventoForm = { 
       ...evento,
-      // Asegura formato compatible con datetime-local
-      fechaHora: evento.fechaHora
-        ? evento.fechaHora.substring(0, 16)
-        : ''
+      fechaHora: evento.fechaHora ? evento.fechaHora.substring(0, 16) : ''
     };
     this.modoEdicion = true;
+    this.errorServidor = '';
     this.modalAbierto = true;
   }
 
   cerrarModal(): void {
     this.modalAbierto = false;
-    this.mensajeExito = '';
+    this.errorServidor = '';
   }
 
   guardar(): void {
     this.guardando = true;
+    this.errorServidor = '';
     const accion = this.modoEdicion
       ? this.eventoService.update(this.eventoForm.id!, this.eventoForm)
       : this.eventoService.create(this.eventoForm);
@@ -109,9 +122,15 @@ export class EventosComponent implements OnInit {
         this.guardando = false;
         this.cerrarModal();
         this.cargarEventos();
+        setTimeout(() => this.mensajeExito = '', 4000);
       },
-      error: () => {
-        this.guardando = false;
+      error: (err) => { 
+        this.guardando = false; 
+        if (err.error && typeof err.error === 'string') {
+          this.errorServidor = err.error;
+        } else {
+          this.errorServidor = 'Ocurrió un error inesperado al guardar.';
+        }
       }
     });
   }

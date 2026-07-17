@@ -67,6 +67,11 @@ public class EventoController {
         eventoService.eliminarEvento(id);
         return "Evento eliminado exitosamente";
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
     
     // ========== Endpoints con consultas JPQL ==========
     

@@ -22,6 +22,7 @@ export class PromocionesComponent implements OnInit {
   cargando = true;
   error    = false;
   mensajeExito = '';
+  errorServidor = '';
 
   // Modal crear / editar
   modalAbierto = false;
@@ -115,6 +116,7 @@ export class PromocionesComponent implements OnInit {
   abrirCrear(): void {
     this.promoForm = this.promoVacia();
     this.modoEdicion = false;
+    this.errorServidor = '';
     this.modalAbierto = true;
   }
 
@@ -125,15 +127,18 @@ export class PromocionesComponent implements OnInit {
       fechaFin:    promo.fechaFin?.substring(0, 10)    ?? ''
     };
     this.modoEdicion = true;
+    this.errorServidor = '';
     this.modalAbierto = true;
   }
 
   cerrarModal(): void {
     this.modalAbierto = false;
+    this.errorServidor = '';
   }
 
   guardar(): void {
     this.guardando = true;
+    this.errorServidor = '';
     
     const promoToSend: Promocion = {
       ...this.promoForm,
@@ -155,7 +160,14 @@ export class PromocionesComponent implements OnInit {
         this.cargarDatos();
         setTimeout(() => this.mensajeExito = '', 4000);
       },
-      error: () => { this.guardando = false; }
+      error: (err) => {
+        this.guardando = false;
+        if (err.error && typeof err.error === 'string') {
+          this.errorServidor = err.error;
+        } else {
+          this.errorServidor = 'Ocurrió un error inesperado al guardar.';
+        }
+      }
     });
   }
 

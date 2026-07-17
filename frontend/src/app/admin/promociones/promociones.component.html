@@ -107,6 +107,12 @@
 
       <div class="modal-body">
         <form #promoFormRef="ngForm" (ngSubmit)="guardar()">
+
+          <!-- Error devuelto por el servidor -->
+          <div class="alert-error" *ngIf="errorServidor" style="background-color: #fee2e2; color: #b91c1c; padding: 10px; margin-bottom: 15px; border-radius: 4px; border: 1px solid #f87171;">
+            {{ errorServidor }}
+          </div>
+
           <div class="form-grid">
 
             <!-- Código -->

@@ -65,6 +65,11 @@ public class PromocionController {
         promocionService.eliminarPromocion(id);
         return "Promoción eliminada exitosamente";
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
+    public org.springframework.http.ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return new org.springframework.http.ResponseEntity<>(ex.getMessage(), org.springframework.http.HttpStatus.BAD_REQUEST);
+    }
     
     @PostMapping("/{id}/usar")
     public boolean usarPromocion(@PathVariable Long id) {
