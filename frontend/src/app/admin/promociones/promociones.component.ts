@@ -134,9 +134,16 @@ export class PromocionesComponent implements OnInit {
 
   guardar(): void {
     this.guardando = true;
+    
+    const promoToSend: Promocion = {
+      ...this.promoForm,
+      fechaInicio: this.promoForm.fechaInicio.length === 10 ? `${this.promoForm.fechaInicio}T00:00:00` : this.promoForm.fechaInicio,
+      fechaFin: this.promoForm.fechaFin.length === 10 ? `${this.promoForm.fechaFin}T23:59:59` : this.promoForm.fechaFin
+    };
+
     const accion = this.modoEdicion
-      ? this.promocionService.update(this.promoForm.id!, this.promoForm)
-      : this.promocionService.create(this.promoForm);
+      ? this.promocionService.update(promoToSend.id!, promoToSend)
+      : this.promocionService.create(promoToSend);
 
     accion.subscribe({
       next: () => {
