@@ -13,9 +13,11 @@ import com.proyecto.app.repository.PromocionRepository;
 public class PromocionService {
     
     private final PromocionRepository promocionRepository;
+    private final IEventoService eventoService;
     
-    public PromocionService(PromocionRepository promocionRepository) {
+    public PromocionService(PromocionRepository promocionRepository, IEventoService eventoService) {
         this.promocionRepository = promocionRepository;
+        this.eventoService = eventoService;
     }
     
     public List<Promocion> todas() {
@@ -43,11 +45,29 @@ public class PromocionService {
                 .collect(Collectors.toList());
     }
     
+    private void validarFechasPromocion(Promocion promocion) {
+        if (promocion.getFechaInicio() != null && promocion.getFechaFin() != null) {
+            if (promocion.getFechaFin().isBefore(promocion.getFechaInicio())) {
+                throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la fecha de inicio.");
+            }
+            if (promocion.getEventoId() != null) {
+                com.proyecto.app.model.Evento evento = eventoService.obtenerEvento(promocion.getEventoId());
+                if (evento != null && evento.getFechaHora() != null) {
+                    if (promocion.getFechaFin().isAfter(evento.getFechaHora())) {
+                        throw new IllegalArgumentException("La fecha de fin de la promoción no puede extenderse más allá de la fecha del evento.");
+                    }
+                }
+            }
+        }
+    }
+
     public Promocion agregarPromocion(Promocion promocion) {
+        validarFechasPromocion(promocion);
         return promocionRepository.save(promocion);
     }
     
     public Promocion actualizarPromocion(Long id, Promocion promocionActualizada) {
+        validarFechasPromocion(promocionActualizada);
         Promocion promocionExistente = promocionRepository.findById(id).orElse(null);
         if (promocionExistente != null) {
             promocionExistente.setCodigo(promocionActualizada.getCodigo());

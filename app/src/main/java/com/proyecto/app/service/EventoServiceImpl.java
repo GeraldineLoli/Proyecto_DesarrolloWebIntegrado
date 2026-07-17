@@ -20,6 +20,9 @@ public class EventoServiceImpl implements IEventoService {
 
     @Override
     public Evento agregarEvento(Evento evento) {
+        if (evento.getFechaHora() != null && evento.getFechaHora().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("No se puede crear un evento con fecha en el pasado.");
+        }
         return eventoRepository.save(evento);
     }
 
