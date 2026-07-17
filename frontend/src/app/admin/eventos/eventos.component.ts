@@ -20,8 +20,6 @@ export class EventosComponent implements OnInit {
   modalAbierto = false;
   modoEdicion = false;
   guardando = false;
-  modoEdicion  = false;
-  guardando    = false;
 
   // Modal eliminar
   modalEliminarAbierto = false;
@@ -32,6 +30,7 @@ export class EventosComponent implements OnInit {
   cargando = true;
   error = false;
   mensajeExito = '';
+  errorServidor = '';
 
   eventoForm: Evento = this.eventoVacio();
 
@@ -163,12 +162,6 @@ export class EventosComponent implements OnInit {
   }
 
   // ── Helpers ───────────────────────────────────────────────
-  formatFecha(fecha?: string): string {
-    if (!fecha) return '—';
-    return new Date(fecha).toLocaleDateString('es-PE', {
-      day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-    });
-  }
 
   private eventoVacio(): Evento {
     return {
