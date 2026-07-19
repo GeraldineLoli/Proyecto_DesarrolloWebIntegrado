@@ -133,13 +133,16 @@ export class MisComprasComponent implements OnInit {
           // Cargar entradas del usuario (filtradas por fecha cercana al pedido)
           this.entradaService.obtenerPorUsuario(this.user!.id!).subscribe({
             next: (todasEntradas) => {
-              // Filtrar entradas cercanas a la fecha del pedido (5 minutos)
-              if (pedido.fechaCreacion) {
+              // Buscar las entradas que corresponden a este pedido
+              if (pedido.entradaIds && pedido.entradaIds.length > 0) {
+                detalle.entradas = todasEntradas.filter(e => e.id && pedido.entradaIds!.includes(e.id));
+              } else if (pedido.fechaCreacion) {
+                // Fallback para pedidos antiguos sin entradaIds: filtrar por fecha (24 horas)
                 const fechaPedido = new Date(pedido.fechaCreacion);
                 detalle.entradas = todasEntradas.filter(entrada => {
                   const fechaEntrada = new Date(entrada.fechaCompra);
                   const diff = Math.abs(fechaEntrada.getTime() - fechaPedido.getTime());
-                  return diff < 300000; // 5 minutos de diferencia
+                  return diff < 86400000; // 24 horas de diferencia para lidiar con zonas horarias
                 }).sort((a, b) => 
                   new Date(b.fechaCompra).getTime() - new Date(a.fechaCompra).getTime()
                 );

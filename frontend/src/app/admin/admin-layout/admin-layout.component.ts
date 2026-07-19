@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../core/services/auth.service';
+import { AuthService } from '../../services/auth.service';
 
 interface NavItem {
   label: string;
@@ -31,7 +31,7 @@ export class AdminLayoutComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   get nombreAdmin(): string {
-    return this.authService.getNombre() ?? 'Admin';
+    return this.authService.getCurrentUser()?.nombre ?? 'Admin';
   }
 
   toggleSidebar(): void {
