@@ -67,6 +67,9 @@ public class AuthController {
             usuarioService.crearUsuario(usuario);
             return ResponseEntity.status(HttpStatus.CREATED)
                 .body("Usuario registrado exitosamente");
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            String mensaje = "Error al registrar usuario: El DNI o Correo Electrónico ya se encuentran registrados.";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mensaje);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body("Error al registrar usuario: " + e.getMessage());

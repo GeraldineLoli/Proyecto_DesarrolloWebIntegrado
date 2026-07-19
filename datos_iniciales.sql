@@ -16,31 +16,31 @@ INSERT INTO public.usuarios (id, apellido, "contraseña", dni, email, fecha_naci
 --
 
 INSERT INTO public.eventos (id, activo, artista_principal, categoria, descripcion, direccion, duracion_minutos, edad_minima, fecha_hora, imagen_url, lugar, nombre) VALUES 
-(1, true, 'Metallica', 'CONCIERTO', 'El mejor festival de rock del año', 'Av. Principal 123', 180, 18, '2024-12-15 20:00:00', 'https://ejemplo.com/rockfest.jpg', 'Estadio Nacional', 'Rock Festival 2024');
+(1, true, 'Metallica', 'CONCIERTO', 'El mejor festival de rock del año', 'Av. Principal 123', 180, 18, '2026-12-15 20:00:00', 'https://ejemplo.com/rockfest.jpg', 'Estadio Nacional', 'Rock Festival 2026');
 
 INSERT INTO public.eventos (id, activo, artista_principal, categoria, descripcion, direccion, duracion_minutos, edad_minima, fecha_hora, imagen_url, lugar, nombre) VALUES 
-(2, true, 'David Guetta', 'ELECTRONICA', 'Noche de música electrónica', 'Calle Falsa 456', 240, 21, '2024-11-20 22:00:00', 'https://ejemplo.com/tecno.jpg', 'Discoteca Central', 'Tecno Party');
+(2, true, 'David Guetta', 'ELECTRONICA', 'Noche de música electrónica', 'Calle Falsa 456', 240, 21, '2026-11-20 22:00:00', 'https://ejemplo.com/tecno.jpg', 'Discoteca Central', 'Tecno Party');
 
 INSERT INTO public.eventos (id, activo, artista_principal, categoria, descripcion, direccion, duracion_minutos, edad_minima, fecha_hora, imagen_url, lugar, nombre) VALUES 
-(3, true, 'Shakespeare Company', 'TEATRO', 'Obra de teatro: Romeo y Julieta', 'Plaza Mayor 789', 120, 12, '2024-10-05 19:00:00', 'https://ejemplo.com/teatro.jpg', 'Teatro Municipal', 'Teatro Clásico');
+(3, true, 'Shakespeare Company', 'TEATRO', 'Obra de teatro: Romeo y Julieta', 'Plaza Mayor 789', 120, 12, '2026-10-05 19:00:00', 'https://ejemplo.com/teatro.jpg', 'Teatro Municipal', 'Teatro Clásico');
 
 INSERT INTO public.eventos (id, activo, artista_principal, categoria, descripcion, direccion, duracion_minutos, edad_minima, fecha_hora, imagen_url, lugar, nombre) VALUES 
-(4, true, 'Chef Rodríguez', 'GASTRONOMIA', 'Degusta lo mejor de la cocina local', 'Av. Gastronómica 321', 480, 0, '2024-11-10 11:00:00', 'https://ejemplo.com/gastro.jpg', 'Centro de Convenciones', 'Feria Gastronómica');
+(4, true, 'Chef Rodríguez', 'GASTRONOMIA', 'Degusta lo mejor de la cocina local', 'Av. Gastronómica 321', 480, 0, '2026-11-10 11:00:00', 'https://ejemplo.com/gastro.jpg', 'Centro de Convenciones', 'Feria Gastronómica');
 
 INSERT INTO public.eventos (id, activo, artista_principal, categoria, descripcion, direccion, duracion_minutos, edad_minima, fecha_hora, imagen_url, lugar, nombre) VALUES 
-(5, true, 'Elon Musk', 'CONFERENCIA', 'Innovación y tecnología', 'Av. Tecnológica 456', 480, 16, '2024-09-25 09:00:00', 'https://ejemplo.com/tech.jpg', 'Centro de Convenciones', 'Conferencia Tech 2024');
+(5, true, 'Elon Musk', 'CONFERENCIA', 'Innovación y tecnología', 'Av. Tecnológica 456', 480, 16, '2026-09-25 09:00:00', 'https://ejemplo.com/tech.jpg', 'Centro de Convenciones', 'Conferencia Tech 2026');
 
 INSERT INTO public.eventos (id, activo, artista_principal, categoria, descripcion, direccion, duracion_minutos, edad_minima, fecha_hora, imagen_url, lugar, nombre) VALUES 
-(6, true, 'Marc Anthony', 'DANZA', 'Noche de baile latino', 'Calle del Ritmo 789', 240, 18, '2024-10-20 21:00:00', 'https://ejemplo.com/salsa.jpg', 'Salón Tropical', 'Salsa Night');
+(6, true, 'Marc Anthony', 'DANZA', 'Noche de baile latino', 'Calle del Ritmo 789', 240, 18, '2026-10-20 21:00:00', 'https://ejemplo.com/salsa.jpg', 'Salón Tropical', 'Salsa Night');
 
 INSERT INTO public.eventos (id, activo, artista_principal, categoria, descripcion, direccion, duracion_minutos, edad_minima, fecha_hora, imagen_url, lugar, nombre) VALUES 
-(7, true, 'El Show de la Granja', 'FAMILIAR', 'Diversión para toda la familia', 'Av. Parque 111', 360, 0, '2024-12-25 10:00:00', 'https://ejemplo.com/infantil.jpg', 'Parque Central', 'Festival Infantil');
+(7, true, 'El Show de la Granja', 'FAMILIAR', 'Diversión para toda la familia', 'Av. Parque 111', 360, 0, '2026-12-25 10:00:00', 'https://ejemplo.com/infantil.jpg', 'Parque Central', 'Festival Infantil');
 
 INSERT INTO public.eventos (id, activo, artista_principal, categoria, descripcion, direccion, duracion_minutos, edad_minima, fecha_hora, imagen_url, lugar, nombre) VALUES 
-(8, true, 'Wynton Marsalis', 'JAZZ', 'Festival de jazz al aire libre', 'Av. Melodía 555', 300, 0, '2024-11-05 16:00:00', 'https://ejemplo.com/jazz.jpg', 'Parque de la Música', 'Jazz en el Parque');
+(8, true, 'Wynton Marsalis', 'JAZZ', 'Festival de jazz al aire libre', 'Av. Melodía 555', 300, 0, '2026-11-05 16:00:00', 'https://ejemplo.com/jazz.jpg', 'Parque de la Música', 'Jazz en el Parque');
 
 INSERT INTO public.eventos (id, activo, artista_principal, categoria, descripcion, direccion, duracion_minutos, edad_minima, fecha_hora, imagen_url, lugar, nombre) VALUES 
-(10, true, 'Artista Principal 1', 'CONCIERTO', 'El mejor concierto del año', 'Av. Los Shyris 1234', 180, 18, '2025-06-15 20:00:00', 'https://ejemplo.com/imagen.jpg', 'Estadio Monumental', 'Nuevo Concierto 2026');
+(10, true, 'Artista Principal 1', 'CONCIERTO', 'El mejor concierto del año', 'Av. Los Shyris 1234', 180, 18, '2027-06-15 20:00:00', 'https://ejemplo.com/imagen.jpg', 'Estadio Monumental', 'Nuevo Concierto 2026');
 
 
 --
@@ -98,19 +98,19 @@ INSERT INTO public.zonas (id, capacidad_total, color_mapa, entradas_disponibles,
 --
 
 INSERT INTO public.pedidos (id, codigo_pedido, estado, fecha_creacion, total, usuario_id) VALUES 
-(1, 'ORD-ABC123', 'PAGADO', '2024-06-01 10:30:00', 300, 2);
+(1, 'ORD-ABC123', 'PAGADO', '2026-06-01 10:30:00', 300, 2);
 
 INSERT INTO public.pedidos (id, codigo_pedido, estado, fecha_creacion, total, usuario_id) VALUES 
-(2, NULL, 'PAGADO', '2024-06-15 15:20:00', 300, 3);
+(2, NULL, 'PAGADO', '2026-06-15 15:20:00', 300, 3);
 
 INSERT INTO public.pedidos (id, codigo_pedido, estado, fecha_creacion, total, usuario_id) VALUES 
-(3, 'ORD-GHI789', 'PENDIENTE', '2024-07-01 11:45:00', 500, 3);
+(3, 'ORD-GHI789', 'PENDIENTE', '2026-07-01 11:45:00', 500, 3);
 
 INSERT INTO public.pedidos (id, codigo_pedido, estado, fecha_creacion, total, usuario_id) VALUES 
-(4, 'ORD-JKL012', 'PAGADO', '2024-08-10 09:15:00', 250, 3);
+(4, 'ORD-JKL012', 'PAGADO', '2026-08-10 09:15:00', 250, 3);
 
 INSERT INTO public.pedidos (id, codigo_pedido, estado, fecha_creacion, total, usuario_id) VALUES 
-(5, 'ORD-MNO345', 'PAGADO', '2024-09-05 14:30:00', 180, 4);
+(5, 'ORD-MNO345', 'PAGADO', '2026-09-05 14:30:00', 180, 4);
 
 INSERT INTO public.pedidos (id, codigo_pedido, estado, fecha_creacion, total, usuario_id) VALUES 
 (7, 'ORD-D76A5CA7', 'PENDIENTE', '2026-05-25 19:54:23.673733', 150, 4);
@@ -168,19 +168,19 @@ INSERT INTO public.entradas (id, codigo_entrada, codigo_transaccion, estado, eve
 --
 
 INSERT INTO public.pagos (id, codigo_transaccion, comprobante_url, estado, fecha_pago, metodo_pago, monto, notas, numero_tarjeta, pedido_id, usuario_id) VALUES 
-(1, 'PAY-001', NULL, 'COMPLETADO', '2024-06-01 10:31:00', 'TARJETA', 300, NULL, '****1234', 1, 2);
+(1, 'PAY-001', NULL, 'COMPLETADO', '2026-06-01 10:31:00', 'TARJETA', 300, NULL, '****1234', 1, 2);
 
 INSERT INTO public.pagos (id, codigo_transaccion, comprobante_url, estado, fecha_pago, metodo_pago, monto, notas, numero_tarjeta, pedido_id, usuario_id) VALUES 
-(2, 'PAY-002', NULL, 'COMPLETADO', '2024-06-15 15:21:00', 'TARJETA', 150, NULL, '****5678', 2, 2);
+(2, 'PAY-002', NULL, 'COMPLETADO', '2026-06-15 15:21:00', 'TARJETA', 150, NULL, '****5678', 2, 2);
 
 INSERT INTO public.pagos (id, codigo_transaccion, comprobante_url, estado, fecha_pago, metodo_pago, monto, notas, numero_tarjeta, pedido_id, usuario_id) VALUES 
-(3, 'PAY-003', NULL, 'PENDIENTE', '2024-07-01 11:46:00', 'YAPE', 500, NULL, NULL, 3, 3);
+(3, 'PAY-003', NULL, 'PENDIENTE', '2026-07-01 11:46:00', 'YAPE', 500, NULL, NULL, 3, 3);
 
 INSERT INTO public.pagos (id, codigo_transaccion, comprobante_url, estado, fecha_pago, metodo_pago, monto, notas, numero_tarjeta, pedido_id, usuario_id) VALUES 
-(4, 'PAY-004', NULL, 'COMPLETADO', '2024-09-05 14:32:00', 'PLIN', 250, NULL, NULL, 4, 4);
+(4, 'PAY-004', NULL, 'COMPLETADO', '2026-09-05 14:32:00', 'PLIN', 250, NULL, NULL, 4, 4);
 
 INSERT INTO public.pagos (id, codigo_transaccion, comprobante_url, estado, fecha_pago, metodo_pago, monto, notas, numero_tarjeta, pedido_id, usuario_id) VALUES 
-(5, 'PAY-005', NULL, 'PENDIENTE', '2024-10-01 16:05:00', 'EFECTIVO', 400, NULL, NULL, 5, 5);
+(5, 'PAY-005', NULL, 'PENDIENTE', '2026-10-01 16:05:00', 'EFECTIVO', 400, NULL, NULL, 5, 5);
 
 INSERT INTO public.pagos (id, codigo_transaccion, comprobante_url, estado, fecha_pago, metodo_pago, monto, notas, numero_tarjeta, pedido_id, usuario_id) VALUES 
 (6, 'TXN-6CCBA9AE', NULL, 'COMPLETADO', '2026-05-25 20:29:01.604593', 'TARJETA', 500, NULL, NULL, 3, 3);
@@ -212,19 +212,19 @@ INSERT INTO public.pagos (id, codigo_transaccion, comprobante_url, estado, fecha
 --
 
 INSERT INTO public.promociones (id, activo, cantidad_disponible, cantidad_usada, codigo, descripcion, evento_id, fecha_fin, fecha_inicio, porcentaje_descuento) VALUES 
-(1, true, 100, 0, 'ROCK20', '20% descuento Rock Festival', 1, '2024-12-14 23:59:59', '2024-11-01 00:00:00', 20);
+(1, true, 100, 0, 'ROCK20', '20% descuento Rock Festival', 1, '2026-12-14 23:59:59', '2026-11-01 00:00:00', 20);
 
 INSERT INTO public.promociones (id, activo, cantidad_disponible, cantidad_usada, codigo, descripcion, evento_id, fecha_fin, fecha_inicio, porcentaje_descuento) VALUES 
-(2, true, 200, 50, 'TECNO15', '15% descuento Tecno Party', 2, '2024-11-19 23:59:59', '2024-10-01 00:00:00', 15);
+(2, true, 200, 50, 'TECNO15', '15% descuento Tecno Party', 2, '2026-11-19 23:59:59', '2026-10-01 00:00:00', 15);
 
 INSERT INTO public.promociones (id, activo, cantidad_disponible, cantidad_usada, codigo, descripcion, evento_id, fecha_fin, fecha_inicio, porcentaje_descuento) VALUES 
-(3, true, 50, 25, 'TEATRO10', '10% descuento Teatro', 3, '2024-10-04 23:59:59', '2024-09-01 00:00:00', 10);
+(3, true, 50, 25, 'TEATRO10', '10% descuento Teatro', 3, '2026-10-04 23:59:59', '2026-09-01 00:00:00', 10);
 
 INSERT INTO public.promociones (id, activo, cantidad_disponible, cantidad_usada, codigo, descripcion, evento_id, fecha_fin, fecha_inicio, porcentaje_descuento) VALUES 
-(4, true, 300, 0, 'GASTRO25', '25% descuento Feria Gastronómica', 4, '2024-11-09 23:59:59', '2024-10-01 00:00:00', 25);
+(4, true, 300, 0, 'GASTRO25', '25% descuento Feria Gastronómica', 4, '2026-11-09 23:59:59', '2026-10-01 00:00:00', 25);
 
 INSERT INTO public.promociones (id, activo, cantidad_disponible, cantidad_usada, codigo, descripcion, evento_id, fecha_fin, fecha_inicio, porcentaje_descuento) VALUES 
-(5, true, 150, 120, 'TECH30', '30% descuento Conferencia Tech', 5, '2024-09-24 23:59:59', '2024-08-01 00:00:00', 30);
+(5, true, 150, 120, 'TECH30', '30% descuento Conferencia Tech', 5, '2026-09-24 23:59:59', '2026-08-01 00:00:00', 30);
 
 
 --
@@ -232,19 +232,19 @@ INSERT INTO public.promociones (id, activo, cantidad_disponible, cantidad_usada,
 --
 
 INSERT INTO public.resenas (id, calificacion, comentario, entrada_id, evento_id, fecha, usuario_id) VALUES 
-(1, 5, 'Excelente evento, sonido increíble, volvería sin dudas', 1, 1, '2024-06-05', 2);
+(1, 5, 'Excelente evento, sonido increíble, volvería sin dudas', 1, 1, '2026-06-05', 2);
 
 INSERT INTO public.resenas (id, calificacion, comentario, entrada_id, evento_id, fecha, usuario_id) VALUES 
-(2, 4, 'Muy buen concierto, el artista principal excelente', 2, 1, '2024-06-20', 2);
+(2, 4, 'Muy buen concierto, el artista principal excelente', 2, 1, '2026-06-20', 2);
 
 INSERT INTO public.resenas (id, calificacion, comentario, entrada_id, evento_id, fecha, usuario_id) VALUES 
-(3, 5, 'La mejor noche de mi vida, la música espectacular', 3, 2, '2024-07-10', 3);
+(3, 5, 'La mejor noche de mi vida, la música espectacular', 3, 2, '2026-07-10', 3);
 
 INSERT INTO public.resenas (id, calificacion, comentario, entrada_id, evento_id, fecha, usuario_id) VALUES 
-(4, 3, 'Buena obra pero un poco larga', 4, 3, '2024-09-10', 4);
+(4, 3, 'Buena obra pero un poco larga', 4, 3, '2026-09-10', 4);
 
 INSERT INTO public.resenas (id, calificacion, comentario, entrada_id, evento_id, fecha, usuario_id) VALUES 
-(5, 5, 'Conferencia muy instructiva, aprendí mucho', 5, 5, '2024-10-05', 5);
+(5, 5, 'Conferencia muy instructiva, aprendí mucho', 5, 5, '2026-10-05', 5);
 
 INSERT INTO public.resenas (id, calificacion, comentario, entrada_id, evento_id, fecha, usuario_id) VALUES 
 (7, 4, 'Buen evento', 6, 1, '2026-07-06', 11);
