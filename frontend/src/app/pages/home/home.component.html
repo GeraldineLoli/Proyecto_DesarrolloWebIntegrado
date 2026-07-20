@@ -2,15 +2,14 @@
 <header class="navbar">
   <div class="navbar-container">
     <a routerLink="/home" class="navbar-brand">
-      <span class="brand-icon">🎫</span>
+      <i class="fa-solid fa-ticket"></i>
       <span class="brand-name">TicketApp</span>
     </a>
 
     <nav class="navbar-nav desktop-only">
       <a routerLink="/home" class="nav-link active">Inicio</a>
-      <a (click)="scrollToEventos()" class="nav-link" style="cursor:pointer">Eventos</a>
       @if (user) {
-        <a routerLink="/mis-reservas" class="nav-link">Mis reservas</a>
+        <a routerLink="/mis-reservas" class="nav-link">Mis reseñas</a>
       }
     </nav>
 
@@ -32,18 +31,18 @@
               </div>
               <hr class="dropdown-divider" />
               <a routerLink="/perfil" class="dropdown-item" role="menuitem">
-                👤 Mi perfil
+                <i class="fa-solid fa-user"></i> Mi perfil
               </a>
               @if (user.rol === 'CLIENTE') {
                 <a routerLink="/mis-reservas" class="dropdown-item" role="menuitem">
-                  🎫 Mis reservas
+                  <i class="fa-solid fa-ticket-simple"></i> Mis reseñas
                 </a>
                 <a routerLink="/mis-compras" class="dropdown-item" role="menuitem">
-                  🛍️ Mis compras
+                  <i class="fa-solid fa-bag-shopping"></i> Mis compras
                 </a>
               }
               <button class="dropdown-item danger" (click)="logout()" role="menuitem">
-                🚪 Cerrar sesión
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
               </button>
             </div>
           }
@@ -59,7 +58,7 @@
 <!-- ── HERO ────────────────────────────────────────────────────────────────── -->
 <section class="hero">
   <div class="hero-content">
-    <span class="hero-badge">🎉 Los mejores eventos te esperan</span>
+    <span class="hero-badge"><i class="fa-solid fa-gift"></i> Los mejores eventos te esperan</span>
     <h1 class="hero-title">
       Descubre y vive<br>
       <span class="hero-highlight">experiencias únicas</span>
@@ -70,7 +69,7 @@
 
     <!-- Barra de búsqueda en el hero -->
     <div class="hero-search">
-      <span class="search-icon">🔍</span>
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
       <input
         type="text"
         [(ngModel)]="busqueda"
@@ -80,7 +79,9 @@
         aria-label="Buscar eventos"
       />
       @if (busqueda) {
-        <button class="search-clear" (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">✕</button>
+        <button class="search-clear" (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       }
     </div>
   </div>
@@ -98,7 +99,7 @@
           (click)="filtrarPorCategoria(cat)"
           role="listitem"
         >
-          @if (cat !== 'Todos') { {{ getCategoriaIcon(cat) }} }
+          @if (cat !== 'Todos') { <i [class]="getCategoriaIcon(cat)"></i> }
           {{ cat }}
         </button>
       }
@@ -143,7 +144,7 @@
     <!-- Error -->
     @if (!loading && error) {
       <div class="empty-state">
-        <div class="empty-icon">⚠️</div>
+        <div class="empty-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
         <h3>{{ error }}</h3>
         <button class="btn-retry" (click)="cargarEventos()">Reintentar</button>
       </div>
@@ -152,7 +153,7 @@
     <!-- Sin resultados -->
     @if (!loading && !error && eventosFiltrados.length === 0) {
       <div class="empty-state">
-        <div class="empty-icon">🔍</div>
+        <div class="empty-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
         <h3>No se encontraron eventos</h3>
         <p>Intenta con otra búsqueda o categoría.</p>
         <button class="btn-retry" (click)="limpiarBusqueda(); filtrarPorCategoria('Todos')">
@@ -176,7 +177,7 @@
                 (error)="$any($event.target).src = getPlaceholderImage(evento.categoria)"
               />
               <span class="card-category-badge">
-                {{ getCategoriaIcon(evento.categoria) }} {{ evento.categoria }}
+                <i [class]="getCategoriaIcon(evento.categoria)"></i> {{ evento.categoria }}
               </span>
             </div>
 
@@ -185,20 +186,20 @@
               <h3 class="card-title">{{ evento.nombre }}</h3>
 
               @if (evento.artistaPrincipal) {
-                <p class="card-artist">🎤 {{ evento.artistaPrincipal }}</p>
+                <p class="card-artist"><i class="fa-solid fa-microphone"></i> {{ evento.artistaPrincipal }}</p>
               }
 
               <div class="card-meta">
                 <div class="meta-item">
-                  <span class="meta-icon">📅</span>
+                  <i class="fa-solid fa-calendar-days meta-icon"></i>
                   <span>{{ formatFecha(evento.fechaHora) }}</span>
                 </div>
                 <div class="meta-item">
-                  <span class="meta-icon">🕐</span>
+                  <i class="fa-solid fa-clock meta-icon"></i>
                   <span>{{ formatHora(evento.fechaHora) }}</span>
                 </div>
                 <div class="meta-item">
-                  <span class="meta-icon">📍</span>
+                  <i class="fa-solid fa-location-dot meta-icon"></i>
                   <span>{{ evento.lugar }}</span>
                 </div>
               </div>
@@ -227,7 +228,7 @@
   <div class="container">
     <div class="footer-content">
       <div class="footer-brand">
-        <span>🎫</span>
+        <i class="fa-solid fa-ticket"></i>
         <span class="brand-name">TicketApp</span>
       </div>
       <p class="footer-copy">© 2026 TicketApp · Todos los derechos reservados</p>

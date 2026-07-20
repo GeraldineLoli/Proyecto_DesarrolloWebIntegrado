@@ -122,14 +122,14 @@ export class HomeComponent implements OnInit {
 
   getCategoriaIcon(categoria: string): string {
     const icons: Record<string, string> = {
-      'concierto':    '🎵',
-      'teatro':       '🎭',
-      'deporte':      '🏟️',
-      'festival':     '🎉',
-      'conferencia':  '🎤',
-      'otro':         '🎪'
+      'concierto':    'fa-solid fa-music',
+      'teatro':       'fa-solid fa-masks-theater',
+      'deporte':      'fa-solid fa-futbol',
+      'festival':     'fa-solid fa-tent',
+      'conferencia':  'fa-solid fa-microphone',
+      'otro':         'fa-solid fa-calendar-days'
     };
-    return icons[categoria.toLowerCase()] || '📅';
+    return icons[categoria.toLowerCase()] || 'fa-solid fa-calendar-days';
   }
 
   getPlaceholderImage(categoria: string): string {

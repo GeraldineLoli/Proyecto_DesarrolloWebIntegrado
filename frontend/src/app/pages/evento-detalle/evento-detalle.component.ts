@@ -147,4 +147,20 @@ export class EventoDetalleComponent implements OnInit, OnDestroy {
     };
     return icons[categoria.toLowerCase()] ?? '📅';
   }
+
+  // Verifica si el evento ya pasó
+  esEventoPasado(): boolean {
+    if (!this.evento?.fechaHora) return false;
+    const fechaEvento = new Date(this.evento.fechaHora);
+    const ahora = new Date();
+    return fechaEvento < ahora;
+  }
+
+  // Verifica si el evento es futuro
+  esEventoFuturo(): boolean {
+    if (!this.evento?.fechaHora) return false;
+    const fechaEvento = new Date(this.evento.fechaHora);
+    const ahora = new Date();
+    return fechaEvento >= ahora;
+  }
 }

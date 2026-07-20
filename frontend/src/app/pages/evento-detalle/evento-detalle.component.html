@@ -6,7 +6,7 @@
       <a routerLink="/home" class="btn-nav btn-volver">← Inicio</a>
       @if (user) {
         <span class="navbar-user">{{ user.nombre }}</span>
-        <a routerLink="/mis-reservas" class="btn-nav">Mis reservas</a>
+        <a routerLink="/mis-reservas" class="btn-nav">Mis reseñas</a>
         <a routerLink="/perfil" class="btn-nav">Mi Perfil</a>
         <button class="btn-nav btn-logout" (click)="logout()">Cerrar sesión</button>
       } @else {
@@ -139,61 +139,79 @@
           </div>
         }
 
-        <!-- Botón reseñas -->
-        <div class="seccion">
-          <button class="btn-resenas" (click)="verResenas()">
-            💬 Ver reseñas del evento
-          </button>
-        </div>
+        <!-- Botón reseñas (solo para eventos pasados) -->
+        @if (esEventoPasado()) {
+          <div class="seccion">
+            <button class="btn-resenas" (click)="verResenas()">
+              💬 Ver reseñas del evento
+            </button>
+          </div>
+        }
       </div>
 
-      <!-- COLUMNA DERECHA: Zonas -->
-      <div class="zonas-col">
-        <div class="zonas-card">
-          <h2 class="zonas-titulo">Zonas disponibles</h2>
+      <!-- COLUMNA DERECHA: Zonas (solo para eventos futuros) -->
+      @if (esEventoFuturo()) {
+        <div class="zonas-col">
+          <div class="zonas-card">
+            <h2 class="zonas-titulo">Zonas disponibles</h2>
 
-          @if (zonas.length === 0) {
-            <p class="zonas-empty">No hay zonas configuradas para este evento.</p>
-          }
+            @if (zonas.length === 0) {
+              <p class="zonas-empty">No hay zonas configuradas para este evento.</p>
+            }
 
-          @for (zona of zonas; track zona.id) {
-            <div class="zona-item" [style.border-left-color]="getZonaColor(zona.nombre)">
-              <div class="zona-header">
-                <span class="zona-nombre" [style.color]="getZonaColor(zona.nombre)">
-                  {{ zona.nombre }}
-                </span>
-                <span class="zona-precio">$ {{ zona.precio | number:'1.2-2' }}</span>
+            @for (zona of zonas; track zona.id) {
+              <div class="zona-item" [style.border-left-color]="getZonaColor(zona.nombre)">
+                <div class="zona-header">
+                  <span class="zona-nombre" [style.color]="getZonaColor(zona.nombre)">
+                    {{ zona.nombre }}
+                  </span>
+                  <span class="zona-precio">$ {{ zona.precio | number:'1.2-2' }}</span>
+                </div>
+                <div class="zona-meta">
+                  <span class="zona-disponibles">
+                    {{ zona.entradasDisponibles }} / {{ zona.capacidadTotal }} disponibles
+                  </span>
+                  @if (zona.tieneNumeracion) {
+                    <span class="zona-tag">Con numeración</span>
+                  }
+                </div>
+                <!-- Barra de disponibilidad -->
+                <div class="zona-barra-bg">
+                  <div
+                    class="zona-barra-fill"
+                    [style.width.%]="(zona.entradasDisponibles / zona.capacidadTotal) * 100"
+                    [style.background-color]="getZonaColor(zona.nombre)"
+                  ></div>
+                </div>
               </div>
-              <div class="zona-meta">
-                <span class="zona-disponibles">
-                  {{ zona.entradasDisponibles }} / {{ zona.capacidadTotal }} disponibles
-                </span>
-                @if (zona.tieneNumeracion) {
-                  <span class="zona-tag">Con numeración</span>
-                }
-              </div>
-              <!-- Barra de disponibilidad -->
-              <div class="zona-barra-bg">
-                <div
-                  class="zona-barra-fill"
-                  [style.width.%]="(zona.entradasDisponibles / zona.capacidadTotal) * 100"
-                  [style.background-color]="getZonaColor(zona.nombre)"
-                ></div>
-              </div>
-            </div>
-          }
+            }
 
-          @if (!user) {
-            <p class="zonas-login-hint">
-              <a routerLink="/login">Inicia sesión</a> para comprar entradas.
-            </p>
-          } @else {
-            <a [routerLink]="['/eventos', evento.id, 'compra']" class="btn-comprar">
-              🎟️ Comprar Entradas
-            </a>
-          }
+            @if (!user) {
+              <p class="zonas-login-hint">
+                <a routerLink="/login">Inicia sesión</a> para comprar entradas.
+              </p>
+            } @else {
+              <a [routerLink]="['/eventos', evento.id, 'compra']" class="btn-comprar">
+                🎟️ Comprar Entradas
+              </a>
+            }
+          </div>
         </div>
-      </div>
+      }
+
+      <!-- Mensaje para eventos pasados -->
+      @if (esEventoPasado()) {
+        <div class="zonas-col">
+          <div class="zonas-card evento-pasado-card">
+            <div class="evento-pasado-icon">🕐</div>
+            <h3 class="evento-pasado-titulo">Evento Finalizado</h3>
+            <p class="evento-pasado-texto">Este evento ya se llevó a cabo.</p>
+            <button class="btn-resenas-grande" (click)="verResenas()">
+              💬 Ver Reseñas del Evento
+            </button>
+          </div>
+        </div>
+      }
 
     </div>
   }

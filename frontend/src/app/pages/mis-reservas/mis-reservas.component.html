@@ -19,18 +19,18 @@
   <div class="breadcrumb">
     <a routerLink="/home">Inicio</a>
     <span>›</span>
-    <span>Mis reservas</span>
+    <span>Mis eventos con entradas</span>
   </div>
 
   <div class="page-header">
-    <h1 class="page-titulo">Mis reservas</h1>
+    <h1 class="page-titulo">Mis eventos con entradas</h1>
     <p class="page-subtitulo">Eventos a los que compraste entrada</p>
   </div>
 
   @if (loading) {
     <div class="loading-state">
       <div class="spinner"></div>
-      <p>Cargando tus reservas...</p>
+      <p>Cargando tus eventos...</p>
     </div>
   }
 
@@ -46,7 +46,7 @@
     @if (reservas.length === 0) {
       <div class="empty-state">
         <span class="empty-icon">🎫</span>
-        <p>No tenés reservas aún.</p>
+        <p>No tenés entradas aún.</p>
         <a routerLink="/home" class="btn-explorar">Explorar eventos</a>
       </div>
     }

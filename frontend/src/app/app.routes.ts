@@ -51,7 +51,7 @@ export const routes: Routes = [
     path: 'mis-reservas',
     loadComponent: () =>
       import('./pages/mis-reservas/mis-reservas.component').then(m => m.MisReservasComponent),
-    title: 'Mis reservas · TicketApp',
+    title: 'Mis reseñas · TicketApp',
     canActivate: [authGuard]
   },
 
