@@ -120,20 +120,39 @@ export class CompraComponent implements OnInit {
   }
 
   agregarZona(zona: Zona): void {
-    const existente = this.zonasCompra.find(zc => zc.zona.id === zona.id);
-    if (existente) {
-      if (existente.cantidad < zona.entradasDisponibles) {
-        existente.cantidad++;
-        existente.subtotal = existente.cantidad * zona.precio;
+    // Recargar zonas para asegurar que tenemos datos actualizados
+    this.zonaService.getZonasPorEvento(this.evento!.id).subscribe({
+      next: (zonasActualizadas) => {
+        this.zonas = zonasActualizadas;
+        const zonaActualizada = this.zonas.find(z => z.id === zona.id);
+        
+        if (!zonaActualizada || zonaActualizada.entradasDisponibles <= 0) {
+          this.error = 'No hay entradas disponibles en esta zona';
+          return;
+        }
+        
+        const existente = this.zonasCompra.find(zc => zc.zona.id === zona.id);
+        if (existente) {
+          if (existente.cantidad < zonaActualizada.entradasDisponibles) {
+            existente.cantidad++;
+            existente.zona = zonaActualizada; // Actualizar con datos frescos
+            existente.subtotal = existente.cantidad * zonaActualizada.precio;
+          } else {
+            this.error = 'No hay más entradas disponibles en esta zona';
+          }
+        } else {
+          this.zonasCompra.push({
+            zona: zonaActualizada,
+            cantidad: 1,
+            subtotal: zonaActualizada.precio
+          });
+        }
+        this.calcularTotales();
+      },
+      error: () => {
+        this.error = 'Error al verificar disponibilidad';
       }
-    } else {
-      this.zonasCompra.push({
-        zona: zona,
-        cantidad: 1,
-        subtotal: zona.precio
-      });
-    }
-    this.calcularTotales();
+    });
   }
 
   eliminarZona(zonaId: number): void {
@@ -217,8 +236,32 @@ export class CompraComponent implements OnInit {
       this.error = 'Debes seleccionar al menos una entrada';
       return;
     }
-    this.paso = 2;
-    this.error = '';
+    
+    // Recargar zonas para verificar disponibilidad antes de proceder al pago
+    this.zonaService.getZonasPorEvento(this.evento!.id).subscribe({
+      next: (zonasActualizadas) => {
+        this.zonas = zonasActualizadas;
+        
+        // Verificar que todas las zonas seleccionadas tengan disponibilidad
+        let hayError = false;
+        for (const zc of this.zonasCompra) {
+          const zonaActual = zonasActualizadas.find(z => z.id === zc.zona.id);
+          if (!zonaActual || zonaActual.entradasDisponibles < zc.cantidad) {
+            this.error = `No hay suficientes entradas disponibles en la zona ${zc.zona.nombre}`;
+            hayError = true;
+            break;
+          }
+        }
+        
+        if (!hayError) {
+          this.paso = 2;
+          this.error = '';
+        }
+      },
+      error: () => {
+        this.error = 'Error al verificar disponibilidad';
+      }
+    });
   }
 
   volverASeleccion(): void {
@@ -322,6 +365,7 @@ export class CompraComponent implements OnInit {
     
     // Preparar todas las entradas
     this.zonasCompra.forEach(zc => {
+      console.log(`📝 Preparando ${zc.cantidad} entradas para zona ${zc.zona.nombre} (ID: ${zc.zona.id})`);
       for (let i = 0; i < zc.cantidad; i++) {
         const entrada: Entrada = {
           eventoId: this.evento!.id,
@@ -337,66 +381,107 @@ export class CompraComponent implements OnInit {
       }
     });
 
-    // Crear todas las entradas
-    let entradasCreadas = 0;
-    const totalEntradas = entradas.length;
-    const idsEntradas: number[] = [];
-
-    if (totalEntradas === 0) {
+    console.log(`📊 Total de entradas a crear: ${entradas.length}`);
+    
+    if (entradas.length === 0) {
       this.error = 'No hay entradas para crear';
       this.procesandoPago = false;
       return;
     }
 
-    entradas.forEach(entrada => {
-      this.entradaService.crearEntrada(entrada).subscribe({
-        next: (entradaCreada) => {
-          entradasCreadas++;
-          if (entradaCreada && entradaCreada.id) {
-            idsEntradas.push(entradaCreada.id);
-          }
-          
-          // Cuando todas las entradas estén creadas
-          if (entradasCreadas === totalEntradas) {
-            // Usar promoción si existe
-            if (this.promocionAplicada) {
-              this.promocionService.usarPromocion(this.promocionAplicada.id).subscribe();
-            }
-            
-            // Actualizar estado del pedido
-            pedido.estado = 'PAGADO';
-            pedido.entradaIds = idsEntradas;
-            
-            this.pedidoService.actualizarPedido(pedido.id!, pedido).subscribe({
-              next: () => {
-                this.procesandoPago = false;
-                this.paso = 3;
-                
-                // Redirigir a mis compras después de 3 segundos
-                setTimeout(() => {
-                  this.router.navigate(['/mis-compras']);
-                }, 3000);
-              },
-              error: (err) => {
-                console.error('Error al actualizar pedido:', err);
-                // Aunque falle la actualización, la compra se realizó
-                this.procesandoPago = false;
-                this.paso = 3;
-                
-                setTimeout(() => {
-                  this.router.navigate(['/mis-compras']);
-                }, 3000);
-              }
-            });
-          }
-        },
-        error: (err) => {
-          console.error('Error al crear entrada:', err);
-          this.error = 'Error al crear las entradas: ' + (err.error || 'Error desconocido');
-          this.procesandoPago = false;
+    // Crear entradas SECUENCIALMENTE para evitar condiciones de carrera
+    this.crearEntradasSecuencialmente(entradas, 0, [], pedido);
+  }
+
+  private crearEntradasSecuencialmente(
+    entradas: Entrada[], 
+    index: number, 
+    idsCreados: number[], 
+    pedido: Pedido
+  ): void {
+    if (index >= entradas.length) {
+      // Todas las entradas creadas
+      console.log(`🎉 Todas las entradas creadas. Total: ${idsCreados.length}`);
+      this.finalizarCompra(pedido, idsCreados);
+      return;
+    }
+
+    const entrada = entradas[index];
+    console.log(`🎟️ Creando entrada ${index + 1}/${entradas.length} para zona ID ${entrada.zonaId}`);
+    
+    this.entradaService.crearEntrada(entrada).subscribe({
+      next: (entradaCreada) => {
+        console.log(`✅ Entrada creada ${index + 1}/${entradas.length}`, entradaCreada);
+        if (entradaCreada && entradaCreada.id) {
+          idsCreados.push(entradaCreada.id);
         }
-      });
+        // Crear la siguiente entrada
+        this.crearEntradasSecuencialmente(entradas, index + 1, idsCreados, pedido);
+      },
+      error: (err) => {
+        console.error(`❌ Error al crear entrada ${index + 1}/${entradas.length}:`, err);
+        console.error('Detalles del error:', err.error);
+        this.error = 'Error al crear las entradas: ' + (err.error || 'Error desconocido');
+        this.procesandoPago = false;
+        
+        // Recargar zonas para actualizar disponibilidad
+        this.zonaService.getZonasPorEvento(this.evento!.id).subscribe({
+          next: (zonasActualizadas) => {
+            this.zonas = zonasActualizadas;
+          }
+        });
+      }
     });
+  }
+
+  private finalizarCompra(pedido: Pedido, idsEntradas: number[]): void {
+    // Usar promoción si existe
+    if (this.promocionAplicada) {
+      this.promocionService.usarPromocion(this.promocionAplicada.id).subscribe();
+    }
+    
+    // Actualizar estado del pedido
+    pedido.estado = 'PAGADO';
+    pedido.entradaIds = idsEntradas;
+    
+    this.pedidoService.actualizarPedido(pedido.id!, pedido).subscribe({
+      next: () => {
+        // Recargar las zonas para reflejar la actualización en la base de datos
+        this.zonaService.getZonasPorEvento(this.evento!.id).subscribe({
+          next: (zonasActualizadas) => {
+            this.zonas = zonasActualizadas;
+            console.log(`🔄 Zonas actualizadas en el frontend`);
+          }
+        });
+        
+        this.procesandoPago = false;
+        this.paso = 3;
+        
+        // Redirigir a mis compras después de 3 segundos
+        setTimeout(() => {
+          this.router.navigate(['/mis-compras']);
+        }, 3000);
+      },
+      error: (err) => {
+        console.error('Error al actualizar pedido:', err);
+        // Aunque falle la actualización, la compra se realizó
+        
+        // Recargar las zonas para reflejar la actualización en la base de datos
+        this.zonaService.getZonasPorEvento(this.evento!.id).subscribe({
+          next: (zonasActualizadas) => {
+            this.zonas = zonasActualizadas;
+          }
+        });
+        
+        this.procesandoPago = false;
+        this.paso = 3;
+        
+        setTimeout(() => {
+          this.router.navigate(['/mis-compras']);
+        }, 3000);
+      }
+    });
+  }
   }
 
   getZonaColor(nombre: string): string {

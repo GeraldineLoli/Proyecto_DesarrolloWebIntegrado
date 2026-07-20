@@ -48,7 +48,7 @@ INSERT INTO public.eventos (id, activo, artista_principal, categoria, descripcio
 --
 
 INSERT INTO public.zonas (id, capacidad_total, color_mapa, entradas_disponibles, evento_id, nombre, precio, tiene_numeracion) VALUES 
-(1, 500, '#FFD700', 500, 1, 'VIP', 250, true);
+(1, 500, '#FFD700', 497, 1, 'VIP', 250, true);
 
 INSERT INTO public.zonas (id, capacidad_total, color_mapa, entradas_disponibles, evento_id, nombre, precio, tiene_numeracion) VALUES 
 (2, 2000, '#87CEEB', 2000, 1, 'PLATEA', 150, true);
@@ -330,3 +330,34 @@ INSERT INTO public.pedido_entradas (pedido_id, entrada_id) VALUES
 
 INSERT INTO public.pedido_entradas (pedido_id, entrada_id) VALUES 
 (14, 12);
+
+
+-- ==========================================
+-- RESETEAR SECUENCIAS DE AUTO-INCREMENTO
+-- ==========================================
+-- Esto es CRÍTICO para evitar errores de llave duplicada
+-- cuando se inserten nuevos registros desde la aplicación
+
+-- Resetear secuencia de usuarios (último ID insertado: 13)
+SELECT setval('usuarios_id_seq', (SELECT MAX(id) FROM usuarios), true);
+
+-- Resetear secuencia de eventos (último ID insertado: 10)
+SELECT setval('eventos_id_seq', (SELECT MAX(id) FROM eventos), true);
+
+-- Resetear secuencia de zonas (último ID insertado: 16)
+SELECT setval('zonas_id_seq', (SELECT MAX(id) FROM zonas), true);
+
+-- Resetear secuencia de pedidos (último ID insertado: 14)
+SELECT setval('pedidos_id_seq', (SELECT MAX(id) FROM pedidos), true);
+
+-- Resetear secuencia de entradas (último ID insertado: 12)
+SELECT setval('entradas_id_seq', (SELECT MAX(id) FROM entradas), true);
+
+-- Resetear secuencia de pagos (último ID insertado: 13)
+SELECT setval('pagos_id_seq', (SELECT MAX(id) FROM pagos), true);
+
+-- Resetear secuencia de promociones (último ID insertado: 5)
+SELECT setval('promociones_id_seq', (SELECT MAX(id) FROM promociones), true);
+
+-- Resetear secuencia de reseñas (último ID insertado: 7)
+SELECT setval('resenas_id_seq', (SELECT MAX(id) FROM resenas), true);

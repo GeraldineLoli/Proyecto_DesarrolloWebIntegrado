@@ -3,6 +3,7 @@ package com.proyecto.app.service;
 import com.proyecto.app.model.Zona;
 import com.proyecto.app.repository.ZonaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,22 +63,37 @@ public class ZonaServiceImpl implements IZonaService {
     }
     
     @Override
-    public boolean reservarEntrada(Long zonaId) {
-        Zona zona = obtenerZonaPorId(zonaId);
+    @Transactional
+    public synchronized boolean reservarEntrada(Long zonaId) {
+        // Forzar recarga desde base de datos para evitar problemas de caché
+        zonaRepository.flush();
+        Zona zona = zonaRepository.findById(zonaId).orElse(null);
+        
         if (zona != null && zona.getEntradasDisponibles() > 0) {
-            zona.setEntradasDisponibles(zona.getEntradasDisponibles() - 1);
+            int nuevasDisponibles = zona.getEntradasDisponibles() - 1;
+            zona.setEntradasDisponibles(nuevasDisponibles);
             zonaRepository.save(zona);
+            zonaRepository.flush(); // Forzar escritura inmediata a la BD
+            System.out.println("✅ ZONA ACTUALIZADA - ID: " + zonaId + " - Entradas disponibles: " + nuevasDisponibles);
             return true;
         }
+        System.out.println("❌ NO SE PUDO RESERVAR - Zona ID: " + zonaId + " - Disponibles: " + (zona != null ? zona.getEntradasDisponibles() : "zona null"));
         return false;
     }
     
     @Override
-    public void liberarEntrada(Long zonaId) {
-        Zona zona = obtenerZonaPorId(zonaId);
+    @Transactional
+    public synchronized void liberarEntrada(Long zonaId) {
+        // Forzar recarga desde base de datos para evitar problemas de caché
+        zonaRepository.flush();
+        Zona zona = zonaRepository.findById(zonaId).orElse(null);
+        
         if (zona != null && zona.getEntradasDisponibles() < zona.getCapacidadTotal()) {
-            zona.setEntradasDisponibles(zona.getEntradasDisponibles() + 1);
+            int nuevasDisponibles = zona.getEntradasDisponibles() + 1;
+            zona.setEntradasDisponibles(nuevasDisponibles);
             zonaRepository.save(zona);
+            zonaRepository.flush(); // Forzar escritura inmediata a la BD
+            System.out.println("✅ ZONA LIBERADA - ID: " + zonaId + " - Entradas disponibles: " + nuevasDisponibles);
         }
     }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -15,13 +15,14 @@ import { AuthResponse } from '../../models/usuario.model';
   templateUrl: './evento-detalle.component.html',
   styleUrl: './evento-detalle.component.css'
 })
-export class EventoDetalleComponent implements OnInit {
+export class EventoDetalleComponent implements OnInit, OnDestroy {
   evento: Evento | null = null;
   zonas: Zona[] = [];
   user: AuthResponse | null = null;
   loading = true;
   errorEvento = '';
   menuAbierto = false;
+  private intervalId: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -35,7 +36,31 @@ export class EventoDetalleComponent implements OnInit {
     this.user = this.authService.getCurrentUser();
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.cargarEvento(id);
+    
+    // Recargar zonas cada 5 segundos para mantener la información actualizada
+    this.intervalId = setInterval(() => {
+      if (this.evento) {
+        this.cargarZonas(this.evento.id);
+      }
+    }, 5000);
+    
+    // También recargar cuando la ventana recupera el foco (volver de otra pestaña)
+    window.addEventListener('focus', this.onWindowFocus);
   }
+
+  ngOnDestroy(): void {
+    // Limpiar el intervalo cuando se destruye el componente
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+    window.removeEventListener('focus', this.onWindowFocus);
+  }
+
+  private onWindowFocus = (): void => {
+    if (this.evento) {
+      this.cargarZonas(this.evento.id);
+    }
+  };
 
   cargarEvento(id: number): void {
     this.loading = true;

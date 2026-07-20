@@ -13,9 +13,11 @@ import java.util.UUID;
 public class EntradaServiceImpl implements IEntradaService {
 
     private final EntradaRepository entradaRepository;
+    private final IZonaService zonaService;
 
-    public EntradaServiceImpl(EntradaRepository entradaRepository) {
+    public EntradaServiceImpl(EntradaRepository entradaRepository, IZonaService zonaService) {
         this.entradaRepository = entradaRepository;
+        this.zonaService = zonaService;
     }
 
     @Override
@@ -29,6 +31,12 @@ public class EntradaServiceImpl implements IEntradaService {
         if (entrada.getCodigoEntrada() == null || entrada.getCodigoEntrada().isEmpty()) {
             entrada.setCodigoEntrada(generarCodigoUnico());
         }
+        
+        // Actualizar las entradas disponibles en la zona
+        if (!zonaService.reservarEntrada(entrada.getZonaId())) {
+            throw new RuntimeException("No hay entradas disponibles en la zona seleccionada");
+        }
+        
         return entradaRepository.save(entrada);
     }
 
@@ -62,6 +70,12 @@ public class EntradaServiceImpl implements IEntradaService {
     public Entrada actualizarEntrada(Entrada entrada) {
         Entrada entradaExistente = entradaRepository.findById(entrada.getId()).orElse(null);
         if (entradaExistente != null) {
+            // Si el estado cambia de PAGADA a CANCELADA o REEMBOLSADA, liberar la entrada
+            if (entradaExistente.getEstado().equals("PAGADA") && 
+                (entrada.getEstado().equals("CANCELADA") || entrada.getEstado().equals("REEMBOLSADA"))) {
+                zonaService.liberarEntrada(entradaExistente.getZonaId());
+            }
+            
             entradaExistente.setEventoId(entrada.getEventoId());
             entradaExistente.setZonaId(entrada.getZonaId());
             entradaExistente.setUsuarioId(entrada.getUsuarioId());
@@ -78,7 +92,12 @@ public class EntradaServiceImpl implements IEntradaService {
 
     @Override
     public void eliminarEntrada(Long id) {
-        entradaRepository.deleteById(id);
+        Entrada entrada = entradaRepository.findById(id).orElse(null);
+        if (entrada != null) {
+            // Liberar la entrada en la zona
+            zonaService.liberarEntrada(entrada.getZonaId());
+            entradaRepository.deleteById(id);
+        }
     }
 
     private String generarCodigoUnico() {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EventoService, Evento } from '../../core/services/evento.service';
@@ -11,7 +11,7 @@ import { ZonaService, Zona } from '../../core/services/zona.service';
   templateUrl: './zonas.component.html',
   styleUrl: './zonas.component.css'
 })
-export class ZonasComponent implements OnInit {
+export class ZonasComponent implements OnInit, OnDestroy {
 
   // Eventos para el selector
   eventos: Evento[] = [];
@@ -40,6 +40,8 @@ export class ZonasComponent implements OnInit {
   mensajeExito = '';
 
   zonaForm: Zona = this.zonaVacia();
+  
+  private intervalId: any;
 
   constructor(
     private eventoService: EventoService,
@@ -57,6 +59,19 @@ export class ZonasComponent implements OnInit {
         this.cargandoEventos = false;
       }
     });
+    
+    // Recargar zonas cada 10 segundos para ver actualizaciones en tiempo real
+    this.intervalId = setInterval(() => {
+      if (this.eventoSeleccionadoId && !this.modalAbierto) {
+        this.cargarZonasSilenciosamente();
+      }
+    }, 10000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   // ── Selección de evento ───────────────────────────────────
@@ -84,6 +99,18 @@ export class ZonasComponent implements OnInit {
       error: () => {
         this.errorZonas = true;
         this.cargandoZonas = false;
+      }
+    });
+  }
+
+  cargarZonasSilenciosamente(): void {
+    if (!this.eventoSeleccionadoId) return;
+    this.zonaService.getByEvento(Number(this.eventoSeleccionadoId)).subscribe({
+      next: data => {
+        this.zonas = data;
+      },
+      error: () => {
+        // Ignorar errores en actualizaciones silenciosas
       }
     });
   }
