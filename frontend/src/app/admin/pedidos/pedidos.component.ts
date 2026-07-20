@@ -29,6 +29,7 @@ export class PedidosComponent implements OnInit {
   nuevoEstado: EstadoPedido        = 'PENDIENTE';
   guardandoEstado = false;
   mensajeExito    = '';
+  errorEstado     = '';
 
   readonly ESTADOS_OPCIONES = ESTADOS_PEDIDO;
 
@@ -83,37 +84,52 @@ export class PedidosComponent implements OnInit {
       .reduce((s, p) => s + p.total, 0);
   }
 
-  // ── Modal cambio de estado ────────────────────────────────
   abrirCambioEstado(pedido: Pedido): void {
     this.pedidoSeleccionado = pedido;
     this.nuevoEstado = pedido.estado as EstadoPedido;
     this.mensajeExito = '';
+    this.errorEstado  = '';
     this.modalEstadoAbierto = true;
   }
 
   cerrarModal(): void {
     this.modalEstadoAbierto = false;
     this.pedidoSeleccionado = null;
+    this.errorEstado = '';
   }
 
   confirmarCambioEstado(): void {
     if (!this.pedidoSeleccionado?.id) return;
     this.guardandoEstado = true;
+    this.errorEstado = '';
 
     this.pedidoService.cambiarEstado(this.pedidoSeleccionado.id, this.nuevoEstado)
       .subscribe({
         next: pedidoActualizado => {
-          // Actualiza el pedido en la lista local — sin re-fetch
+          // Actualiza la lista local sin re-fetch
           const idx = this.pedidos.findIndex(p => p.id === pedidoActualizado.id);
-          if (idx !== -1) this.pedidos[idx] = pedidoActualizado;
+          if (idx !== -1) {
+            this.pedidos[idx] = pedidoActualizado;
+          } else {
+            // Si por alguna razón no lo encuentra, recarga todo
+            this.cargarPedidos();
+          }
           this.aplicarFiltro();
-
           this.mensajeExito = `✅ Estado actualizado a ${this.nuevoEstado}`;
           this.guardandoEstado = false;
           this.cerrarModal();
           setTimeout(() => this.mensajeExito = '', 4000);
         },
-        error: () => { this.guardandoEstado = false; }
+        error: (err) => {
+          this.guardandoEstado = false;
+          if (err.status === 400) {
+            this.errorEstado = err.error ?? 'Estado inválido.';
+          } else if (err.status === 403) {
+            this.errorEstado = 'Sin permisos para cambiar el estado.';
+          } else {
+            this.errorEstado = 'Error al actualizar. Verifica que el servidor esté activo.';
+          }
+        }
       });
   }
 

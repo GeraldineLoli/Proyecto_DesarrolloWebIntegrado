@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EventoService, Evento } from '../../core/services/evento.service';
@@ -38,7 +38,8 @@ export class PromocionesComponent implements OnInit {
 
   constructor(
     private promocionService: PromocionService,
-    private eventoService: EventoService
+    private eventoService: EventoService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -48,7 +49,6 @@ export class PromocionesComponent implements OnInit {
   cargarDatos(): void {
     this.cargando = true;
 
-    // Cargo promociones y eventos en paralelo
     this.eventoService.getAll().subscribe({
       next: eventos => { this.eventos = eventos; }
     });
@@ -58,10 +58,12 @@ export class PromocionesComponent implements OnInit {
         this.promociones = data;
         this.aplicarFiltro();
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = true;
         this.cargando = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -77,6 +79,11 @@ export class PromocionesComponent implements OnInit {
   }
 
   // ── Helpers de vista ──────────────────────────────────────
+  get fechaMinima(): string {
+    // Formato date: YYYY-MM-DD
+    return new Date().toISOString().substring(0, 10);
+  }
+
   nombreEvento(eventoId: number): string {
     return this.eventos.find(e => e.id === eventoId)?.nombre ?? `Evento #${eventoId}`;
   }

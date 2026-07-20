@@ -188,12 +188,15 @@
 
       <div class="modal-footer">
         <button class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
-        <button
-          class="btn btn-primary"
-          (click)="confirmarCambioEstado()"
-          [disabled]="guardandoEstado || nuevoEstado === pedidoSeleccionado?.estado">
-          {{ guardandoEstado ? 'Guardando...' : 'Confirmar cambio' }}
-        </button>
+        <div class="footer-right">
+          <p class="error-estado" *ngIf="errorEstado">⚠️ {{ errorEstado }}</p>
+          <button
+            class="btn btn-primary"
+            (click)="confirmarCambioEstado()"
+            [disabled]="guardandoEstado || nuevoEstado === pedidoSeleccionado?.estado">
+            {{ guardandoEstado ? 'Guardando...' : 'Confirmar cambio' }}
+          </button>
+        </div>
       </div>
 
     </div>

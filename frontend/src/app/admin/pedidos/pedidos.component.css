@@ -201,3 +201,16 @@
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primary   { background: #4f6ef7; color: #fff; }
 .btn-secondary { background: #e2e8f0; color: #4a5568; }
+
+/* ── Footer del modal con error ─────────────────────────────── */
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.error-estado {
+  font-size: 0.82rem;
+  color: #e53e3e;
+  margin: 0;
+}

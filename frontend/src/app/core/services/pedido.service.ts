@@ -37,6 +37,7 @@ export class PedidoService {
 
   // Solo ADMIN — devuelve el pedido actualizado directamente
   cambiarEstado(id: number, estado: EstadoPedido): Observable<Pedido> {
+    // El backend espera { "estado": "APROBADO" } como CambioEstadoRequest
     return this.http.patch<Pedido>(`${this.API}/${id}/estado`, { estado });
   }
 }

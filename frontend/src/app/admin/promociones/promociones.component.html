@@ -148,13 +148,13 @@
             <!-- Fecha inicio -->
             <div class="field">
               <label>Fecha inicio *</label>
-              <input type="date" [(ngModel)]="promoForm.fechaInicio" name="fechaInicio" required />
+              <input type="date" [(ngModel)]="promoForm.fechaInicio" name="fechaInicio" required [min]="fechaMinima" />
             </div>
 
             <!-- Fecha fin -->
             <div class="field">
               <label>Fecha fin *</label>
-              <input type="date" [(ngModel)]="promoForm.fechaFin" name="fechaFin" required />
+              <input type="date" [(ngModel)]="promoForm.fechaFin" name="fechaFin" required [min]="promoForm.fechaInicio || fechaMinima" />
             </div>
 
             <!-- Descripción -->

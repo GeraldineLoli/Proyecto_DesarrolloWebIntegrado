@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EventoService, Evento } from '../../core/services/evento.service';
@@ -43,7 +43,7 @@ export class EventosComponent implements OnInit {
     'CONFERENCIA', 'STAND_UP', 'OTRO'
   ];
 
-  constructor(private eventoService: EventoService) {}
+  constructor(private eventoService: EventoService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.cargarEventos();
@@ -56,10 +56,12 @@ export class EventosComponent implements OnInit {
         this.eventos = data;
         this.aplicarFiltro();
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = true;
         this.cargando = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -76,6 +78,13 @@ export class EventosComponent implements OnInit {
       e.lugar.toLowerCase().includes(q) ||
       (e.artistaPrincipal?.toLowerCase().includes(q) ?? false)
     );
+  }
+
+  // ── Helpers de fecha ─────────────────────────────────────
+  get fechaMinima(): string {
+    const ahora = new Date();
+    // Formato datetime-local: YYYY-MM-DDTHH:mm
+    return ahora.toISOString().substring(0, 16);
   }
 
   // ── Helpers de vista ──────────────────────────────────────

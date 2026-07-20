@@ -115,7 +115,7 @@
             <!-- Fecha y hora -->
             <div class="field">
               <label>Fecha y hora *</label>
-              <input type="datetime-local" [(ngModel)]="eventoForm.fechaHora" name="fechaHora" required />
+              <input type="datetime-local" [(ngModel)]="eventoForm.fechaHora" name="fechaHora" required [min]="fechaMinima" />
             </div>
 
             <!-- Lugar -->
