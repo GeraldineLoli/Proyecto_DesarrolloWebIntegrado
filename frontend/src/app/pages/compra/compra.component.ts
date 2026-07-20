@@ -402,7 +402,7 @@ export class CompraComponent implements OnInit {
     if (index >= entradas.length) {
       // Todas las entradas creadas
       console.log(`🎉 Todas las entradas creadas. Total: ${idsCreados.length}`);
-      this.finalizarCompra(pedido, idsCreados);
+      this.finalizarYActualizarPedido(pedido, idsCreados);
       return;
     }
 
@@ -434,7 +434,7 @@ export class CompraComponent implements OnInit {
     });
   }
 
-  private finalizarCompra(pedido: Pedido, idsEntradas: number[]): void {
+  private finalizarYActualizarPedido(pedido: Pedido, idsEntradas: number[]): void {
     // Usar promoción si existe
     if (this.promocionAplicada) {
       this.promocionService.usarPromocion(this.promocionAplicada.id).subscribe();
@@ -481,7 +481,6 @@ export class CompraComponent implements OnInit {
         }, 3000);
       }
     });
-  }
   }
 
   getZonaColor(nombre: string): string {

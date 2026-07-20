@@ -179,3 +179,112 @@
 .confirm-text {
   color: #2d3748; font-size: 0.95rem; line-height: 1.5; margin: 0;
 }
+
+
+/* ══════════════════════════════════════════════════════════
+   SELECTOR DE IMAGEN
+══════════════════════════════════════════════════════════ */
+
+.imagen-preview-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 15px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f9fafb;
+}
+
+.imagen-preview {
+  max-width: 100%;
+  max-height: 300px;
+  display: block;
+  object-fit: contain;
+}
+
+.btn-eliminar-imagen {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-eliminar-imagen:hover {
+  background: rgba(220, 38, 38, 1);
+  transform: scale(1.1);
+}
+
+.file-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-input-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: #f3f4f6;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  color: #374151;
+}
+
+.file-input-label:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.file-icon {
+  font-size: 20px;
+}
+
+.file-hint {
+  color: #6b7280;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.url-alternativa {
+  margin-top: 15px;
+  padding: 10px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.url-alternativa summary {
+  cursor: pointer;
+  color: #6366f1;
+  font-size: 13px;
+  font-weight: 500;
+  user-select: none;
+}
+
+.url-alternativa summary:hover {
+  color: #4f46e5;
+}
+
+.url-alternativa input {
+  margin-top: 10px;
+  width: 100%;
+}

@@ -30,6 +30,8 @@ public class Evento {
     private LocalDateTime fechaHora;
 
     private int duracionMinutos;
+    
+    @Column(length = 5000000) // Aumentar el tamaño para soportar imágenes en Base64
     private String imagenUrl;
     private String artistaPrincipal;
 

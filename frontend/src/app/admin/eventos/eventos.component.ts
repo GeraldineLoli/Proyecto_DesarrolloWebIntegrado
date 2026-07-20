@@ -32,6 +32,10 @@ export class EventosComponent implements OnInit {
   mensajeExito = '';
   errorServidor = '';
 
+  // Imagen
+  imagenSeleccionada: File | null = null;
+  imagenPreview: string | null = null;
+
   eventoForm: Evento = this.eventoVacio();
 
   readonly CATEGORIAS = [
@@ -88,6 +92,8 @@ export class EventosComponent implements OnInit {
     this.eventoForm = this.eventoVacio();
     this.modoEdicion = false;
     this.errorServidor = '';
+    this.imagenSeleccionada = null;
+    this.imagenPreview = null;
     this.modalAbierto = true;
   }
 
@@ -98,17 +104,71 @@ export class EventosComponent implements OnInit {
     };
     this.modoEdicion = true;
     this.errorServidor = '';
+    this.imagenSeleccionada = null;
+    this.imagenPreview = evento.imagenUrl || null;
     this.modalAbierto = true;
   }
 
   cerrarModal(): void {
     this.modalAbierto = false;
     this.errorServidor = '';
+    this.imagenSeleccionada = null;
+    this.imagenPreview = null;
+  }
+
+  onImagenSeleccionada(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      
+      // Validar tipo de archivo
+      if (!file.type.startsWith('image/')) {
+        this.errorServidor = 'Por favor selecciona un archivo de imagen válido';
+        return;
+      }
+      
+      // Validar tamaño (máximo 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        this.errorServidor = 'La imagen no debe superar los 2MB';
+        return;
+      }
+      
+      this.imagenSeleccionada = file;
+      this.errorServidor = '';
+      
+      // Crear preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagenPreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  eliminarImagen(): void {
+    this.imagenSeleccionada = null;
+    this.imagenPreview = null;
+    this.eventoForm.imagenUrl = '';
   }
 
   guardar(): void {
     this.guardando = true;
     this.errorServidor = '';
+    
+    // Si hay una imagen seleccionada, convertirla a Base64
+    if (this.imagenSeleccionada) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.eventoForm.imagenUrl = e.target.result;
+        this.guardarEvento();
+      };
+      reader.readAsDataURL(this.imagenSeleccionada);
+    } else {
+      this.guardarEvento();
+    }
+  }
+
+  private guardarEvento(): void {
     const accion = this.modoEdicion
       ? this.eventoService.update(this.eventoForm.id!, this.eventoForm)
       : this.eventoService.create(this.eventoForm);

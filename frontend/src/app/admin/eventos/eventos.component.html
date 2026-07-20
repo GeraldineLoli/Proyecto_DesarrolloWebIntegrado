@@ -157,11 +157,38 @@
               </select>
             </div>
 
-            <!-- URL imagen -->
+            <!-- Imagen del evento -->
             <div class="field full">
-              <label>URL de imagen</label>
-              <input type="url" [(ngModel)]="eventoForm.imagenUrl" name="imagenUrl"
-                     placeholder="https://..." />
+              <label>Imagen del evento</label>
+              
+              <!-- Preview de la imagen -->
+              <div class="imagen-preview-container" *ngIf="imagenPreview">
+                <img [src]="imagenPreview" alt="Preview" class="imagen-preview" />
+                <button type="button" class="btn-eliminar-imagen" (click)="eliminarImagen()" title="Eliminar imagen">✕</button>
+              </div>
+              
+              <!-- Selector de archivo -->
+              <div class="file-input-wrapper">
+                <input 
+                  type="file" 
+                  id="imagenInput" 
+                  (change)="onImagenSeleccionada($event)" 
+                  accept="image/*"
+                  class="file-input" 
+                />
+                <label for="imagenInput" class="file-input-label">
+                  <span class="file-icon">📁</span>
+                  <span>{{ imagenSeleccionada ? imagenSeleccionada.name : 'Seleccionar imagen' }}</span>
+                </label>
+                <small class="file-hint">Formatos: JPG, PNG, GIF. Máximo 2MB</small>
+              </div>
+              
+              <!-- URL alternativa (opcional) -->
+              <details class="url-alternativa">
+                <summary>O usar URL de imagen</summary>
+                <input type="url" [(ngModel)]="eventoForm.imagenUrl" name="imagenUrl"
+                       placeholder="https://..." (ngModelChange)="imagenPreview = eventoForm.imagenUrl || null" />
+              </details>
             </div>
 
             <!-- Descripción -->
