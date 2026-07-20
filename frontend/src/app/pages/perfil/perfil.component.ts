@@ -115,11 +115,10 @@ export class PerfilComponent implements OnInit {
   }
 
   iniciarEdicion(): void {
+    // Solo se permite editar email y telefono
     this.usuarioEdit = {
-      nombre: this.usuario?.nombre,
-      apellido: this.usuario?.apellido,
-      telefono: this.usuario?.telefono,
-      fechaNacimiento: this.usuario?.fechaNacimiento
+      email: this.usuario?.email,
+      telefono: this.usuario?.telefono
     };
     this.editando = true;
     this.mensajeExito = '';
@@ -133,13 +132,28 @@ export class PerfilComponent implements OnInit {
 
   guardarCambios(): void {
     if (!this.usuario?.id) return;
+
+    // Validar email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!this.usuarioEdit.email || !emailRegex.test(this.usuarioEdit.email)) {
+      this.mensajeError = 'Ingresa un correo electrónico válido.';
+      return;
+    }
+
+    // Validar telefono si se ingresó
+    if (this.usuarioEdit.telefono && !/^[\d\s\+\-\(\)]{6,20}$/.test(this.usuarioEdit.telefono)) {
+      this.mensajeError = 'El teléfono ingresado no es válido.';
+      return;
+    }
+
     this.guardando = true;
     this.mensajeError = '';
 
-    // Construir el objeto completo para el PUT
+    // Solo se envían los campos editables al backend
     const payload = {
       ...this.usuario,
-      ...this.usuarioEdit
+      email: this.usuarioEdit.email,
+      telefono: this.usuarioEdit.telefono
     };
 
     this.usuarioService.actualizarUsuario(this.usuario.id, payload).subscribe({
@@ -147,11 +161,10 @@ export class PerfilComponent implements OnInit {
         this.mensajeExito = 'Perfil actualizado correctamente.';
         this.editando = false;
         this.guardando = false;
-        // Refrescar datos locales
-        Object.assign(this.usuario!, this.usuarioEdit);
+        Object.assign(this.usuario!, { email: this.usuarioEdit.email, telefono: this.usuarioEdit.telefono });
       },
       error: () => {
-        this.mensajeError = 'Error al guardar los cambios. Inténtalo de nuevo.';
+        this.mensajeError = 'Error al guardar los cambios. El email puede estar en uso.';
         this.guardando = false;
       }
     });

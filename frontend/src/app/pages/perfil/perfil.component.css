@@ -412,3 +412,18 @@
   font-weight: 600;
 }
 .btn-ver-resenas:hover { text-decoration: underline; }
+
+.edit-nota {
+  font-size: 0.85rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.btn-volver {
+  color: #a78bfa !important;
+  border: 1px solid rgba(167,139,250,0.4) !important;
+}
+.btn-volver:hover { background: rgba(167,139,250,0.15) !important; }

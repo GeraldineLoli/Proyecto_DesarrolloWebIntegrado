@@ -116,7 +116,7 @@
                 <span class="input-icon">🔒</span>
                 <input id="password" [type]="showPass ? 'text' : 'password'"
                   name="password" [(ngModel)]="usuario.password"
-                  placeholder="Mínimo 6 caracteres" required autocomplete="new-password" />
+                  placeholder="Mínimo 8 caracteres, 1 mayúscula y 1 número" required autocomplete="new-password" />
                 <button type="button" class="toggle-pass" (click)="showPass = !showPass">
                   {{ showPass ? '🙈' : '👁️' }}
                 </button>

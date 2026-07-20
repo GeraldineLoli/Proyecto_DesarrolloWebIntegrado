@@ -47,6 +47,13 @@ export const routes: Routes = [
     title: 'Mi perfil · TicketApp',
     canActivate: [authGuard]
   },
+  {
+    path: 'mis-reservas',
+    loadComponent: () =>
+      import('./pages/mis-reservas/mis-reservas.component').then(m => m.MisReservasComponent),
+    title: 'Mis reservas · TicketApp',
+    canActivate: [authGuard]
+  },
 
   // ── Páginas cliente — Geraldine ────────────────────────────
   {

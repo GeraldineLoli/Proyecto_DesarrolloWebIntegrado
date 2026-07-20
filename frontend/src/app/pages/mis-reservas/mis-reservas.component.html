@@ -1,0 +1,132 @@
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-content">
+    <a routerLink="/home" class="navbar-brand">🎟️ TicketApp</a>
+    <div class="navbar-actions">
+      <a routerLink="/home" class="btn-nav btn-volver">← Inicio</a>
+      @if (user) {
+        <span class="navbar-user">{{ user.nombre }}</span>
+        <a routerLink="/perfil" class="btn-nav">Mi Perfil</a>
+        <button class="btn-nav btn-logout" (click)="logout()">Cerrar sesión</button>
+      }
+    </div>
+  </div>
+</nav>
+
+<div class="reservas-container">
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb">
+    <a routerLink="/home">Inicio</a>
+    <span>›</span>
+    <span>Mis reservas</span>
+  </div>
+
+  <div class="page-header">
+    <h1 class="page-titulo">Mis reservas</h1>
+    <p class="page-subtitulo">Eventos a los que compraste entrada</p>
+  </div>
+
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando tus reservas...</p>
+    </div>
+  }
+
+  @if (error) {
+    <div class="error-state">
+      <p>⚠️ {{ error }}</p>
+      <a routerLink="/home" class="btn-link">← Volver al inicio</a>
+    </div>
+  }
+
+  @if (!loading && !error) {
+
+    @if (reservas.length === 0) {
+      <div class="empty-state">
+        <span class="empty-icon">🎫</span>
+        <p>No tenés reservas aún.</p>
+        <a routerLink="/home" class="btn-explorar">Explorar eventos</a>
+      </div>
+    }
+
+    @if (reservas.length > 0) {
+
+      <div class="reservas-grid">
+        @for (r of reservas; track r.entrada.id) {
+          <div class="reserva-card" [class.card-pasado]="r.eventoYaPaso" [class.card-futuro]="!r.eventoYaPaso">
+
+            <!-- Imagen -->
+            <div class="card-img-wrapper">
+              <img
+                [src]="r.evento.imagenUrl || getPlaceholderImage(r.evento.categoria)"
+                [alt]="r.evento.nombre"
+                class="card-img"
+                (error)="$any($event.target).src = getPlaceholderImage(r.evento.categoria)"
+              />
+              <!-- Badge estado del evento -->
+              <span class="evento-estado-badge" [class.badge-pasado]="r.eventoYaPaso" [class.badge-futuro]="!r.eventoYaPaso">
+                @if (r.eventoYaPaso) { ✅ Finalizado }
+                @else { 📅 Próximo — {{ diasRestantes(r.evento.fechaHora) }} días }
+              </span>
+            </div>
+
+            <div class="card-body">
+              <h3 class="card-titulo">{{ r.evento.nombre }}</h3>
+
+              <div class="card-info">
+                <div class="info-item">
+                  <span>📅</span>
+                  <span>{{ formatFecha(r.evento.fechaHora) }}</span>
+                </div>
+                <div class="info-item">
+                  <span>🕐</span>
+                  <span>{{ formatHora(r.evento.fechaHora) }}</span>
+                </div>
+                <div class="info-item">
+                  <span>📍</span>
+                  <span>{{ r.evento.lugar }}</span>
+                </div>
+                <div class="info-item">
+                  <span>{{ getCategoriaIcon(r.evento.categoria) }}</span>
+                  <span>{{ r.evento.categoria }}</span>
+                </div>
+              </div>
+
+              <!-- Datos de la entrada -->
+              <div class="entrada-info">
+                <span class="entrada-codigo">{{ r.entrada.codigoEntrada }}</span>
+                <span class="entrada-precio">$ {{ r.entrada.precioPagado | number:'1.2-2' }}</span>
+              </div>
+              <div class="entrada-fecha">
+                Comprada el {{ formatFechaCompra(r.entrada.fechaCompra) }}
+              </div>
+
+              <!-- Acciones -->
+              <div class="card-actions">
+                <a [routerLink]="['/eventos', r.evento.id]" class="btn-ver-evento">
+                  Ver evento
+                </a>
+
+                @if (r.eventoYaPaso) {
+                  @if (r.yaReseno) {
+                    <span class="btn-ya-reseno">✅ Reseña enviada</span>
+                  } @else {
+                    <button class="btn-resena" (click)="irAResenas(r.evento.id!)">
+                      ⭐ Dejar reseña
+                    </button>
+                  }
+                } @else {
+                  <span class="btn-pendiente">🔒 Disponible tras el evento</span>
+                }
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+  }
+
+</div>

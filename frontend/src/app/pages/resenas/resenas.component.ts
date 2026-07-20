@@ -134,7 +134,11 @@ export class ResenasComponent implements OnInit {
       return;
     }
     if (!this.entradaUsuario) {
-      this.errorForm = 'Necesitas haber comprado una entrada para dejar una reseña.';
+      this.errorForm = 'Necesitas haber comprado una entrada para dejar una resena.';
+      return;
+    }
+    if (!this.eventoYaPaso) {
+      this.errorForm = 'Solo podes resena un evento despues de que haya finalizado.';
       return;
     }
 
@@ -184,6 +188,11 @@ export class ResenasComponent implements OnInit {
 
   promedioRedondeado(): string {
     return this.promedio.toFixed(1);
+  }
+
+  get eventoYaPaso(): boolean {
+    if (!this.evento) return false;
+    return new Date(this.evento.fechaHora) < new Date();
   }
 
   distribucion(estrella: number): number {

@@ -42,7 +42,9 @@ export class HomeComponent implements OnInit {
 
     this.eventoService.getEventos().subscribe({
       next: (data) => {
-        this.eventos = data.filter(e => e.activo);
+        const ahora = new Date();
+        // Filtrar: solo activos Y con fecha futura
+        this.eventos = data.filter(e => e.activo && new Date(e.fechaHora) > ahora);
         this.eventosFiltrados = [...this.eventos];
         this.loading = false;
       },
@@ -92,6 +94,11 @@ export class HomeComponent implements OnInit {
     this.authService.logout();
     // La navegación al login la maneja el guard implícitamente
     window.location.href = '/login';
+  }
+
+  scrollToEventos(): void {
+    const el = document.getElementById('eventos');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   }
 
   toggleMenu(): void {

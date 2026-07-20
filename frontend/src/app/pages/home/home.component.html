@@ -8,7 +8,10 @@
 
     <nav class="navbar-nav desktop-only">
       <a routerLink="/home" class="nav-link active">Inicio</a>
-      <a href="#eventos" class="nav-link">Eventos</a>
+      <a (click)="scrollToEventos()" class="nav-link" style="cursor:pointer">Eventos</a>
+      @if (user) {
+        <a routerLink="/mis-reservas" class="nav-link">Mis reservas</a>
+      }
     </nav>
 
     <div class="navbar-actions">
@@ -32,6 +35,9 @@
                 👤 Mi perfil
               </a>
               @if (user.rol === 'CLIENTE') {
+                <a routerLink="/mis-reservas" class="dropdown-item" role="menuitem">
+                  🎫 Mis reservas
+                </a>
                 <a routerLink="/mis-compras" class="dropdown-item" role="menuitem">
                   🛍️ Mis compras
                 </a>

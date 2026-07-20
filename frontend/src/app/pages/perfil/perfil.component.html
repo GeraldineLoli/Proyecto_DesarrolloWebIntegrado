@@ -3,9 +3,11 @@
   <div class="navbar-content">
     <a routerLink="/home" class="navbar-brand">🎟️ TicketApp</a>
     <div class="navbar-actions">
+      <a routerLink="/home" class="btn-nav btn-volver">← Inicio</a>
       @if (user) {
         <span class="navbar-user">{{ user.nombre }}</span>
-        <button class="btn-nav btn-logout" (click)="logout()">Salir</button>
+        <a routerLink="/mis-reservas" class="btn-nav">Mis reservas</a>
+        <button class="btn-nav btn-logout" (click)="logout()">Cerrar sesión</button>
       }
     </div>
   </div>
@@ -116,22 +118,15 @@
 
         @if (editando) {
           <form class="form-edicion" (ngSubmit)="guardarCambios()">
+            <p class="edit-nota">Solo podés modificar tu correo electrónico y teléfono.</p>
             <div class="form-grid">
               <div class="form-group">
-                <label>Nombre</label>
-                <input type="text" [(ngModel)]="usuarioEdit.nombre" name="nombre" class="input" />
-              </div>
-              <div class="form-group">
-                <label>Apellido</label>
-                <input type="text" [(ngModel)]="usuarioEdit.apellido" name="apellido" class="input" />
+                <label>Correo electrónico</label>
+                <input type="email" [(ngModel)]="usuarioEdit.email" name="email" class="input" placeholder="tucorreo@ejemplo.com" required />
               </div>
               <div class="form-group">
                 <label>Teléfono</label>
                 <input type="tel" [(ngModel)]="usuarioEdit.telefono" name="telefono" class="input" placeholder="Ej. +51 999 999 999" />
-              </div>
-              <div class="form-group">
-                <label>Fecha de nacimiento</label>
-                <input type="date" [(ngModel)]="usuarioEdit.fechaNacimiento" name="fechaNacimiento" class="input" />
               </div>
             </div>
             <div class="form-actions">
