@@ -31,8 +31,14 @@ export class RegisterComponent {
   showPass = false;
   showConfirm = false;
   step = 1;
+  fechaMaxima: string;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {
+    // Calcular fecha máxima (hace 13 años)
+    const hoy = new Date();
+    hoy.setFullYear(hoy.getFullYear() - 13);
+    this.fechaMaxima = hoy.toISOString().split('T')[0];
+  }
 
   nextStep(): void {
     if (!this.isStep1Valid()) return;
@@ -73,21 +79,22 @@ export class RegisterComponent {
     if (this.usuario.telefono && !/^[\d\s\+\-\(\)]{6,20}$/.test(this.usuario.telefono)) {
       this.error = 'El teléfono ingresado no es válido.'; return false;
     }
-    if (this.usuario.fechaNacimiento) {
-      const nacimiento = new Date(this.usuario.fechaNacimiento);
-      const hoy = new Date();
-      if (nacimiento >= hoy) {
-        this.error = 'La fecha de nacimiento no puede ser futura.'; return false;
-      }
-      // Cálculo de edad preciso
-      let edad = hoy.getFullYear() - nacimiento.getFullYear();
-      const mDiff = hoy.getMonth() - nacimiento.getMonth();
-      if (mDiff < 0 || (mDiff === 0 && hoy.getDate() < nacimiento.getDate())) {
-        edad--;
-      }
-      if (edad < 13) {
-        this.error = 'Debes tener al menos 13 años para registrarte.'; return false;
-      }
+    if (!this.usuario.fechaNacimiento) {
+      this.error = 'La fecha de nacimiento es obligatoria.'; return false;
+    }
+    const nacimiento = new Date(this.usuario.fechaNacimiento);
+    const hoy = new Date();
+    if (nacimiento >= hoy) {
+      this.error = 'La fecha de nacimiento no puede ser hoy ni en el futuro.'; return false;
+    }
+    // Cálculo de edad preciso
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const mDiff = hoy.getMonth() - nacimiento.getMonth();
+    if (mDiff < 0 || (mDiff === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad--;
+    }
+    if (edad < 13) {
+      this.error = 'Debes tener al menos 13 años para registrarte.'; return false;
     }
     return true;
   }
@@ -124,7 +131,6 @@ export class RegisterComponent {
 
     const payload = { ...this.usuario };
     if (!payload.telefono) delete payload.telefono;
-    if (!payload.fechaNacimiento) delete payload.fechaNacimiento;
 
     this.authService.register(payload).subscribe({
       next: () => {

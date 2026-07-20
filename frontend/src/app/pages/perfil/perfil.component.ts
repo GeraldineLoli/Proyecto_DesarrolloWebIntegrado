@@ -35,6 +35,7 @@ export class PerfilComponent implements OnInit {
   guardando = false;
   mensajeExito = '';
   mensajeError = '';
+  fechaMaxima: string;
 
   loading = true;
   error = '';
@@ -46,7 +47,12 @@ export class PerfilComponent implements OnInit {
     private entradaService: EntradaService,
     private resenaService: ResenaService,
     private eventoService: EventoService
-  ) {}
+  ) {
+    // Calcular fecha máxima (hace 13 años)
+    const hoy = new Date();
+    hoy.setFullYear(hoy.getFullYear() - 13);
+    this.fechaMaxima = hoy.toISOString().split('T')[0];
+  }
 
   ngOnInit(): void {
     this.user = this.authService.getCurrentUser();
@@ -115,10 +121,11 @@ export class PerfilComponent implements OnInit {
   }
 
   iniciarEdicion(): void {
-    // Solo se permite editar email y telefono
+    // Solo se permite editar email, telefono y fecha de nacimiento (si no existe)
     this.usuarioEdit = {
       email: this.usuario?.email,
-      telefono: this.usuario?.telefono
+      telefono: this.usuario?.telefono,
+      fechaNacimiento: this.usuario?.fechaNacimiento
     };
     this.editando = true;
     this.mensajeExito = '';
@@ -128,6 +135,11 @@ export class PerfilComponent implements OnInit {
   cancelarEdicion(): void {
     this.editando = false;
     this.mensajeError = '';
+  }
+
+  puedeEditarFechaNacimiento(): boolean {
+    // Solo se puede editar si no existe
+    return !this.usuario?.fechaNacimiento;
   }
 
   guardarCambios(): void {
@@ -146,22 +158,63 @@ export class PerfilComponent implements OnInit {
       return;
     }
 
+    // Validar fecha de nacimiento si se está editando (solo si no existía)
+    if (this.puedeEditarFechaNacimiento() && this.usuarioEdit.fechaNacimiento) {
+      const nacimiento = new Date(this.usuarioEdit.fechaNacimiento);
+      const hoy = new Date();
+      if (nacimiento >= hoy) {
+        this.mensajeError = 'La fecha de nacimiento no puede ser hoy ni en el futuro.';
+        return;
+      }
+      // Calcular edad
+      let edad = hoy.getFullYear() - nacimiento.getFullYear();
+      const mDiff = hoy.getMonth() - nacimiento.getMonth();
+      if (mDiff < 0 || (mDiff === 0 && hoy.getDate() < nacimiento.getDate())) {
+        edad--;
+      }
+      if (edad < 13) {
+        this.mensajeError = 'Debes tener al menos 13 años.';
+        return;
+      }
+    }
+
     this.guardando = true;
     this.mensajeError = '';
 
-    // Solo se envían los campos editables al backend
-    const payload = {
+    // Construir payload con los campos editables
+    const payload: any = {
       ...this.usuario,
       email: this.usuarioEdit.email,
       telefono: this.usuarioEdit.telefono
     };
+
+    // Solo incluir fecha de nacimiento si se puede editar y se ingresó
+    if (this.puedeEditarFechaNacimiento() && this.usuarioEdit.fechaNacimiento) {
+      payload.fechaNacimiento = this.usuarioEdit.fechaNacimiento;
+    }
 
     this.usuarioService.actualizarUsuario(this.usuario.id, payload).subscribe({
       next: () => {
         this.mensajeExito = 'Perfil actualizado correctamente.';
         this.editando = false;
         this.guardando = false;
-        Object.assign(this.usuario!, { email: this.usuarioEdit.email, telefono: this.usuarioEdit.telefono });
+        
+        // Actualizar el objeto usuario local
+        Object.assign(this.usuario!, { 
+          email: this.usuarioEdit.email, 
+          telefono: this.usuarioEdit.telefono,
+          ...(this.puedeEditarFechaNacimiento() && this.usuarioEdit.fechaNacimiento ? { fechaNacimiento: this.usuarioEdit.fechaNacimiento } : {})
+        });
+
+        // Si se actualizó la fecha de nacimiento, también actualizar en localStorage
+        if (this.puedeEditarFechaNacimiento() && this.usuarioEdit.fechaNacimiento) {
+          const authUserStr = localStorage.getItem('auth_user');
+          if (authUserStr) {
+            const authUser = JSON.parse(authUserStr);
+            authUser.fechaNacimiento = this.usuarioEdit.fechaNacimiento;
+            localStorage.setItem('auth_user', JSON.stringify(authUser));
+          }
+        }
       },
       error: () => {
         this.mensajeError = 'Error al guardar los cambios. El email puede estar en uso.';

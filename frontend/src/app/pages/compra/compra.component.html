@@ -199,30 +199,6 @@
                   <span>MASTERCARD</span>
                 </div>
               </label>
-              
-              <label class="metodo-item">
-                <input type="radio" name="metodoPago" value="YAPE" [(ngModel)]="metodoPago" (change)="errorMetodoPago = ''" />
-                <div class="metodo-label">
-                  <span class="metodo-icono">📱</span>
-                  <span>YAPE</span>
-                </div>
-              </label>
-              
-              <label class="metodo-item">
-                <input type="radio" name="metodoPago" value="PLIN" [(ngModel)]="metodoPago" (change)="errorMetodoPago = ''" />
-                <div class="metodo-label">
-                  <span class="metodo-icono">📱</span>
-                  <span>PLIN</span>
-                </div>
-              </label>
-              
-              <label class="metodo-item">
-                <input type="radio" name="metodoPago" value="EFECTIVO" [(ngModel)]="metodoPago" (change)="errorMetodoPago = ''" />
-                <div class="metodo-label">
-                  <span class="metodo-icono">💵</span>
-                  <span>EFECTIVO</span>
-                </div>
-              </label>
             </div>
             @if (errorMetodoPago) {
               <p class="error-field">{{ errorMetodoPago }}</p>
@@ -235,11 +211,11 @@
                   <input 
                     type="text" 
                     [(ngModel)]="numeroTarjeta" 
-                    (input)="errorNumeroTarjeta = ''"
+                    (input)="formatearNumeroTarjeta($event)"
                     placeholder="1234 5678 9012 3456" 
                     class="form-input" 
                     [class.input-error]="errorNumeroTarjeta"
-                    maxlength="16" 
+                    maxlength="19" 
                   />
                   @if (errorNumeroTarjeta) {
                     <p class="error-field">{{ errorNumeroTarjeta }}</p>
@@ -250,7 +226,7 @@
                   <input 
                     type="text" 
                     [(ngModel)]="nombreTarjeta" 
-                    (input)="errorNombreTarjeta = ''"
+                    (input)="validarNombreTarjeta($event)"
                     placeholder="JUAN PEREZ" 
                     class="form-input"
                     [class.input-error]="errorNombreTarjeta"
@@ -265,7 +241,7 @@
                     <input 
                       type="text" 
                       [(ngModel)]="fechaExpiracion" 
-                      (input)="errorFechaExpiracion = ''"
+                      (input)="formatearFechaExpiracion($event)"
                       placeholder="MM/AA" 
                       class="form-input"
                       [class.input-error]="errorFechaExpiracion"
@@ -280,11 +256,11 @@
                     <input 
                       type="text" 
                       [(ngModel)]="cvv" 
-                      (input)="errorCvv = ''"
+                      (input)="formatearCVV($event)"
                       placeholder="123" 
                       class="form-input"
                       [class.input-error]="errorCvv"
-                      maxlength="3" 
+                      maxlength="4" 
                     />
                     @if (errorCvv) {
                       <p class="error-field">{{ errorCvv }}</p>

@@ -9,6 +9,7 @@ import { PromocionService } from '../../services/promocion.service';
 import { PedidoService } from '../../services/pedido.service';
 import { PagoService } from '../../services/pago.service';
 import { EntradaService } from '../../services/entrada.service';
+import { UsuarioService } from '../../services/usuario.service';
 import { Evento } from '../../models/evento.model';
 import { Zona } from '../../models/zona.model';
 import { Promocion } from '../../models/promocion.model';
@@ -74,7 +75,8 @@ export class CompraComponent implements OnInit {
     private promocionService: PromocionService,
     private pedidoService: PedidoService,
     private pagoService: PagoService,
-    private entradaService: EntradaService
+    private entradaService: EntradaService,
+    private usuarioService: UsuarioService
   ) {}
 
   ngOnInit(): void {
@@ -237,6 +239,46 @@ export class CompraComponent implements OnInit {
       return;
     }
     
+    // Verificar edad del usuario si el evento tiene edad mínima
+    if (this.evento?.edadMinima && this.evento.edadMinima > 0) {
+      // Obtener información completa del usuario desde el servicio
+      this.usuarioService.getUsuarioPorId(this.user!.id!).subscribe({
+        next: (usuarioCompleto) => {
+          // Si el usuario no tiene fecha de nacimiento configurada
+          if (!usuarioCompleto.fechaNacimiento) {
+            this.error = `Este evento es para mayores de ${this.evento!.edadMinima} años. Por favor, configura tu fecha de nacimiento en tu perfil antes de continuar.`;
+            return;
+          }
+          
+          // Calcular edad del usuario
+          const fechaNacimiento = new Date(usuarioCompleto.fechaNacimiento);
+          const hoy = new Date();
+          let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+          const mDiff = hoy.getMonth() - fechaNacimiento.getMonth();
+          if (mDiff < 0 || (mDiff === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+            edad--;
+          }
+          
+          // Verificar si cumple con la edad mínima
+          if (edad < this.evento!.edadMinima!) {
+            this.error = `Lo sentimos, este evento es para mayores de ${this.evento!.edadMinima} años. Tu edad actual es ${edad} años.`;
+            return;
+          }
+          
+          // Si pasa la validación de edad, continuar con la verificación de disponibilidad
+          this.verificarDisponibilidadYContinuar();
+        },
+        error: () => {
+          this.error = 'No se pudo verificar tu información de usuario. Por favor, intenta nuevamente.';
+        }
+      });
+    } else {
+      // Si no hay edad mínima, continuar directamente
+      this.verificarDisponibilidadYContinuar();
+    }
+  }
+
+  private verificarDisponibilidadYContinuar(): void {
     // Recargar zonas para verificar disponibilidad antes de proceder al pago
     this.zonaService.getZonasPorEvento(this.evento!.id).subscribe({
       next: (zonasActualizadas) => {
@@ -268,6 +310,88 @@ export class CompraComponent implements OnInit {
     this.paso = 1;
   }
 
+  // Validación y formato de número de tarjeta
+  formatearNumeroTarjeta(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let valor = input.value.replace(/\s/g, ''); // Quitar espacios
+    valor = valor.replace(/\D/g, ''); // Solo números
+    
+    // Formatear con espacios cada 4 dígitos
+    if (valor.length > 0) {
+      valor = valor.match(/.{1,4}/g)?.join(' ') || valor;
+    }
+    
+    this.numeroTarjeta = valor;
+    this.errorNumeroTarjeta = '';
+  }
+
+  // Validación de nombre (solo letras y espacios)
+  validarNombreTarjeta(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let valor = input.value;
+    
+    // Solo letras, espacios y convertir a mayúsculas
+    valor = valor.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
+    valor = valor.toUpperCase();
+    
+    this.nombreTarjeta = valor;
+    this.errorNombreTarjeta = '';
+  }
+
+  // Formato y validación de fecha de expiración MM/AA
+  formatearFechaExpiracion(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let valor = input.value.replace(/\D/g, ''); // Solo números
+    
+    if (valor.length >= 2) {
+      valor = valor.substring(0, 2) + '/' + valor.substring(2, 4);
+    }
+    
+    this.fechaExpiracion = valor;
+    this.errorFechaExpiracion = '';
+  }
+
+  // Formato de CVV (solo números)
+  formatearCVV(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let valor = input.value.replace(/\D/g, ''); // Solo números
+    
+    this.cvv = valor;
+    this.errorCvv = '';
+  }
+
+  // Validar que la fecha de expiración no esté vencida
+  validarFechaExpiracion(fecha: string): boolean {
+    if (!fecha || !fecha.includes('/')) {
+      return false;
+    }
+    
+    const [mes, anio] = fecha.split('/');
+    const mesNum = parseInt(mes, 10);
+    const anioNum = parseInt('20' + anio, 10);
+    
+    // Validar formato
+    if (mesNum < 1 || mesNum > 12) {
+      return false;
+    }
+    
+    // Obtener fecha actual
+    const ahora = new Date();
+    const mesActual = ahora.getMonth() + 1; // getMonth() devuelve 0-11
+    const anioActual = ahora.getFullYear();
+    
+    // Comparar fechas
+    if (anioNum < anioActual) {
+      return false; // Año pasado
+    }
+    
+    if (anioNum === anioActual && mesNum < mesActual) {
+      return false; // Mismo año pero mes pasado
+    }
+    
+    return true;
+  }
+
   finalizarCompra(): void {
     // Limpiar errores previos
     this.errorMetodoPago = '';
@@ -287,23 +411,37 @@ export class CompraComponent implements OnInit {
 
     // Validar datos de tarjeta si es necesario
     if (this.metodoPago === 'VISA' || this.metodoPago === 'MASTERCARD') {
-      if (!this.numeroTarjeta || this.numeroTarjeta.trim().length < 13) {
-        this.errorNumeroTarjeta = 'Ingresa un número de tarjeta válido (mínimo 13 dígitos)';
+      // Validar número de tarjeta (debe tener 16 dígitos sin espacios)
+      const numeroSinEspacios = this.numeroTarjeta.replace(/\s/g, '');
+      if (!numeroSinEspacios || numeroSinEspacios.length < 13 || numeroSinEspacios.length > 16) {
+        this.errorNumeroTarjeta = 'Número de tarjeta inválido (13-16 dígitos)';
         hayErrores = true;
       }
       
+      // Validar nombre (debe tener al menos 3 caracteres y solo letras)
       if (!this.nombreTarjeta || this.nombreTarjeta.trim().length < 3) {
         this.errorNombreTarjeta = 'Ingresa el nombre como aparece en la tarjeta';
         hayErrores = true;
-      }
-      
-      if (!this.fechaExpiracion || this.fechaExpiracion.trim().length < 4) {
-        this.errorFechaExpiracion = 'Ingresa la fecha de expiración (MM/AA)';
+      } else if (!/^[A-ZÁÉÍÓÚÑa-záéíóúñ\s]+$/.test(this.nombreTarjeta)) {
+        this.errorNombreTarjeta = 'El nombre solo debe contener letras';
         hayErrores = true;
       }
       
+      // Validar formato de fecha MM/AA
+      if (!this.fechaExpiracion || !/^\d{2}\/\d{2}$/.test(this.fechaExpiracion)) {
+        this.errorFechaExpiracion = 'Formato inválido. Use MM/AA';
+        hayErrores = true;
+      } else if (!this.validarFechaExpiracion(this.fechaExpiracion)) {
+        this.errorFechaExpiracion = 'La tarjeta está vencida o la fecha es inválida';
+        hayErrores = true;
+      }
+      
+      // Validar CVV (debe tener 3 o 4 dígitos y solo números)
       if (!this.cvv || this.cvv.trim().length < 3) {
-        this.errorCvv = 'Ingresa el CVV (3 dígitos)';
+        this.errorCvv = 'Ingresa el CVV (3-4 dígitos)';
+        hayErrores = true;
+      } else if (!/^\d{3,4}$/.test(this.cvv)) {
+        this.errorCvv = 'El CVV solo debe contener números';
         hayErrores = true;
       }
     }

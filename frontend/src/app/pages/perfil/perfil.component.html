@@ -118,7 +118,7 @@
 
         @if (editando) {
           <form class="form-edicion" (ngSubmit)="guardarCambios()">
-            <p class="edit-nota">Solo podés modificar tu correo electrónico y teléfono.</p>
+            <p class="edit-nota">Solo podés modificar tu correo electrónico, teléfono{{ puedeEditarFechaNacimiento() ? ' y fecha de nacimiento (una única vez)' : '' }}.</p>
             <div class="form-grid">
               <div class="form-group">
                 <label>Correo electrónico</label>
@@ -128,6 +128,13 @@
                 <label>Teléfono</label>
                 <input type="tel" [(ngModel)]="usuarioEdit.telefono" name="telefono" class="input" placeholder="Ej. +51 999 999 999" />
               </div>
+              @if (puedeEditarFechaNacimiento()) {
+                <div class="form-group">
+                  <label>Fecha de nacimiento <span style="color: #dc2626;">*</span></label>
+                  <input type="date" [(ngModel)]="usuarioEdit.fechaNacimiento" name="fechaNacimiento" class="input" [max]="fechaMaxima" required />
+                  <small style="color: #6b7280; font-size: 0.875rem;">⚠️ Solo podrás modificar este campo una vez</small>
+                </div>
+              }
             </div>
             <div class="form-actions">
               <button type="button" class="btn-cancelar" (click)="cancelarEdicion()">Cancelar</button>

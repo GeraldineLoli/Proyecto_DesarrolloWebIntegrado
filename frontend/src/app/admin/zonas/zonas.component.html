@@ -165,7 +165,8 @@
             <div class="field">
               <label>Precio (S/) *</label>
               <input type="number" [(ngModel)]="zonaForm.precio" name="precio"
-                     required min="0" step="0.01" />
+                     required min="0.01" step="0.01" />
+              <small style="color: #6b7280; font-size: 12px;">El precio debe ser mayor a 0</small>
             </div>
 
             <!-- Color en mapa -->

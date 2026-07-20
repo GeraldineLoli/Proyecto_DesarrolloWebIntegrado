@@ -87,9 +87,10 @@
             </div>
 
             <div class="form-group">
-              <label for="fechaNacimiento">Fecha de nacimiento <span class="optional">(opcional)</span></label>
+              <label for="fechaNacimiento">Fecha de nacimiento *</label>
               <input id="fechaNacimiento" type="date" name="fechaNacimiento"
-                [(ngModel)]="usuario.fechaNacimiento" />
+                [(ngModel)]="usuario.fechaNacimiento" [max]="fechaMaxima" required />
+              <small style="color: #6b7280; font-size: 12px;">Debes tener al menos 13 años para registrarte</small>
             </div>
 
             <button type="submit" class="btn-primary btn-full">
