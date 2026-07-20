@@ -3,10 +3,11 @@
   <div class="navbar-content">
     <a routerLink="/home" class="navbar-brand">🎟️ TicketApp</a>
     <div class="navbar-actions">
+      <a [routerLink]="['/eventos', eventoId]" class="btn-nav btn-volver">← Volver al evento</a>
       @if (user) {
         <span class="navbar-user">{{ user.nombre }}</span>
         <a routerLink="/perfil" class="btn-nav">Mi Perfil</a>
-        <button class="btn-nav btn-logout" (click)="logout()">Salir</button>
+        <button class="btn-nav btn-logout" (click)="logout()">Cerrar sesión</button>
       } @else {
         <a routerLink="/login" class="btn-nav">Iniciar sesión</a>
       }
@@ -80,7 +81,7 @@
 
     <!-- BOTÓN / FORMULARIO NUEVA RESEÑA -->
     @if (user) {
-      @if (!yaReseno && entradaUsuario) {
+      @if (!yaReseno && entradaUsuario && eventoYaPaso) {
         <div class="nueva-resena-section">
           @if (!mostrarFormulario) {
             <button class="btn-escribir" (click)="toggleFormulario()">
@@ -139,6 +140,12 @@
 
       @if (yaReseno) {
         <div class="ya-reseno">✅ Ya dejaste una resena para este evento.</div>
+      }
+
+      @if (entradaUsuario && !eventoYaPaso && !yaReseno) {
+        <div class="sin-entrada">
+          🕐 Podrás dejar tu reseña una vez que el evento haya finalizado.
+        </div>
       }
 
       @if (!entradaUsuario && !yaReseno) {

@@ -3,10 +3,12 @@
   <div class="navbar-content">
     <a routerLink="/home" class="navbar-brand">🎟️ TicketApp</a>
     <div class="navbar-actions">
+      <a routerLink="/home" class="btn-nav btn-volver">← Inicio</a>
       @if (user) {
         <span class="navbar-user">{{ user.nombre }}</span>
+        <a routerLink="/mis-reservas" class="btn-nav">Mis reservas</a>
         <a routerLink="/perfil" class="btn-nav">Mi Perfil</a>
-        <button class="btn-nav btn-logout" (click)="logout()">Salir</button>
+        <button class="btn-nav btn-logout" (click)="logout()">Cerrar sesión</button>
       } @else {
         <a routerLink="/login" class="btn-nav">Iniciar sesión</a>
         <a routerLink="/register" class="btn-nav btn-primary-nav">Registro</a>

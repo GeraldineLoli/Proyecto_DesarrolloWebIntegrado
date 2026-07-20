@@ -345,3 +345,9 @@
   line-height: 1.65;
   margin: 0;
 }
+
+.btn-volver {
+  color: #a78bfa !important;
+  border: 1px solid rgba(167,139,250,0.4) !important;
+}
+.btn-volver:hover { background: rgba(167,139,250,0.15) !important; }
